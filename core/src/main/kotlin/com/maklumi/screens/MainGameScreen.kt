@@ -4,20 +4,23 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
+import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.maps.tiled.TiledMap
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
+import com.maklumi.Player
 import com.maklumi.Utility
+import ktx.graphics.use
 
 
 class MainGameScreen : Screen {
     private val tag = javaClass.simpleName
 
-    private val overviewMap = "maps/tmx/Town.tmx"
+    private val overviewMap = "sprites/tmx/Town.tmx"
     private val unitScale = 1f / 16f
     private var townMap: TiledMap? = null
 
-    lateinit var orthoCamera: OrthographicCamera
-    lateinit var tiledMapRenderer: OrthogonalTiledMapRenderer
+    private lateinit var orthoCamera: OrthographicCamera
+    private lateinit var tiledMapRenderer: OrthogonalTiledMapRenderer
 
     private var viewportWidth: Float = 0f
     private var viewportHeight: Float = 0f
@@ -25,21 +28,21 @@ class MainGameScreen : Screen {
     private var physicalHeight: Float = 0f
     private var aspectRatio: Float = 0f
 
+    lateinit var playerSprite: Sprite
+
     @Override
     override fun show() {
         setupViewport()
 
         Utility.loadMapAsset(overviewMap)
-        if (Utility.assetManager.isLoaded(overviewMap)) {
-            townMap = Utility.getMapAsset(overviewMap)
-        }
+        townMap = Utility.getMapAsset(overviewMap)
 
         orthoCamera = OrthographicCamera(viewportWidth, viewportHeight)
         orthoCamera.setToOrtho(false, 20f, 14f)
-        orthoCamera.update()
 
         tiledMapRenderer = OrthogonalTiledMapRenderer(townMap, unitScale)
-        tiledMapRenderer.setView(orthoCamera)
+
+        playerSprite = Player().frameSprite
     }
 
     @Override
@@ -47,7 +50,15 @@ class MainGameScreen : Screen {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
+        // lock and center the camera to player's position
+        orthoCamera.position.set(playerSprite.x, playerSprite.y, 0f)
+        orthoCamera.update()
+        tiledMapRenderer.setView(orthoCamera)
         tiledMapRenderer.render()
+
+        tiledMapRenderer.batch.use {
+            it.draw(playerSprite, playerSprite.x, playerSprite.y, 1f, 1f)
+        }
     }
 
     @Override
