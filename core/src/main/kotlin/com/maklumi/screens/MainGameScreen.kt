@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.maps.tiled.TiledMap
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
 import com.maklumi.Player
+import com.maklumi.PlayerController
 import com.maklumi.Utility
 import ktx.graphics.use
 
@@ -28,7 +29,10 @@ class MainGameScreen : Screen {
     private var physicalHeight: Float = 0f
     private var aspectRatio: Float = 0f
 
-    lateinit var playerSprite: Sprite
+    private lateinit var playerSprite: Sprite
+
+    private val player = Player()
+    private var controller = PlayerController(player)
 
     @Override
     override fun show() {
@@ -42,13 +46,17 @@ class MainGameScreen : Screen {
 
         tiledMapRenderer = OrthogonalTiledMapRenderer(townMap, unitScale)
 
-        playerSprite = Player().frameSprite
+        playerSprite = player.frameSprite
+
+        Gdx.input.inputProcessor = controller
     }
 
     @Override
     override fun render(delta: Float) {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
+
+        controller.processInput(delta)
 
         // lock and center the camera to player's position
         orthoCamera.position.set(playerSprite.x, playerSprite.y, 0f)
@@ -57,7 +65,9 @@ class MainGameScreen : Screen {
         tiledMapRenderer.render()
 
         tiledMapRenderer.batch.use {
-            it.draw(playerSprite, playerSprite.x, playerSprite.y, 1f, 1f)
+            it.draw(playerSprite,
+                    player.playerPosition.x,
+                    player.playerPosition.y, 1f, 1f)
         }
     }
 
@@ -78,7 +88,8 @@ class MainGameScreen : Screen {
     }
 
     @Override
-    override fun dispose() { // Destroy screen's assets here.
+    override fun dispose() {
+        Gdx.input.inputProcessor = null
     }
 
     private fun setupViewport() {
