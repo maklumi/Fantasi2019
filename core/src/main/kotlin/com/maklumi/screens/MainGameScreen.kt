@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
-import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.maps.tiled.TiledMap
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
 import com.maklumi.Player
@@ -14,7 +13,6 @@ import ktx.graphics.use
 
 
 class MainGameScreen : Screen {
-    private val tag = javaClass.simpleName
 
     private val overviewMap = "sprites/tmx/Town.tmx"
     private val unitScale = 1f / 16f
@@ -29,10 +27,8 @@ class MainGameScreen : Screen {
     private var physicalHeight: Float = 0f
     private var aspectRatio: Float = 0f
 
-    private lateinit var playerSprite: Sprite
-
     private val player = Player()
-    private var controller = PlayerController(player)
+    private val controller = PlayerController(player)
 
     @Override
     override fun show() {
@@ -46,8 +42,6 @@ class MainGameScreen : Screen {
 
         tiledMapRenderer = OrthogonalTiledMapRenderer(townMap, unitScale)
 
-        playerSprite = player.frameSprite
-
         Gdx.input.inputProcessor = controller
     }
 
@@ -58,33 +52,35 @@ class MainGameScreen : Screen {
 
         controller.processInput(delta)
 
+        player.update(delta)
+
         // lock and center the camera to player's position
-        orthoCamera.position.set(playerSprite.x, playerSprite.y, 0f)
+        orthoCamera.position.set(player.playerPosition.x, player.playerPosition.y, 0f)
         orthoCamera.update()
         tiledMapRenderer.setView(orthoCamera)
         tiledMapRenderer.render()
 
         tiledMapRenderer.batch.use {
-            it.draw(playerSprite,
+            it.draw(player.currentFrame,
                     player.playerPosition.x,
                     player.playerPosition.y, 1f, 1f)
         }
     }
 
     @Override
-    override fun resize(width: Int, height: Int) { // Resize your screen here. The parameters represent the new window size.
+    override fun resize(width: Int, height: Int) {
     }
 
     @Override
-    override fun pause() { // Invoked when your application is paused.
+    override fun pause() {
     }
 
     @Override
-    override fun resume() { // Invoked when your application is resumed after pause.
+    override fun resume() {
     }
 
     @Override
-    override fun hide() { // This method is called when another screen replaces this one.
+    override fun hide() {
     }
 
     @Override
@@ -114,9 +110,5 @@ class MainGameScreen : Screen {
             viewportWidth = virtualWidth
             viewportHeight = viewportWidth * (physicalHeight / physicalWidth)
         }
-
-        Gdx.app.debug(tag, "WorldRenderer: virtual: ($virtualWidth,$virtualHeight)")
-        Gdx.app.debug(tag, "WorldRenderer: viewport: ($viewportWidth,$viewportHeight)")
-        Gdx.app.debug(tag, "WorldRenderer: physical: ($physicalWidth,$physicalHeight)")
     }
 }
