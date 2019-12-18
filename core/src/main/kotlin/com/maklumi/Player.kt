@@ -3,6 +3,7 @@ package com.maklumi
 import com.badlogic.gdx.graphics.g2d.Animation
 //import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Array as GdxArray
 
@@ -31,8 +32,13 @@ class Player {
         loadAllAnimations()
     }
 
-    private var velocity = Vector2(4f, 4f)
-    val playerPosition = Vector2(7f, 6f)
+    private val velocity = Vector2(4f, 4f)
+    val currentPosition = Vector2(10f, 6f)
+    private val nextPosition = currentPosition.cpy()
+    val boundingBox: Rectangle
+        get() = Rectangle(currentPosition.x, currentPosition.y, 16f, 8f)
+    val nextBoundingBox: Rectangle
+        get() = Rectangle(nextPosition.x, nextPosition.y, 16f, 8f)
 
     enum class Direction {
         UP, RIGHT, DOWN, LEFT;
@@ -46,8 +52,9 @@ class Player {
 //    }
 
     fun calculateNextPosition(currentDirection: Direction, deltaTime: Float) {
-        var tempX = playerPosition.x
-        var tempY = playerPosition.y
+        var tempX = currentPosition.x
+        var tempY = currentPosition.y
+        nextPosition.set(tempX, tempY)
 
         velocity.scl(deltaTime)
 
@@ -58,13 +65,16 @@ class Player {
             Direction.DOWN -> tempY -= velocity.y
         }
 
-        playerPosition.set(tempX, tempY)
+        nextPosition.set(tempX, tempY)
 
         velocity.scl(1 / deltaTime)
 
         // also set direction
         this.currentDirection = currentDirection
-        // then set current frame
+    }
+
+    fun setCurrentPosition() {
+        currentPosition.set(nextPosition)
         setCurrentFrame()
     }
 

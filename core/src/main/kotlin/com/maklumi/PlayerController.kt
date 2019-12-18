@@ -1,68 +1,69 @@
 package com.maklumi
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputProcessor
 
 class PlayerController(private val player: Player) : InputProcessor {
+    enum class Keys { Left, Right, Up, Down, Quit }
 
-    sealed class Keys {
-        object Left : Keys() {
-            override fun onPressed(player: Player, delta: Float) {
-                player.calculateNextPosition(Player.Direction.LEFT, delta)
-            }
-        }
-
-        object Right : Keys() {
-            override fun onPressed(player: Player, delta: Float) {
-                player.calculateNextPosition(Player.Direction.RIGHT, delta)
-            }
-        }
-
-        object Up : Keys() {
-            override fun onPressed(player: Player, delta: Float) {
-                player.calculateNextPosition(Player.Direction.UP, delta)
-            }
-        }
-
-        object Down : Keys() {
-            override fun onPressed(player: Player, delta: Float) {
-                player.calculateNextPosition(Player.Direction.DOWN, delta)
-            }
-        }
-
-        object NoPress : Keys() {
-            override fun onPressed(player: Player, delta: Float) {
-            }
-        }
-
-        abstract fun onPressed(player: Player, delta: Float)
-    }
-
-    private var keyPress: Keys = Keys.NoPress
+    private val keys = mutableMapOf(
+            Keys.Left to false,
+            Keys.Right to false,
+            Keys.Up to false,
+            Keys.Down to false,
+            Keys.Quit to false)
 
     override fun keyDown(keycode: Int): Boolean {
-        keyPress = if (keycode == Input.Keys.LEFT || keycode == Input.Keys.A) {
-            Keys.Left
+        if (keycode == Input.Keys.LEFT || keycode == Input.Keys.A) {
+            keys[Keys.Left] = true
         } else if (keycode == Input.Keys.RIGHT || keycode == Input.Keys.D) {
-            Keys.Right
+            keys[Keys.Right] = true
         } else if (keycode == Input.Keys.UP || keycode == Input.Keys.W) {
-            Keys.Up
+            keys[Keys.Up] = true
         } else if (keycode == Input.Keys.DOWN || keycode == Input.Keys.S) {
-            Keys.Down
-        } else {
-            Keys.NoPress
+            keys[Keys.Down] = true
+        } else if (keycode == Input.Keys.Q) {
+            keys[Keys.Quit] = true
         }
         return true
     }
 
     override fun keyUp(keycode: Int): Boolean {
-        keyPress = Keys.NoPress
+        if (keycode == Input.Keys.LEFT || keycode == Input.Keys.A) {
+            keys[Keys.Left] = false
+        } else if (keycode == Input.Keys.RIGHT || keycode == Input.Keys.D) {
+            keys[Keys.Right] = false
+        } else if (keycode == Input.Keys.UP || keycode == Input.Keys.W) {
+            keys[Keys.Up] = false
+        } else if (keycode == Input.Keys.DOWN || keycode == Input.Keys.S) {
+            keys[Keys.Down] = false
+        } else if (keycode == Input.Keys.Q) {
+            keys[Keys.Quit] = false
+        }
         return true
     }
 
     fun processInput(delta: Float) {
-        if (delta < 0.005) return
-        keyPress.onPressed(player, delta)
+//        if (delta < 0.005) return
+
+        when {
+            keys[Keys.Left]!! -> {
+                player.calculateNextPosition(Player.Direction.LEFT, delta)
+            }
+            keys[Keys.Right]!! -> {
+                player.calculateNextPosition(Player.Direction.RIGHT, delta)
+            }
+            keys[Keys.Up]!! -> {
+                player.calculateNextPosition(Player.Direction.UP, delta)
+            }
+            keys[Keys.Down]!! -> {
+                player.calculateNextPosition(Player.Direction.DOWN, delta)
+            }
+            keys[Keys.Quit]!! -> {
+                Gdx.app.exit()
+            }
+        }
     }
 
     override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
