@@ -57,22 +57,22 @@ class InputComponent : InputProcessor {
 
         when {
             keys[Keys.Left]!! -> {
-                entity.calculateNextPosition(Entity.Direction.LEFT, delta)
+                entity.physicsComponent.calculateNextPosition(Entity.Direction.LEFT, delta)
                 entity.state = Entity.State.WALKING
                 entity.direction = Entity.Direction.LEFT
             }
             keys[Keys.Right]!! -> {
-                entity.calculateNextPosition(Entity.Direction.RIGHT, delta)
+                entity.physicsComponent.calculateNextPosition(Entity.Direction.RIGHT, delta)
                 entity.state = Entity.State.WALKING
                 entity.direction = Entity.Direction.RIGHT
             }
             keys[Keys.Up]!! -> {
-                entity.calculateNextPosition(Entity.Direction.UP, delta)
+                entity.physicsComponent.calculateNextPosition(Entity.Direction.UP, delta)
                 entity.state = Entity.State.WALKING
                 entity.direction = Entity.Direction.UP
             }
             keys[Keys.Down]!! -> {
-                entity.calculateNextPosition(Entity.Direction.DOWN, delta)
+                entity.physicsComponent.calculateNextPosition(Entity.Direction.DOWN, delta)
                 entity.state = Entity.State.WALKING
                 entity.direction = Entity.Direction.DOWN
             }
