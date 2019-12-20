@@ -7,24 +7,27 @@ import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.maps.MapLayer
+import com.badlogic.gdx.maps.MapObject
 import com.badlogic.gdx.maps.objects.RectangleMapObject
-import com.badlogic.gdx.maps.tiled.TiledMap
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
 import com.badlogic.gdx.math.Rectangle
+import com.maklumi.MapManager.collisionLayer
+import com.maklumi.MapManager.currentMap
+import com.maklumi.MapManager.currentMapName
+import com.maklumi.MapManager.loadMap
+import com.maklumi.MapManager.playerStartUnitScaled
+import com.maklumi.MapManager.portalLayer
+import com.maklumi.MapManager.setClosestStartPosition
+import com.maklumi.MapManager.spawnsLayer
+import com.maklumi.MapManager.unitScale
 import com.maklumi.Player
 import com.maklumi.PlayerController
-import com.maklumi.Utility
 import ktx.graphics.use
 
 
 class MainGameScreen : Screen {
 
-    private val overviewMap = "maps/town.tmx" //castle_of_doom town topworld
-    private val unitScale = 1f / 16f
-    private var townMap: TiledMap? = null
-    private var collisionLayer: MapLayer? = null
     private val shapeRenderer = ShapeRenderer()
-    private lateinit var currBoundingBox: Rectangle
 
     private lateinit var orthoCamera: OrthographicCamera
     private lateinit var tiledMapRenderer: OrthogonalTiledMapRenderer
@@ -37,20 +40,19 @@ class MainGameScreen : Screen {
 
     private val player = Player()
     private val controller = PlayerController(player)
+    private val temp = Rectangle()
 
     @Override
     override fun show() {
         setupViewport()
 
-        Utility.loadMapAsset(overviewMap)
-        townMap = Utility.getMapAsset(overviewMap)
-        collisionLayer = townMap?.layers?.get("MAP_COLLISION_LAYER")
-        currBoundingBox = player.boundingBox
+        loadMap(currentMapName)
+        player.initStartPosition(playerStartUnitScaled)
 
         orthoCamera = OrthographicCamera(viewportWidth, viewportHeight)
         orthoCamera.setToOrtho(false, 20f, 14f)
 
-        tiledMapRenderer = OrthogonalTiledMapRenderer(townMap, unitScale)
+        tiledMapRenderer = OrthogonalTiledMapRenderer(currentMap, unitScale)
 
         Gdx.input.inputProcessor = controller
     }
@@ -62,8 +64,10 @@ class MainGameScreen : Screen {
 
         controller.processInput(delta)
 
+        isCollisionWithPortalLayer(player.currentBound)
+
         player.update(delta)
-        if (!isCollisionWithMapLayer(player.nextBoundingBox)) {
+        if (isCollisionWithMapLayer(collisionLayer, player.nextBound) == null) {
             player.setCurrentPosition()
         }
 
@@ -82,36 +86,53 @@ class MainGameScreen : Screen {
         drawBoundingBox()
     }
 
-    private fun isCollisionWithMapLayer(rect: Rectangle): Boolean {
-        if (collisionLayer == null) return false
+    private fun isCollisionWithPortalLayer(rect: Rectangle) {
+        val portalHit = isCollisionWithMapLayer(portalLayer, rect)
 
-        //Convert rectangle to map coordinates in pixels
-        // rect = (x=10,y=10,w=16,h=8) => (10*16,10*16,16,8) pixels
-        val temp = Rectangle(rect.x / unitScale, rect.y / unitScale,
-                rect.width, rect.height)
+        if (portalHit != null) {
+            // before leaving, cache closest start position from current player position
+            setClosestStartPosition(player.currentPosition)
+            // then
+            loadMap(portalHit.name)
+            tiledMapRenderer.map = currentMap
+            player.initStartPosition(playerStartUnitScaled)
+        }
+    }
 
-        return collisionLayer!!.objects.any {
-            it as RectangleMapObject
-            temp.overlaps(it.rectangle)
+    private fun isCollisionWithMapLayer(mapLayer: MapLayer?, rect: Rectangle): MapObject? {
+        if (mapLayer == null) return null
+
+        //Convert rectangle (in world unit) to mapLayer coordinates (in pixels)
+        temp.setPosition(rect.x / unitScale, rect.y / unitScale)
+        temp.setSize(rect.width, rect.height)
+
+        return mapLayer.objects.firstOrNull {
+            temp.overlaps((it as RectangleMapObject).rectangle)
         }
     }
 
     private fun drawBoundingBox() {
-        val b = player.boundingBox
+        val b = player.nextBound
         shapeRenderer.apply {
             projectionMatrix = orthoCamera.combined
             begin(ShapeRenderer.ShapeType.Filled)
             color = Color.YELLOW
             rect(b.x, b.y, b.width * unitScale, b.height * unitScale)
+            fun debugLayer(layer: MapLayer, clr: Color) {
+                layer.objects.forEach {
+                    it as RectangleMapObject
+                    shapeRenderer.color = clr
+                    shapeRenderer.rect(it.rectangle.x * unitScale, it.rectangle.y * unitScale,
+                            it.rectangle.width * unitScale, it.rectangle.height * unitScale)
 
-            collisionLayer?.objects?.forEach {
-                it as RectangleMapObject
-                color = Color.BLUE
-                rect(it.rectangle.x * unitScale, it.rectangle.y * unitScale,
-                        it.rectangle.width * unitScale, it.rectangle.height * unitScale)
+                }
             }
+            if (collisionLayer != null) debugLayer(collisionLayer!!, Color.BLUE)
+            if (portalLayer != null) debugLayer(portalLayer!!, Color.DARK_GRAY)
+            if (spawnsLayer != null) debugLayer(spawnsLayer!!, Color.LIME)
             end()
         }
+
     }
 
     @Override

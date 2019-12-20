@@ -33,15 +33,20 @@ class Player {
     }
 
     private val velocity = Vector2(4f, 4f)
-    val currentPosition = Vector2(10f, 6f)
-    private val nextPosition = currentPosition.cpy()
-    val boundingBox: Rectangle
+    val currentPosition = Vector2()
+    private val nextPosition = Vector2()
+    val currentBound: Rectangle
         get() = Rectangle(currentPosition.x, currentPosition.y, 16f, 8f)
-    val nextBoundingBox: Rectangle
+    val nextBound: Rectangle
         get() = Rectangle(nextPosition.x, nextPosition.y, 16f, 8f)
 
     enum class Direction {
         UP, RIGHT, DOWN, LEFT;
+    }
+
+    fun initStartPosition(pos: Vector2) {
+        currentPosition.set(pos)
+        nextPosition.set(pos)
     }
 
 //    private fun loadDefaultSprite() {
