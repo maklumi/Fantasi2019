@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Array as GdxArray
 
-class Player {
+class Entity {
 
     private val frameWidth = 16
     private val frameHeight = 16

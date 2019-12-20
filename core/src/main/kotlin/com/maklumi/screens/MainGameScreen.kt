@@ -20,8 +20,8 @@ import com.maklumi.MapManager.portalLayer
 import com.maklumi.MapManager.setClosestStartPosition
 import com.maklumi.MapManager.spawnsLayer
 import com.maklumi.MapManager.unitScale
-import com.maklumi.Player
-import com.maklumi.PlayerController
+import com.maklumi.Entity
+import com.maklumi.InputComponent
 import ktx.graphics.use
 
 
@@ -38,8 +38,8 @@ class MainGameScreen : Screen {
     private var physicalHeight: Float = 0f
     private var aspectRatio: Float = 0f
 
-    private val player = Player()
-    private val controller = PlayerController(player)
+    private val player = Entity()
+    private val controller = InputComponent(player)
     private val temp = Rectangle()
 
     @Override

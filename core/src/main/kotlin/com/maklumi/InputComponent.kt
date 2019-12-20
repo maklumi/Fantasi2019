@@ -3,9 +3,17 @@ package com.maklumi
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputProcessor
+import com.badlogic.gdx.math.Vector3
 
-class PlayerController(private val player: Player) : InputProcessor {
+class InputComponent(private val entity: Entity) : InputProcessor {
     enum class Keys { Left, Right, Up, Down, Quit }
+    enum class Mouse { SELECT, DOACTION }
+
+    private val lastMouseCoordinates = Vector3()
+
+    private val mouseButtons = mutableMapOf(
+            Mouse.SELECT to false,
+            Mouse.DOACTION to false)
 
     private val keys = mutableMapOf(
             Keys.Left to false,
@@ -49,16 +57,16 @@ class PlayerController(private val player: Player) : InputProcessor {
 
         when {
             keys[Keys.Left]!! -> {
-                player.calculateNextPosition(Player.Direction.LEFT, delta)
+                entity.calculateNextPosition(Entity.Direction.LEFT, delta)
             }
             keys[Keys.Right]!! -> {
-                player.calculateNextPosition(Player.Direction.RIGHT, delta)
+                entity.calculateNextPosition(Entity.Direction.RIGHT, delta)
             }
             keys[Keys.Up]!! -> {
-                player.calculateNextPosition(Player.Direction.UP, delta)
+                entity.calculateNextPosition(Entity.Direction.UP, delta)
             }
             keys[Keys.Down]!! -> {
-                player.calculateNextPosition(Player.Direction.DOWN, delta)
+                entity.calculateNextPosition(Entity.Direction.DOWN, delta)
             }
             keys[Keys.Quit]!! -> {
                 Gdx.app.exit()
@@ -66,8 +74,23 @@ class PlayerController(private val player: Player) : InputProcessor {
         }
     }
 
+    override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
+        if (button == Input.Buttons.LEFT || button == Input.Buttons.RIGHT)
+            lastMouseCoordinates.set(screenX.toFloat(), screenY.toFloat(), 0f)
+
+        if (button == Input.Buttons.LEFT) mouseButtons[Mouse.SELECT] = true
+
+        if (button == Input.Buttons.RIGHT) mouseButtons[Mouse.DOACTION] = true
+
+        return true
+    }
+
     override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
-        return false
+        if (button == Input.Buttons.LEFT) mouseButtons[Mouse.SELECT] = false
+
+        if (button == Input.Buttons.RIGHT) mouseButtons[Mouse.DOACTION] = false
+
+        return true
     }
 
     override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
@@ -83,10 +106,6 @@ class PlayerController(private val player: Player) : InputProcessor {
     }
 
     override fun touchDragged(screenX: Int, screenY: Int, pointer: Int): Boolean {
-        return false
-    }
-
-    override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         return false
     }
 
