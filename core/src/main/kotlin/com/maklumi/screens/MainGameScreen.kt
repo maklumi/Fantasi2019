@@ -11,6 +11,7 @@ import com.badlogic.gdx.maps.MapObject
 import com.badlogic.gdx.maps.objects.RectangleMapObject
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
 import com.badlogic.gdx.math.Rectangle
+import com.maklumi.Entity
 import com.maklumi.MapManager.collisionLayer
 import com.maklumi.MapManager.currentMap
 import com.maklumi.MapManager.currentMapName
@@ -20,8 +21,6 @@ import com.maklumi.MapManager.portalLayer
 import com.maklumi.MapManager.setClosestStartPosition
 import com.maklumi.MapManager.spawnsLayer
 import com.maklumi.MapManager.unitScale
-import com.maklumi.Entity
-import com.maklumi.InputComponent
 import ktx.graphics.use
 
 
@@ -39,7 +38,7 @@ class MainGameScreen : Screen {
     private var aspectRatio: Float = 0f
 
     private val player = Entity()
-    private val controller = InputComponent(player)
+    private val controller = player.inputComponent
     private val temp = Rectangle()
 
     @Override
@@ -62,7 +61,7 @@ class MainGameScreen : Screen {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
-        controller.processInput(delta)
+        controller.update(player, delta)
 
         isCollisionWithPortalLayer(player.currentBound)
 
@@ -78,7 +77,7 @@ class MainGameScreen : Screen {
         tiledMapRenderer.render()
 
         tiledMapRenderer.batch.use {
-            it.draw(player.currentFrame,
+            it.draw(player.graphicsComponent.currentFrame,
                     player.currentPosition.x,
                     player.currentPosition.y, 1f, 1f)
         }
@@ -112,12 +111,12 @@ class MainGameScreen : Screen {
     }
 
     private fun drawBoundingBox() {
-        val b = player.nextBound
+//        val b = player.nextBound
         shapeRenderer.apply {
             projectionMatrix = orthoCamera.combined
             begin(ShapeRenderer.ShapeType.Filled)
             color = Color.YELLOW
-            rect(b.x, b.y, b.width * unitScale, b.height * unitScale)
+            //            rect(b.x, b.y, b.width * unitScale, b.height * unitScale)
             fun debugLayer(layer: MapLayer, clr: Color) {
                 layer.objects.forEach {
                     it as RectangleMapObject
@@ -129,7 +128,7 @@ class MainGameScreen : Screen {
             }
             if (collisionLayer != null) debugLayer(collisionLayer!!, Color.BLUE)
             if (portalLayer != null) debugLayer(portalLayer!!, Color.DARK_GRAY)
-            if (spawnsLayer != null) debugLayer(spawnsLayer!!, Color.LIME)
+//            if (spawnsLayer != null) debugLayer(spawnsLayer!!, Color.LIME)
             end()
         }
 

@@ -5,7 +5,7 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.math.Vector3
 
-class InputComponent(private val entity: Entity) : InputProcessor {
+class InputComponent : InputProcessor {
     enum class Keys { Left, Right, Up, Down, Quit }
     enum class Mouse { SELECT, DOACTION }
 
@@ -52,24 +52,35 @@ class InputComponent(private val entity: Entity) : InputProcessor {
         return true
     }
 
-    fun processInput(delta: Float) {
-//        if (delta < 0.005) return
+    fun update(entity: Entity, delta: Float) {
+        if (delta < 0.005 || entity.state == Entity.State.PAUSE) return
 
         when {
             keys[Keys.Left]!! -> {
                 entity.calculateNextPosition(Entity.Direction.LEFT, delta)
+                entity.state = Entity.State.WALKING
+                entity.direction = Entity.Direction.LEFT
             }
             keys[Keys.Right]!! -> {
                 entity.calculateNextPosition(Entity.Direction.RIGHT, delta)
+                entity.state = Entity.State.WALKING
+                entity.direction = Entity.Direction.RIGHT
             }
             keys[Keys.Up]!! -> {
                 entity.calculateNextPosition(Entity.Direction.UP, delta)
+                entity.state = Entity.State.WALKING
+                entity.direction = Entity.Direction.UP
             }
             keys[Keys.Down]!! -> {
                 entity.calculateNextPosition(Entity.Direction.DOWN, delta)
+                entity.state = Entity.State.WALKING
+                entity.direction = Entity.Direction.DOWN
             }
             keys[Keys.Quit]!! -> {
                 Gdx.app.exit()
+            }
+            else -> {
+                entity.state = Entity.State.IDLE
             }
         }
     }
