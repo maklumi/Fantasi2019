@@ -4,7 +4,7 @@ import com.maklumi.Component.MESSAGE
 
 class DemoInputComponent : InputComponent() {
 
-    override fun update(entity: Entity) {
+    override fun update(entity: Entity, delta: Float) {
         when (currentDirection) {
             Entity.Direction.LEFT -> {
                 entity.sendMessage(MESSAGE.CURRENT_STATE, json.toJson(Entity.State.WALKING))

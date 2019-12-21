@@ -7,13 +7,15 @@ import com.badlogic.gdx.math.Vector2
 
 abstract class PhysicsComponent : Component {
 
-    protected val velocity = Vector2(4f, 4f)
+    private val velocity = Vector2(4f, 4f)
     protected val nextPosition = Vector2()
     protected val currentPosition = Vector2()
     protected var currentState = Entity.State.IDLE
     protected var currentDirection = Entity.Direction.DOWN
     val currentBound: Rectangle
         get() = Rectangle(currentPosition.x, currentPosition.y, 16f, 8f)
+    protected val nextBound: Rectangle
+        get() = Rectangle(nextPosition.x, nextPosition.y, 16f, 8f)
     protected val temp = Rectangle()
 
 
@@ -32,6 +34,18 @@ abstract class PhysicsComponent : Component {
             if (it != null) {
                 entity.sendMessage(Component.MESSAGE.COLLISION_WITH_MAP)
             }
+        }
+    }
+
+    protected fun isCollisionWithPortalLayer(rect: Rectangle): MapObject? {
+        val mapLayer = MapManager.portalLayer ?: return null
+
+        //Convert rectangle (in world unit) to mapLayer coordinates (in pixels)
+        temp.setPosition(rect.x / MapManager.unitScale, rect.y / MapManager.unitScale)
+        temp.setSize(rect.width, rect.height)
+
+        return mapLayer.objects.firstOrNull {
+            temp.overlaps((it as RectangleMapObject).rectangle)
         }
     }
 

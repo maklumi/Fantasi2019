@@ -12,7 +12,7 @@ object EntityFactory {
                 Entity(PlayerInputComponent(), PlayerPhysicsComponent(), PlayerGraphicsComponent())
             }
             EntityType.DEMO_PLAYER -> {
-                Entity(DemoInputComponent(), PlayerPhysicsComponent(), PlayerGraphicsComponent())
+                Entity(NPCInputComponent(), NPCPhysicsComponent(), NPCGraphicsComponent())
             }
         }
     }

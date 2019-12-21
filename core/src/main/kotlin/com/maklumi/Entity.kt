@@ -1,11 +1,12 @@
 package com.maklumi
 
 import com.badlogic.gdx.graphics.g2d.Batch
+import kotlin.random.Random
 import com.badlogic.gdx.utils.Array as gdxArray
 
-class Entity(val inputComponent: InputComponent,
+class Entity(private val inputComponent: InputComponent,
              val physicsComponent: PhysicsComponent,
-             val graphicsComponent: GraphicsComponent) {
+             private val graphicsComponent: GraphicsComponent) {
 
 
     private val components = gdxArray<Component>(5).also {
@@ -23,11 +24,15 @@ class Entity(val inputComponent: InputComponent,
     }
 
     enum class State {
-        IDLE, WALKING
+        IDLE, WALKING, IMMOBILE;
+
+        companion object {
+            fun nextRandom(): State = values()[Random.nextInt(0, 3)]
+        }
     }
 
     fun update(batch: Batch, delta: Float) {
-        inputComponent.update(this)
+        inputComponent.update(this, delta)
         physicsComponent.update(this, delta)
         graphicsComponent.update(batch, delta)
     }

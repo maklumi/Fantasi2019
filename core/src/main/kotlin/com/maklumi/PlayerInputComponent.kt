@@ -3,24 +3,8 @@ package com.maklumi
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputProcessor
-import com.badlogic.gdx.math.Vector3
 
 class PlayerInputComponent : InputProcessor, InputComponent() {
-    enum class Keys { Left, Right, Up, Down, Quit }
-    enum class Mouse { SELECT, DOACTION }
-
-    private val lastMouseCoordinates = Vector3()
-
-    private val mouseButtons = mutableMapOf(
-            Mouse.SELECT to false,
-            Mouse.DOACTION to false)
-
-    private val keys = mutableMapOf(
-            Keys.Left to false,
-            Keys.Right to false,
-            Keys.Up to false,
-            Keys.Down to false,
-            Keys.Quit to false)
 
     init {
         Gdx.input.inputProcessor = this
@@ -56,7 +40,7 @@ class PlayerInputComponent : InputProcessor, InputComponent() {
         return true
     }
 
-    override fun update(entity: Entity) {
+    override fun update(entity: Entity, delta: Float) {
 
         // keyboard input
         when {
