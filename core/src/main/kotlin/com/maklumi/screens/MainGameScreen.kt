@@ -10,7 +10,7 @@ import com.badlogic.gdx.maps.MapLayer
 import com.badlogic.gdx.maps.objects.RectangleMapObject
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
 import com.maklumi.Component.MESSAGE
-import com.maklumi.Entity
+import com.maklumi.EntityFactory
 import com.maklumi.MapManager.camera
 import com.maklumi.MapManager.collisionLayer
 import com.maklumi.MapManager.currentMap
@@ -36,8 +36,7 @@ class MainGameScreen : Screen {
     private var physicalHeight: Float = 0f
     private var aspectRatio: Float = 0f
 
-    private val player = Entity()
-    private val controller = player.inputComponent
+    private val player = EntityFactory.getEntity(EntityFactory.EntityType.PLAYER)
 
     @Override
     override fun show() {
@@ -49,7 +48,9 @@ class MainGameScreen : Screen {
         camera.setToOrtho(false, 20f, 14f)
 
         tiledMapRenderer = OrthogonalTiledMapRenderer(currentMap, unitScale)
-        Gdx.input.inputProcessor = controller
+        // to prevent initial flicker
+        camera.position.set(playerStartUnitScaled, 0f)
+        camera.update()
     }
 
     @Override

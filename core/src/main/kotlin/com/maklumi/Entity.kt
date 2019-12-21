@@ -3,11 +3,9 @@ package com.maklumi
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.utils.Array as gdxArray
 
-class Entity {
-
-    val inputComponent = InputComponent()
-    val physicsComponent = PhysicsComponent()
-    val graphicsComponent = GraphicsComponent()
+class Entity(val inputComponent: InputComponent,
+             val physicsComponent: PhysicsComponent,
+             val graphicsComponent: GraphicsComponent) {
 
 
     private val components = gdxArray<Component>(5).also {
