@@ -3,13 +3,16 @@ package com.maklumi
 object EntityFactory {
 
     enum class EntityType {
-        PLAYER
+        PLAYER, DEMO_PLAYER
     }
 
     fun getEntity(entityType: EntityType): Entity {
-        when (entityType) {
+        return when (entityType) {
             EntityType.PLAYER -> {
-                return Entity(PlayerInputComponent(), PlayerPhysicsComponent(), PlayerGraphicsComponent())
+                Entity(PlayerInputComponent(), PlayerPhysicsComponent(), PlayerGraphicsComponent())
+            }
+            EntityType.DEMO_PLAYER -> {
+                Entity(DemoInputComponent(), PlayerPhysicsComponent(), PlayerGraphicsComponent())
             }
         }
     }

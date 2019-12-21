@@ -9,6 +9,7 @@ interface Component {
         CURRENT_POSITION,
         CURRENT_DIRECTION,
         CURRENT_STATE,
+        COLLISION_WITH_MAP,
     }
 
     fun receiveMessage(message: String)

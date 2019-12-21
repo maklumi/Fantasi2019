@@ -16,6 +16,10 @@ class Entity(val inputComponent: InputComponent,
 
     enum class Direction {
         UP, RIGHT, DOWN, LEFT;
+
+        companion object {
+            fun nextRandom(): Direction = values().random()
+        }
     }
 
     enum class State {

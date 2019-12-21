@@ -36,7 +36,7 @@ class MainGameScreen : Screen {
     private var physicalHeight: Float = 0f
     private var aspectRatio: Float = 0f
 
-    private val player = EntityFactory.getEntity(EntityFactory.EntityType.PLAYER)
+    private val player = EntityFactory.getEntity(EntityFactory.EntityType.DEMO_PLAYER)
 
     @Override
     override fun show() {

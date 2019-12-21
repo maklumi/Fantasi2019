@@ -1,7 +1,5 @@
 package com.maklumi
 
-import com.badlogic.gdx.maps.MapLayer
-import com.badlogic.gdx.maps.MapObject
 import com.badlogic.gdx.maps.objects.RectangleMapObject
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
@@ -9,39 +7,11 @@ import ktx.json.fromJson
 
 class PlayerPhysicsComponent : PhysicsComponent() {
 
-    private val temp = Rectangle()
-
     private val nextBound: Rectangle
         get() = Rectangle(nextPosition.x, nextPosition.y, 16f, 8f)
 
-
-    private fun calculateNextPosition(deltaTime: Float) {
-        if (deltaTime == 0f) return // don't know why, else velocity become NaN
-        var tempX = currentPosition.x
-        var tempY = currentPosition.y
-        nextPosition.set(tempX, tempY)
-
-        velocity.scl(deltaTime)
-
-        when (currentDirection) {
-            Entity.Direction.LEFT -> tempX -= velocity.x
-            Entity.Direction.RIGHT -> tempX += velocity.x
-            Entity.Direction.UP -> tempY += velocity.y
-            Entity.Direction.DOWN -> tempY -= velocity.y
-        }
-
-        nextPosition.set(tempX, tempY)
-
-        velocity.scl(1 / deltaTime)
-    }
-
-    private fun setCurrentPosition(entity: Entity) {
-        currentPosition.set(nextPosition)
-        entity.sendMessage(Component.MESSAGE.CURRENT_POSITION, json.toJson(currentPosition))
-    }
-
     override fun update(entity: Entity, deltaTime: Float) {
-        if (isCollisionWithMapLayer(MapManager.collisionLayer, nextBound) == null
+        if (isCollisionWithMapLayer(entity, nextBound) == null
                 && currentState == Entity.State.WALKING) {
             setCurrentPosition(entity)
         }
@@ -55,20 +25,16 @@ class PlayerPhysicsComponent : PhysicsComponent() {
         MapManager.camera.update()
     }
 
-    private fun isCollisionWithMapLayer(mapLayer: MapLayer?, rect: Rectangle): MapObject? {
-        if (mapLayer == null) return null
+    private fun isCollisionWithPortalLayer(rect: Rectangle) {
+        val mapLayer = MapManager.portalLayer ?: return
 
         //Convert rectangle (in world unit) to mapLayer coordinates (in pixels)
         temp.setPosition(rect.x / MapManager.unitScale, rect.y / MapManager.unitScale)
         temp.setSize(rect.width, rect.height)
 
-        return mapLayer.objects.firstOrNull {
+        val portalHit = mapLayer.objects.firstOrNull {
             temp.overlaps((it as RectangleMapObject).rectangle)
         }
-    }
-
-    private fun isCollisionWithPortalLayer(rect: Rectangle) {
-        val portalHit = isCollisionWithMapLayer(MapManager.portalLayer, rect)
 
         if (portalHit != null) {
             MapManager.setClosestStartPosition(currentPosition)
