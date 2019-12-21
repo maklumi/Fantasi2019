@@ -9,24 +9,25 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.maps.MapLayer
 import com.badlogic.gdx.maps.objects.RectangleMapObject
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
-import com.badlogic.gdx.math.Rectangle
+import com.maklumi.Component.MESSAGE
 import com.maklumi.Entity
-import com.maklumi.MapManager
+import com.maklumi.MapManager.camera
 import com.maklumi.MapManager.collisionLayer
 import com.maklumi.MapManager.currentMap
 import com.maklumi.MapManager.currentMapName
+import com.maklumi.MapManager.isNewMapLoaded
 import com.maklumi.MapManager.loadMap
 import com.maklumi.MapManager.playerStartUnitScaled
 import com.maklumi.MapManager.portalLayer
+import com.maklumi.MapManager.spawnsLayer
 import com.maklumi.MapManager.unitScale
-import ktx.graphics.use
+import com.maklumi.json
 
 
 class MainGameScreen : Screen {
 
     private val shapeRenderer = ShapeRenderer()
 
-    private lateinit var orthoCamera: OrthographicCamera
     private lateinit var tiledMapRenderer: OrthogonalTiledMapRenderer
 
     private var viewportWidth: Float = 0f
@@ -43,13 +44,11 @@ class MainGameScreen : Screen {
         setupViewport()
 
         loadMap(currentMapName)
-        player.physicsComponent.initStartPosition(playerStartUnitScaled)
 
-        orthoCamera = OrthographicCamera(viewportWidth, viewportHeight)
-        orthoCamera.setToOrtho(false, 20f, 14f)
+        camera = OrthographicCamera(viewportWidth, viewportHeight)
+        camera.setToOrtho(false, 20f, 14f)
 
         tiledMapRenderer = OrthogonalTiledMapRenderer(currentMap, unitScale)
-
         Gdx.input.inputProcessor = controller
     }
 
@@ -58,45 +57,29 @@ class MainGameScreen : Screen {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
-        isCollisionWithPortalLayer(player.physicsComponent.currentBound)
-
-        player.update(delta)
-
-        // lock and center the camera to player's position
-        orthoCamera.position.set(player.physicsComponent.currentPosition.x, player.physicsComponent.currentPosition.y, 0f)
-        orthoCamera.update()
-        tiledMapRenderer.setView(orthoCamera)
+        // world map and camera
+        tiledMapRenderer.setView(camera)
+        if (isNewMapLoaded) {
+            tiledMapRenderer.map = currentMap
+            player.sendMessage(MESSAGE.INIT_START_POSITION, json.toJson(playerStartUnitScaled))
+            isNewMapLoaded = false
+        }
         tiledMapRenderer.render()
 
-        tiledMapRenderer.batch.use {
-            it.draw(player.graphicsComponent.currentFrame,
-                    player.physicsComponent.currentPosition.x,
-                    player.physicsComponent.currentPosition.y, 1f, 1f)
-        }
-
+        // debug
         drawBoundingBox()
+        // player entity
+        player.update(tiledMapRenderer.batch, delta)
     }
 
-    private fun isCollisionWithPortalLayer(rect: Rectangle) {
-        val portalHit = player.physicsComponent.isCollisionWithMapLayer(portalLayer, rect)
-
-        if (portalHit != null) {
-            // before leaving, cache closest start position from current player position
-            MapManager.setClosestStartPosition(player.physicsComponent.currentPosition)
-            // then
-            loadMap(portalHit.name)
-            tiledMapRenderer.map = currentMap
-            player.physicsComponent.initStartPosition(playerStartUnitScaled)
-        }
-    }
 
     private fun drawBoundingBox() {
-//        val b = player.nextBound
+        val b = player.physicsComponent.currentBound
         shapeRenderer.apply {
-            projectionMatrix = orthoCamera.combined
+            projectionMatrix = camera.combined
             begin(ShapeRenderer.ShapeType.Filled)
             color = Color.YELLOW
-            //            rect(b.x, b.y, b.width * unitScale, b.height * unitScale)
+            rect(b.x, b.y, b.width * unitScale, b.height * unitScale)
             fun debugLayer(layer: MapLayer, clr: Color) {
                 layer.objects.forEach {
                     it as RectangleMapObject
@@ -108,7 +91,7 @@ class MainGameScreen : Screen {
             }
             if (collisionLayer != null) debugLayer(collisionLayer!!, Color.BLUE)
             if (portalLayer != null) debugLayer(portalLayer!!, Color.DARK_GRAY)
-//            if (spawnsLayer != null) debugLayer(spawnsLayer!!, Color.LIME)
+            if (spawnsLayer != null) debugLayer(spawnsLayer!!, Color.LIME)
             end()
         }
 

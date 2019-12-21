@@ -1,5 +1,6 @@
 package com.maklumi
 
+import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.maps.MapLayer
 import com.badlogic.gdx.maps.objects.RectangleMapObject
 import com.badlogic.gdx.maps.tiled.TiledMap
@@ -32,6 +33,8 @@ object MapManager {
     val playerStartUnitScaled: Vector2
         get() = playerStart.cpy().scl(unitScale)
 
+    lateinit var camera: OrthographicCamera
+    var isNewMapLoaded = false
 
     fun setClosestStartPosition(fromInWorldUnit: Vector2) {
         val testPosition = Vector2()
@@ -70,6 +73,8 @@ object MapManager {
         }
         val start = startPositionTable[currentMapName]
         playerStart.set(start)
+        isNewMapLoaded = true
+        println("MapManager: loadmap($currentMapName)")
     }
 
 }

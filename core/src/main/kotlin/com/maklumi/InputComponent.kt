@@ -4,8 +4,9 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.math.Vector3
+import com.maklumi.Component.MESSAGE
 
-class InputComponent : InputProcessor {
+class InputComponent : InputProcessor, Component {
     enum class Keys { Left, Right, Up, Down, Quit }
     enum class Mouse { SELECT, DOACTION }
 
@@ -52,35 +53,31 @@ class InputComponent : InputProcessor {
         return true
     }
 
-    fun update(entity: Entity, delta: Float) {
-        if (delta < 0.005 || entity.state == Entity.State.PAUSE) return
+    fun update(entity: Entity) {
 
+        // keyboard input
         when {
             keys[Keys.Left]!! -> {
-                entity.physicsComponent.calculateNextPosition(Entity.Direction.LEFT, delta)
-                entity.state = Entity.State.WALKING
-                entity.direction = Entity.Direction.LEFT
+                entity.sendMessage(MESSAGE.CURRENT_STATE, json.toJson(Entity.State.WALKING))
+                entity.sendMessage(MESSAGE.CURRENT_DIRECTION, json.toJson(Entity.Direction.LEFT))
             }
             keys[Keys.Right]!! -> {
-                entity.physicsComponent.calculateNextPosition(Entity.Direction.RIGHT, delta)
-                entity.state = Entity.State.WALKING
-                entity.direction = Entity.Direction.RIGHT
+                entity.sendMessage(MESSAGE.CURRENT_STATE, json.toJson(Entity.State.WALKING))
+                entity.sendMessage(MESSAGE.CURRENT_DIRECTION, json.toJson(Entity.Direction.RIGHT))
             }
             keys[Keys.Up]!! -> {
-                entity.physicsComponent.calculateNextPosition(Entity.Direction.UP, delta)
-                entity.state = Entity.State.WALKING
-                entity.direction = Entity.Direction.UP
+                entity.sendMessage(MESSAGE.CURRENT_STATE, json.toJson(Entity.State.WALKING))
+                entity.sendMessage(MESSAGE.CURRENT_DIRECTION, json.toJson(Entity.Direction.UP))
             }
             keys[Keys.Down]!! -> {
-                entity.physicsComponent.calculateNextPosition(Entity.Direction.DOWN, delta)
-                entity.state = Entity.State.WALKING
-                entity.direction = Entity.Direction.DOWN
+                entity.sendMessage(MESSAGE.CURRENT_STATE, json.toJson(Entity.State.WALKING))
+                entity.sendMessage(MESSAGE.CURRENT_DIRECTION, json.toJson(Entity.Direction.DOWN))
             }
             keys[Keys.Quit]!! -> {
                 Gdx.app.exit()
             }
             else -> {
-                entity.state = Entity.State.IDLE
+                entity.sendMessage(MESSAGE.CURRENT_STATE, json.toJson(Entity.State.IDLE))
             }
         }
     }
@@ -120,5 +117,7 @@ class InputComponent : InputProcessor {
         return false
     }
 
+    override fun receiveMessage(message: String) {
+    }
 
 }

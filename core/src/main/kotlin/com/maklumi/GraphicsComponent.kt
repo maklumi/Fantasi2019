@@ -1,16 +1,19 @@
 package com.maklumi
 
 import com.badlogic.gdx.graphics.g2d.Animation
-import com.badlogic.gdx.graphics.g2d.Sprite
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Array
+import com.maklumi.Component.MESSAGE
+import ktx.graphics.use
+import ktx.json.fromJson
 
-class GraphicsComponent {
+class GraphicsComponent : Component {
     private val frameWidth = 16
     private val frameHeight = 16
     private val spritePath = "sprites/characters/Warrior.png"
 
-    //    lateinit var frameSprite: Sprite
     private val walkLeftFrames = Array<TextureRegion>(4)
     private val walkRightFrames = Array<TextureRegion>(4)
     private val walkUpFrames = Array<TextureRegion>(4)
@@ -22,40 +25,39 @@ class GraphicsComponent {
 
 
     private var frameTime = 0f
-    private var frameSprite = Sprite()
-    var currentFrame = TextureRegion()
+    private var currentFrame = TextureRegion()
+    private val currentPosition = Vector2()
+    private var currentState = Entity.State.IDLE
+    private var currentDirection = Entity.Direction.DOWN
 
     init {
-        loadDefaultSprite()
         loadAllAnimations()
     }
 
-    fun update(entity: Entity, delta: Float) {
+    fun update(batch: Batch, delta: Float) {
         frameTime = (frameTime + delta) % 10
 
-        if (entity.state == Entity.State.IDLE) {
-            currentFrame = when (entity.direction) {
+        if (currentState == Entity.State.IDLE) {
+            currentFrame = when (currentDirection) {
                 Entity.Direction.DOWN -> walkDownFrames[0]
                 Entity.Direction.LEFT -> walkLeftFrames[0]
                 Entity.Direction.UP -> walkUpFrames[0]
                 Entity.Direction.RIGHT -> walkRightFrames[0]
             }
-        } else if (entity.state == Entity.State.WALKING) {
-            currentFrame = when (entity.direction) {
+        } else if (currentState == Entity.State.WALKING) {
+            currentFrame = when (currentDirection) {
                 Entity.Direction.DOWN -> walkDownAnimation.getKeyFrame(frameTime)
                 Entity.Direction.LEFT -> walkLeftAnimation.getKeyFrame(frameTime)
                 Entity.Direction.UP -> walkUpAnimation.getKeyFrame(frameTime)
                 Entity.Direction.RIGHT -> walkRightAnimation.getKeyFrame(frameTime)
             }
         }
-    }
 
-    private fun loadDefaultSprite() {
-        Utility.loadTextureAsset(spritePath)
-        val texture = Utility.getTextureAsset(spritePath)
-        val textureFrames = TextureRegion.split(texture, frameWidth, frameHeight)
-        frameSprite = Sprite(textureFrames[0][0], 0, 0, frameWidth, frameHeight)
-        currentFrame = textureFrames[0][0]
+        batch.use {
+            it.draw(currentFrame,
+                    currentPosition.x,
+                    currentPosition.y, 1f, 1f)
+        }
     }
 
     private fun loadAllAnimations() {
@@ -79,6 +81,26 @@ class GraphicsComponent {
         walkLeftAnimation = Animation(0.25f, walkLeftFrames, Animation.PlayMode.LOOP)
         walkRightAnimation = Animation(0.25f, walkRightFrames, Animation.PlayMode.LOOP)
         walkUpAnimation = Animation(0.25f, walkUpFrames, Animation.PlayMode.LOOP)
+    }
+
+    override fun receiveMessage(message: String) {
+        val string: List<String> = message.split(MESSAGE_TOKEN)
+        //for message with 1 pair of object payload
+        if (string.size != 2) return
+        when {
+            MESSAGE.valueOf(string[0]) == MESSAGE.INIT_START_POSITION -> {
+                currentPosition.set(json.fromJson(string[1]))
+            }
+            MESSAGE.valueOf(string[0]) == MESSAGE.CURRENT_POSITION -> {
+                currentPosition.set(json.fromJson(string[1]))
+            }
+            MESSAGE.valueOf(string[0]) == MESSAGE.CURRENT_STATE -> {
+                currentState = json.fromJson(string[1])
+            }
+            MESSAGE.valueOf(string[0]) == MESSAGE.CURRENT_DIRECTION -> {
+                currentDirection = json.fromJson(string[1])
+            }
+        }
     }
 
 }
