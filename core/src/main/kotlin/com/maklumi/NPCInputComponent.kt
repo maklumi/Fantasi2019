@@ -17,6 +17,12 @@ class NPCInputComponent : InputComponent(), InputProcessor {
     override fun update(entity: Entity, delta: Float) {
         frameTime += delta
 
+        // if IMMOBILE, don't update anything
+        if (currentState == Entity.State.IMMOBILE) {
+            entity.sendMessage(MESSAGE.CURRENT_STATE, json.toJson(Entity.State.IMMOBILE))
+            return
+        }
+
         //Change direction after so many seconds
         if (frameTime > 3f) {
             currentState = Entity.State.nextRandom()
@@ -24,10 +30,7 @@ class NPCInputComponent : InputComponent(), InputProcessor {
             frameTime = 0.0f
         }
 
-        if (currentState == Entity.State.IMMOBILE) {
-            entity.sendMessage(MESSAGE.CURRENT_STATE, json.toJson(Entity.State.IMMOBILE))
-            return
-        } else if (currentState == Entity.State.IDLE) {
+        if (currentState == Entity.State.IDLE) {
             entity.sendMessage(MESSAGE.CURRENT_STATE, json.toJson(Entity.State.IDLE))
             return
         }

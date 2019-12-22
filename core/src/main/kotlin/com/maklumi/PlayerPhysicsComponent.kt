@@ -14,7 +14,8 @@ class PlayerPhysicsComponent : PhysicsComponent() {
         val portalHit = isCollisionWithPortalLayer(currentBound)
         if (portalHit != null) {
             MapManager.setClosestStartPosition(currentPosition)
-            MapManager.loadMap(portalHit.name)
+            val mapType = MapFactory.MapType.valueOf(portalHit.name)
+            MapManager.loadMap(mapType)
         }
 
         calculateNextPosition(deltaTime)

@@ -11,12 +11,13 @@ import com.badlogic.gdx.maps.objects.RectangleMapObject
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
 import com.maklumi.Component.MESSAGE
 import com.maklumi.EntityFactory
+import com.maklumi.MapFactory
+import com.maklumi.MapManager
 import com.maklumi.MapManager.camera
 import com.maklumi.MapManager.collisionLayer
 import com.maklumi.MapManager.currentMap
-import com.maklumi.MapManager.currentMapName
+import com.maklumi.MapManager.gameMap
 import com.maklumi.MapManager.isNewMapLoaded
-import com.maklumi.MapManager.loadMap
 import com.maklumi.MapManager.playerStartUnitScaled
 import com.maklumi.MapManager.portalLayer
 import com.maklumi.MapManager.spawnsLayer
@@ -36,16 +37,16 @@ class MainGameScreen : Screen {
     private var physicalHeight: Float = 0f
     private var aspectRatio: Float = 0f
 
-    private val player = EntityFactory.getEntity(EntityFactory.EntityType.DEMO_PLAYER)
+    private val player = EntityFactory.getEntity(EntityFactory.EntityType.PLAYER)
 
     @Override
     override fun show() {
         setupViewport()
 
-        loadMap(currentMapName)
-
         camera = OrthographicCamera(viewportWidth, viewportHeight)
         camera.setToOrtho(false, 20f, 14f)
+
+        MapManager.loadMap(MapFactory.MapType.TOWN)
 
         tiledMapRenderer = OrthogonalTiledMapRenderer(currentMap, unitScale)
         // to prevent initial flicker
