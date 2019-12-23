@@ -10,10 +10,6 @@ class NPCInputComponent : InputComponent(), InputProcessor {
     private var frameTime = 0.0f
     private var currentState = Entity.State.WALKING
 
-    init {
-        Gdx.input.inputProcessor = this
-    }
-
     override fun update(entity: Entity, delta: Float) {
         frameTime += delta
 
