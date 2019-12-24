@@ -5,9 +5,12 @@ import com.badlogic.gdx.utils.Array
 
 class EntityConfig {
     val animationConfig = Array<AnimationConfig>()
+    var state = Entity.State.IDLE
+    var direction = Entity.Direction.DOWN
 }
 
 data class AnimationConfig(
+        var frameDuration: Float = 1.0f,
         var animationType: AnimationType = AnimationType.IDLE,
         var texturePaths: Array<String> = Array(),
         var gridPoints: Array<GridPoint2> = Array()

@@ -3,8 +3,11 @@ package com.maklumi
 import com.badlogic.gdx.math.Vector2
 import com.maklumi.Component.MESSAGE
 import ktx.json.fromJson
+import kotlin.random.Random
 
 class NPCPhysicsComponent : PhysicsComponent() {
+
+    override val velocity: Vector2 = Vector2(1f, 1f).scl(Random.nextInt(1, 5).toFloat())
 
     override fun update(entity: Entity, deltaTime: Float) {
         if (currentState == Entity.State.IMMOBILE) return

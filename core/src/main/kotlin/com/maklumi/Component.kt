@@ -11,6 +11,8 @@ interface Component {
         CURRENT_STATE,
         COLLISION_WITH_MAP,
         LOAD_ANIMATIONS,
+        INIT_DIRECTION,
+        INIT_STATE,
     }
 
     fun receiveMessage(message: String)

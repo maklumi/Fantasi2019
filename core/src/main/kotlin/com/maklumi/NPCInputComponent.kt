@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputProcessor
 import com.maklumi.Component.MESSAGE
+import ktx.json.fromJson
 
 class NPCInputComponent : InputComponent(), InputProcessor {
 
@@ -58,6 +59,13 @@ class NPCInputComponent : InputComponent(), InputProcessor {
             if (MESSAGE.COLLISION_WITH_MAP == MESSAGE.valueOf(string.first())) {
                 currentDirection = Entity.Direction.nextRandom()
             }
+        }
+
+        if (string.size == 2) {
+            val code = MESSAGE.valueOf(string[0])
+            val value = string[1]
+            if (MESSAGE.INIT_STATE == code) currentState = json.fromJson(value)
+            if (MESSAGE.INIT_DIRECTION == code) currentDirection = json.fromJson(value)
         }
     }
 

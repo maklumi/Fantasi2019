@@ -73,17 +73,17 @@ abstract class GraphicsComponent : Component {
             Component.MESSAGE.valueOf(string[0]) == Component.MESSAGE.LOAD_ANIMATIONS -> {
                 val entityConfig = json.fromJson<EntityConfig>(string[1])
                 val animConfigs = entityConfig.animationConfig
-                animConfigs.forEach { (type, paths, points) ->
+                animConfigs.forEach { (dur, type, paths, points) ->
                     if (paths.size == 1)
-                        animations[type] = loadAnimation(paths[0], points)
+                        animations[type] = loadAnimation(paths[0], points, dur)
                     if (paths.size == 2)
-                        animations[type] = loadAnimation(paths[0], paths[1], points)
+                        animations[type] = loadAnimation(paths[0], paths[1], points, dur)
                 }
             }
         }
     }
 
-    private fun loadAnimation(path1: String, path2: String, points: gdxArray<GridPoint2>): Animation<TextureRegion> {
+    private fun loadAnimation(path1: String, path2: String, points: gdxArray<GridPoint2>, duration: Float): Animation<TextureRegion> {
         Utility.loadTextureAsset(path1)
         Utility.loadTextureAsset(path2)
         val tex1 = Utility.getTextureAsset(path1)
@@ -97,10 +97,10 @@ abstract class GraphicsComponent : Component {
         keyFrames.add(texture1Frames[points[0].x][points[0].y])
         keyFrames.add(texture2Frames[points[0].x][points[0].y])
 
-        return Animation(0.25f, keyFrames, Animation.PlayMode.LOOP)
+        return Animation(duration, keyFrames, Animation.PlayMode.LOOP)
     }
 
-    private fun loadAnimation(path: String, points: gdxArray<GridPoint2>): Animation<TextureRegion> {
+    private fun loadAnimation(path: String, points: gdxArray<GridPoint2>, duration: Float): Animation<TextureRegion> {
         Utility.loadTextureAsset(path)
         val texture = Utility.getTextureAsset(path)
         val textureFrames = TextureRegion.split(texture, frameWidth, frameHeight)
@@ -109,6 +109,6 @@ abstract class GraphicsComponent : Component {
 
         points.forEach { p -> keyFrames.add(textureFrames[p.x][p.y]) }
 
-        return Animation(0.25f, keyFrames, Animation.PlayMode.LOOP)
+        return Animation(duration, keyFrames, Animation.PlayMode.LOOP)
     }
 }

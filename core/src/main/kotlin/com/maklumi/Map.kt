@@ -28,10 +28,13 @@ abstract class Map(private var mapType: MapFactory.MapType, path: String) {
         get() = Vector2(start).scl(unitScale)
 
     val npcStartPositions: gdxArray<Vector2>
+    protected val specialNPCStartPositions: MutableMap<String, Vector2>
 
     init {
         loadMap(path)
         npcStartPositions = getNPCStartPositions()
+        specialNPCStartPositions = getOtherNPCStartPositions()
+//        print("Map-init: $specialNPCStartPositions")
     }
 
     private fun loadMap(path: String) {
@@ -41,7 +44,7 @@ abstract class Map(private var mapType: MapFactory.MapType, path: String) {
         portalLayer = currentMap?.layers?.get(MAP_PORTAL_LAYER)
         spawnsLayer = currentMap?.layers?.get(MAP_SPAWNS_LAYER)
         setClosestStartPosition(Vector2())
-        println("Map-38: loadmap($mapType)")
+        println("Map-loadmap: loadmap($mapType)")
     }
 
     fun setClosestStartPosition(worldOrigin: Vector2) {
@@ -76,6 +79,23 @@ abstract class Map(private var mapType: MapFactory.MapType, path: String) {
                     // convert from map coordinates
                     rectCenter.scl(unitScale)
                     positions.add(rectCenter)
+                }
+        return positions
+    }
+
+    private fun getOtherNPCStartPositions(): MutableMap<String, Vector2> {
+        val positions = mutableMapOf<String, Vector2>()
+
+        spawnsLayer?.objects?.filter {
+            !it.name.equals(NPC_START, true) &&
+                    !it.name.equals(PLAYER_START, true)
+        }
+                ?.forEach {
+                    val rectCenter = Vector2()
+                    (it as RectangleMapObject).rectangle.getCenter(rectCenter)
+                    // convert from map coordinates
+                    rectCenter.scl(unitScale)
+                    positions[it.name] = rectCenter
                 }
         return positions
     }

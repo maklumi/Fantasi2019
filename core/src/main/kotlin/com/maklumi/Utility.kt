@@ -14,6 +14,7 @@ object Utility {
     private val filePathResolver = InternalFileHandleResolver()
 
     fun loadMapAsset(path: String) {
+        if (assetManager.isLoaded(path)) return
         if (filePathResolver.resolve(path).exists()) {
             assetManager.setLoader(TiledMap::class.java, TmxMapLoader(filePathResolver))
             assetManager.load(path, TiledMap::class.java)
@@ -26,6 +27,7 @@ object Utility {
     fun getMapAsset(path: String): TiledMap? = assetManager.get(path, TiledMap::class.java)
 
     fun loadTextureAsset(path: String) {
+        if (assetManager.isLoaded(path)) return
         if (filePathResolver.resolve(path).exists()) {
             assetManager.setLoader(Texture::class.java, TextureLoader(filePathResolver))
             assetManager.load(path, Texture::class.java)
