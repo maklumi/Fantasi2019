@@ -16,7 +16,7 @@ abstract class PhysicsComponent : Component {
         get() = Rectangle(currentPosition.x, currentPosition.y, 16f, 8f)
     protected val nextBound: Rectangle
         get() = Rectangle(nextPosition.x, nextPosition.y, 16f, 8f)
-    protected val temp = Rectangle()
+    private val temp = Rectangle()
 
 
     abstract fun update(entity: Entity, deltaTime: Float)

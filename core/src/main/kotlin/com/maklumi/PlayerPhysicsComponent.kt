@@ -21,7 +21,7 @@ class PlayerPhysicsComponent : PhysicsComponent() {
         calculateNextPosition(deltaTime)
 
         // lock and center the camera to player's position
-        MapManager.camera.position.set(currentPosition.x, currentPosition.y, 0f)
+        MapManager.camera.position.set(currentPosition.x + 5, currentPosition.y + 15, 0f) // bring map abit down
         MapManager.camera.update()
     }
 

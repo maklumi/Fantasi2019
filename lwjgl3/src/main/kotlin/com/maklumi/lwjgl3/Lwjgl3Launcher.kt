@@ -22,7 +22,8 @@ object Lwjgl3Launcher {
         get() {
             val configuration = Lwjgl3ApplicationConfiguration()
             configuration.setTitle("Fantasi2019")
-            configuration.setWindowedMode(800, 600)
+            configuration.setWindowedMode(1000, 980)
+            configuration.setWindowPosition(10, 40)
             configuration.setWindowIcon("libgdx128.png", "libgdx64.png", "libgdx32.png", "libgdx16.png")
             return configuration
         }

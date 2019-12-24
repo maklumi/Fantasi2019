@@ -1,6 +1,7 @@
 package com.maklumi
 
 import com.badlogic.gdx.graphics.OrthographicCamera
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.maps.MapLayer
 import com.badlogic.gdx.maps.tiled.TiledMap
 import com.badlogic.gdx.math.Vector2
@@ -11,7 +12,7 @@ object MapManager {
 
     var isNewMapLoaded = false
 
-    lateinit var gameMap: Map
+    private lateinit var gameMap: Map
 
     val currentMap: TiledMap?
         get() = gameMap.currentMap
@@ -37,6 +38,10 @@ object MapManager {
 
     fun setClosestStartPosition(pos: Vector2) { // in world unit
         gameMap.setClosestStartPosition(pos)
+    }
+
+    fun updateMapEntities(batch: Batch, delta: Float) {
+        gameMap.updateMapEntities(batch, delta)
     }
 
 }

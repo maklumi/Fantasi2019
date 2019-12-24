@@ -16,12 +16,12 @@ import com.maklumi.MapManager
 import com.maklumi.MapManager.camera
 import com.maklumi.MapManager.collisionLayer
 import com.maklumi.MapManager.currentMap
-import com.maklumi.MapManager.gameMap
 import com.maklumi.MapManager.isNewMapLoaded
 import com.maklumi.MapManager.playerStartUnitScaled
 import com.maklumi.MapManager.portalLayer
 import com.maklumi.MapManager.spawnsLayer
 import com.maklumi.MapManager.unitScale
+import com.maklumi.MapManager.updateMapEntities
 import com.maklumi.json
 
 
@@ -44,7 +44,7 @@ class MainGameScreen : Screen {
         setupViewport()
 
         camera = OrthographicCamera(viewportWidth, viewportHeight)
-        camera.setToOrtho(false, 20f, 14f)
+        camera.setToOrtho(false, 40f, 40f)
 
         MapManager.loadMap(MapFactory.MapType.TOWN)
 
@@ -70,6 +70,8 @@ class MainGameScreen : Screen {
 
         // debug
         drawBoundingBox()
+        // map entities
+        updateMapEntities(tiledMapRenderer.batch, delta)
         // player entity
         player.update(tiledMapRenderer.batch, delta)
     }

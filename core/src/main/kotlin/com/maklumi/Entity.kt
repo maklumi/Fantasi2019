@@ -27,7 +27,7 @@ class Entity(private val inputComponent: InputComponent,
         IDLE, WALKING, IMMOBILE;
 
         companion object {
-            fun nextRandom(): State = values()[Random.nextInt(0, 3)]
+            fun nextRandom(): State = values()[Random.nextInt(0, 2)] // IMMOBILE stays immobile
         }
     }
 

@@ -1,9 +1,11 @@
 package com.maklumi
 
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.maps.MapLayer
 import com.badlogic.gdx.maps.objects.RectangleMapObject
 import com.badlogic.gdx.maps.tiled.TiledMap
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.utils.Array as gdxArray
 
 abstract class Map(private var mapType: MapFactory.MapType, path: String) {
 
@@ -13,6 +15,7 @@ abstract class Map(private var mapType: MapFactory.MapType, path: String) {
         private const val MAP_PORTAL_LAYER = "MAP_PORTAL_LAYER"
         private const val MAP_SPAWNS_LAYER = "MAP_SPAWNS_LAYER"
         private const val PLAYER_START = "PLAYER_START"
+        private const val NPC_START = "NPC_START"
     }
 
     var currentMap: TiledMap? = null
@@ -24,8 +27,11 @@ abstract class Map(private var mapType: MapFactory.MapType, path: String) {
     val startUnitScaled: Vector2  // in world unit
         get() = Vector2(start).scl(unitScale)
 
+    val npcStartPositions: gdxArray<Vector2>
+
     init {
         loadMap(path)
+        npcStartPositions = getNPCStartPositions()
     }
 
     private fun loadMap(path: String) {
@@ -56,5 +62,21 @@ abstract class Map(private var mapType: MapFactory.MapType, path: String) {
                 }
 
         start.set(closestStartPosition)
+    }
+
+    abstract fun updateMapEntities(batch: Batch, delta: Float)
+
+    private fun getNPCStartPositions(): gdxArray<Vector2> {
+        val positions = gdxArray<Vector2>()
+
+        spawnsLayer?.objects?.filter { it.name.equals(NPC_START, true) }
+                ?.forEach {
+                    val rectCenter = Vector2()
+                    (it as RectangleMapObject).rectangle.getCenter(rectCenter)
+                    // convert from map coordinates
+                    rectCenter.scl(unitScale)
+                    positions.add(rectCenter)
+                }
+        return positions
     }
 }

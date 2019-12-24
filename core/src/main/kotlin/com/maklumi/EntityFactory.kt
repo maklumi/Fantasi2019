@@ -6,7 +6,7 @@ import ktx.json.fromJson
 object EntityFactory {
 
     enum class EntityType {
-        PLAYER, DEMO_PLAYER
+        PLAYER, DEMO_PLAYER, NPC
     }
 
     private const val PLAYER_CONFIG = "scripts/player.json"
@@ -21,6 +21,9 @@ object EntityFactory {
                         }
             }
             EntityType.DEMO_PLAYER -> {
+                Entity(NPCInputComponent(), PlayerPhysicsComponent(), PlayerGraphicsComponent())
+            }
+            EntityType.NPC -> {
                 Entity(NPCInputComponent(), NPCPhysicsComponent(), NPCGraphicsComponent())
             }
         }
