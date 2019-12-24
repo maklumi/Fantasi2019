@@ -4,9 +4,10 @@ import com.badlogic.gdx.math.GridPoint2
 import com.badlogic.gdx.utils.Array
 
 class EntityConfig {
-    val animationConfig = Array<AnimationConfig>()
+    var entityID: String = "no name"
     var state = Entity.State.IDLE
     var direction = Entity.Direction.DOWN
+    val animationConfig = Array<AnimationConfig>()
 }
 
 data class AnimationConfig(

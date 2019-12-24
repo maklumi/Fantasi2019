@@ -1,6 +1,10 @@
 package com.maklumi
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.utils.JsonValue
+import ktx.json.fromJson
+import ktx.json.readValue
 import kotlin.random.Random
 import com.badlogic.gdx.utils.Array as gdxArray
 
@@ -44,4 +48,17 @@ class Entity(private val inputComponent: InputComponent,
         components.forEach { it.receiveMessage(fullMessage) }
     }
 
+    companion object {
+
+        fun getEntityConfig(configFilePath: String): EntityConfig {
+            return json.fromJson(Gdx.files.internal(configFilePath))
+        }
+
+        fun getEntityConfigs(configFilePath: String): gdxArray<EntityConfig> {
+            val configs = gdxArray<EntityConfig>()
+            val jsonValues = json.fromJson<ArrayList<JsonValue>>(Gdx.files.internal(configFilePath))
+            jsonValues.forEach { configs.add(json.readValue<EntityConfig>(it)) }
+            return configs
+        }
+    }
 }

@@ -1,11 +1,9 @@
 package com.maklumi
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Array
 import com.maklumi.Component.MESSAGE
-import ktx.json.fromJson
 
 class TownMap : Map(MapFactory.MapType.TOWN, "maps/town.tmx") {
 
@@ -13,25 +11,28 @@ class TownMap : Map(MapFactory.MapType.TOWN, "maps/town.tmx") {
     private val townBlacksmith = "scripts/town_blacksmith.json"
     private val townInnKeeper = "scripts/town_innkeeper.json"
     private val townMage = "scripts/town_mage.json"
+    private val townFolk = "scripts/town_folk.json"
 
     private val mapEntities = Array<Entity>()
 
     init {
         // init NPC
         npcStartPositions.forEach { position ->
-            val guard = initEntityNPC(position, townGuardWalking)
+            val guard = initEntityNPC(position, Entity.getEntityConfig(townGuardWalking))
             mapEntities.add(guard)
         }
         // init other special NPC
-        val smith = initEntitySpecial("TOWN_BLACKSMITH", townBlacksmith)
-        val mage = initEntitySpecial("TOWN_MAGE", townMage)
-        val keeper = initEntitySpecial("TOWN_INNKEEPER", townInnKeeper)
+        val smith = initEntitySpecial(Entity.getEntityConfig(townBlacksmith))
+        val mage = initEntitySpecial(Entity.getEntityConfig(townMage))
+        val keeper = initEntitySpecial(Entity.getEntityConfig(townInnKeeper))
         mapEntities.add(smith, mage, keeper)
+        // town folks have their configs in one file
+        Entity.getEntityConfigs(townFolk)
+                .forEach { mapEntities.add(initEntitySpecial(it)) }
     }
 
-    private fun initEntityNPC(position: Vector2, configFile: String): Entity {
+    private fun initEntityNPC(position: Vector2, entityConfig: EntityConfig): Entity {
         val entity = EntityFactory.getEntity(EntityFactory.EntityType.NPC)
-        val entityConfig = json.fromJson<EntityConfig>(Gdx.files.internal(configFile))
         entity.apply {
             sendMessage(MESSAGE.LOAD_ANIMATIONS, json.toJson(entityConfig))
             sendMessage(MESSAGE.INIT_START_POSITION, json.toJson(position))
@@ -41,14 +42,14 @@ class TownMap : Map(MapFactory.MapType.TOWN, "maps/town.tmx") {
         return entity
     }
 
-    private fun initEntitySpecial(positionName: String, configFile: String): Entity {
+    private fun initEntitySpecial(entityConfig: EntityConfig): Entity {
         val position =
-                if (specialNPCStartPositions.containsKey(positionName))
-                    specialNPCStartPositions[positionName]!!
+                if (specialNPCStartPositions.containsKey(entityConfig.entityID))
+                    specialNPCStartPositions[entityConfig.entityID]!!
                 else
                     Vector2()
 
-        return initEntityNPC(position, configFile)
+        return initEntityNPC(position, entityConfig)
     }
 
     override fun updateMapEntities(batch: Batch, delta: Float) {

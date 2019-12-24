@@ -34,7 +34,7 @@ abstract class Map(private var mapType: MapFactory.MapType, path: String) {
         loadMap(path)
         npcStartPositions = getNPCStartPositions()
         specialNPCStartPositions = getOtherNPCStartPositions()
-//        print("Map-init: $specialNPCStartPositions")
+        print("Map-init: $specialNPCStartPositions")
     }
 
     private fun loadMap(path: String) {
@@ -86,16 +86,26 @@ abstract class Map(private var mapType: MapFactory.MapType, path: String) {
     private fun getOtherNPCStartPositions(): MutableMap<String, Vector2> {
         val positions = mutableMapOf<String, Vector2>()
 
-        spawnsLayer?.objects?.filter {
-            !it.name.equals(NPC_START, true) &&
-                    !it.name.equals(PLAYER_START, true)
-        }
+//        spawnsLayer?.objects?.filter {
+//            !it.name.equals(NPC_START, true) &&
+//                    !it.name.equals(PLAYER_START, true)
+//        }
+//                ?.forEach {
+//                    val rectCenter = Vector2()
+//                    (it as RectangleMapObject).rectangle.getCenter(rectCenter)
+//                    // convert from map coordinates
+//                    rectCenter.scl(unitScale)
+//                    positions[it.name] = rectCenter
+//                }
+        spawnsLayer?.objects?.filterNot { it.name == PLAYER_START || it.name == NPC_START }
                 ?.forEach {
-                    val rectCenter = Vector2()
-                    (it as RectangleMapObject).rectangle.getCenter(rectCenter)
-                    // convert from map coordinates
-                    rectCenter.scl(unitScale)
-                    positions[it.name] = rectCenter
+                    it as RectangleMapObject
+                    // offset entity so we can see debug box
+                    var x = it.rectangle.x - it.rectangle.width / 4
+                    var y = it.rectangle.y - it.rectangle.height / 4
+                    x *= unitScale
+                    y *= unitScale
+                    positions[it.name] = Vector2(x, y)
                 }
         return positions
     }
