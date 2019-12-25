@@ -2,7 +2,6 @@ package com.maklumi
 
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.utils.Array
 import com.maklumi.Component.MESSAGE
 
 class TownMap : Map(MapFactory.MapType.TOWN, "maps/town.tmx") {
@@ -12,8 +11,6 @@ class TownMap : Map(MapFactory.MapType.TOWN, "maps/town.tmx") {
     private val townInnKeeper = "scripts/town_innkeeper.json"
     private val townMage = "scripts/town_mage.json"
     private val townFolk = "scripts/town_folk.json"
-
-    private val mapEntities = Array<Entity>()
 
     init {
         // init NPC
@@ -53,6 +50,9 @@ class TownMap : Map(MapFactory.MapType.TOWN, "maps/town.tmx") {
     }
 
     override fun updateMapEntities(batch: Batch, delta: Float) {
-        mapEntities.forEach { it.update(batch, delta) }
+        // #iterator() cannot be used nested, so use own index
+        for (i in 0 until mapEntities.size) {
+            mapEntities[i].update(batch, delta)
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.maklumi
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.utils.JsonValue
 import ktx.json.fromJson
 import ktx.json.readValue
@@ -47,6 +48,8 @@ class Entity(private val inputComponent: InputComponent,
 
         components.forEach { it.receiveMessage(fullMessage) }
     }
+
+    fun getCurrentBoundingBox(): Rectangle = physicsComponent.currentBound
 
     companion object {
 

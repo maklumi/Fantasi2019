@@ -13,6 +13,7 @@ interface Component {
         LOAD_ANIMATIONS,
         INIT_DIRECTION,
         INIT_STATE,
+        COLLISION_WITH_ENTITY,
     }
 
     fun receiveMessage(message: String)

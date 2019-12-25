@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.maps.MapLayer
 import com.badlogic.gdx.maps.tiled.TiledMap
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.utils.Array as gdxArray
 
 object MapManager {
 
@@ -30,6 +31,7 @@ object MapManager {
         get() = gameMap.startUnitScaled
 
     lateinit var camera: OrthographicCamera
+    lateinit var player: Entity
 
     fun loadMap(mapType: MapFactory.MapType) {
         gameMap = MapFactory.getMap(mapType)
@@ -43,5 +45,7 @@ object MapManager {
     fun updateMapEntities(batch: Batch, delta: Float) {
         gameMap.updateMapEntities(batch, delta)
     }
+
+    fun getCurrentMapEntities(): gdxArray<Entity> = gameMap.mapEntities
 
 }

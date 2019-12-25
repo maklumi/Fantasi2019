@@ -47,7 +47,7 @@ class MainGameScreen : Screen {
         camera.setToOrtho(false, 40f, 40f)
 
         MapManager.loadMap(MapFactory.MapType.TOWN)
-
+        MapManager.player = player
         tiledMapRenderer = OrthogonalTiledMapRenderer(currentMap, unitScale)
         // to prevent initial flicker
         camera.position.set(playerStartUnitScaled, 0f)
@@ -83,7 +83,7 @@ class MainGameScreen : Screen {
             projectionMatrix = camera.combined
             begin(ShapeRenderer.ShapeType.Filled)
             color = Color.YELLOW
-            rect(b.x, b.y, b.width * unitScale, b.height * unitScale)
+            rect(b.x, b.y, b.width, b.height)
             fun debugLayer(layer: MapLayer, clr: Color) {
                 layer.objects.forEach {
                     it as RectangleMapObject

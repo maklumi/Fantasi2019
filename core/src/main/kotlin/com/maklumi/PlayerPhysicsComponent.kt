@@ -7,6 +7,7 @@ class PlayerPhysicsComponent : PhysicsComponent() {
 
     override fun update(entity: Entity, deltaTime: Float) {
         if (isCollisionWithMapLayer(entity, nextBound) == null
+                && !isCollisionWithMapEntities(entity)
                 && currentState == Entity.State.WALKING) {
             setCurrentPosition(entity)
         }

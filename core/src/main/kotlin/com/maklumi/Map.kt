@@ -29,12 +29,13 @@ abstract class Map(private var mapType: MapFactory.MapType, path: String) {
 
     val npcStartPositions: gdxArray<Vector2>
     protected val specialNPCStartPositions: MutableMap<String, Vector2>
+    var mapEntities: gdxArray<Entity> = gdxArray()
 
     init {
         loadMap(path)
         npcStartPositions = getNPCStartPositions()
         specialNPCStartPositions = getOtherNPCStartPositions()
-        print("Map-init: $specialNPCStartPositions")
+//        print("Map-init: $specialNPCStartPositions")
     }
 
     private fun loadMap(path: String) {

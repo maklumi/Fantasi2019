@@ -14,13 +14,12 @@ class NPCPhysicsComponent : PhysicsComponent() {
 
         if (isCollisionWithMapLayer(entity, nextBound) == null
                 && isCollisionWithPortalLayer(nextBound) == null
+                && !isCollisionWithMapEntities(entity)
                 && currentState == Entity.State.WALKING) {
             setCurrentPosition(entity)
         }
 
         calculateNextPosition(deltaTime)
-        MapManager.camera.position.set(currentPosition.x, currentPosition.y, 0f)
-        MapManager.camera.update()
     }
 
     override fun receiveMessage(message: String) {
@@ -42,5 +41,10 @@ class NPCPhysicsComponent : PhysicsComponent() {
             else -> {
             }
         }
+    }
+
+    override fun isCollisionWithMapEntities(entity: Entity): Boolean {
+        return super.isCollisionWithMapEntities(entity) or
+                isCollisionWithPlayer(entity)
     }
 }

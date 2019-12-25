@@ -56,9 +56,9 @@ class NPCInputComponent : InputComponent(), InputProcessor {
         val string = message.split(MESSAGE_TOKEN)
 
         if (string.size == 1) {
-            if (MESSAGE.COLLISION_WITH_MAP == MESSAGE.valueOf(string.first())) {
-                currentDirection = Entity.Direction.nextRandom()
-            }
+            val code = MESSAGE.valueOf(string.first())
+            if (MESSAGE.COLLISION_WITH_MAP == code) currentDirection = Entity.Direction.nextRandom()
+            if (MESSAGE.COLLISION_WITH_ENTITY == code) currentDirection = Entity.Direction.nextRandom()
         }
 
         if (string.size == 2) {
