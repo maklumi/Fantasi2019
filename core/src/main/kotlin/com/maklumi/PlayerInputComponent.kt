@@ -67,6 +67,13 @@ class PlayerInputComponent : InputProcessor, InputComponent() {
                 entity.sendMessage(Component.MESSAGE.CURRENT_STATE, json.toJson(Entity.State.IDLE))
             }
         }
+
+        // Mouse input
+        if (mouseButtons[Mouse.SELECT]!!) {
+//            print("lastMouseCoordinates $lastMouseCoordinates")
+            entity.sendMessage(Component.MESSAGE.INIT_SELECT_ENTITY, json.toJson(lastMouseCoordinates))
+            mouseButtons[Mouse.SELECT] = false
+        }
     }
 
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {

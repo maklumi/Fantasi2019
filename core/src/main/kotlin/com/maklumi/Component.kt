@@ -14,6 +14,9 @@ interface Component {
         INIT_DIRECTION,
         INIT_STATE,
         COLLISION_WITH_ENTITY,
+        INIT_SELECT_ENTITY,
+        ENTITY_SELECTED,
+        ENTITY_DESELECTED
     }
 
     fun receiveMessage(message: String)

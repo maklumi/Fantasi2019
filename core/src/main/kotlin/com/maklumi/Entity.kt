@@ -13,6 +13,7 @@ class Entity(private val inputComponent: InputComponent,
              val physicsComponent: PhysicsComponent,
              private val graphicsComponent: GraphicsComponent) {
 
+    var entityConfig = EntityConfig()
 
     private val components = gdxArray<Component>(MAX_COMPONENTS).also {
         it.add(inputComponent)

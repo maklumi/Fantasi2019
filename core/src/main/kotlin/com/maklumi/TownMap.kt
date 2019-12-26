@@ -31,6 +31,7 @@ class TownMap : Map(MapFactory.MapType.TOWN, "maps/town.tmx") {
     private fun initEntityNPC(position: Vector2, entityConfig: EntityConfig): Entity {
         val entity = EntityFactory.getEntity(EntityFactory.EntityType.NPC)
         entity.apply {
+            this.entityConfig = entityConfig
             sendMessage(MESSAGE.LOAD_ANIMATIONS, json.toJson(entityConfig))
             sendMessage(MESSAGE.INIT_START_POSITION, json.toJson(position))
             sendMessage(MESSAGE.INIT_STATE, json.toJson(entityConfig.state))

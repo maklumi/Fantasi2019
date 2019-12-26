@@ -17,6 +17,7 @@ object EntityFactory {
                 Entity(PlayerInputComponent(), PlayerPhysicsComponent(), PlayerGraphicsComponent())
                         .also {
                             val entityConfig = json.fromJson<EntityConfig>(Gdx.files.internal(PLAYER_CONFIG))
+                            it.entityConfig = entityConfig
                             it.sendMessage(Component.MESSAGE.LOAD_ANIMATIONS, json.toJson(entityConfig))
                         }
             }

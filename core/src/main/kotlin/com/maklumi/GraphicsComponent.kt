@@ -1,6 +1,8 @@
 package com.maklumi
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
@@ -51,6 +53,8 @@ abstract class GraphicsComponent : Component {
             }
         }
 
+        drawSelected(entity)
+
         batch.use {
             it.draw(currentFrame,
                     currentPosition.x,
@@ -59,16 +63,21 @@ abstract class GraphicsComponent : Component {
 
         val myColor = if (entity.physicsComponent is PlayerPhysicsComponent) Color.FIREBRICK
         else Color.CHARTREUSE
-
+        Gdx.gl.glEnable(GL20.GL_BLEND)
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
         val rect = entity.getCurrentBoundingBox()
         shapeRenderer.apply {
             projectionMatrix = camera.combined
             begin(ShapeRenderer.ShapeType.Filled)
+            myColor.a = 0.4f
             color = myColor
             rect(rect.x, rect.y, rect.width, rect.height)
             end()
         }
+        Gdx.gl.glDisable(GL20.GL_BLEND)
     }
+
+    open fun drawSelected(entity: Entity) {}
 
     override fun receiveMessage(message: String) {
         val string: List<String> = message.split(MESSAGE_TOKEN)
