@@ -3,16 +3,19 @@ package com.maklumi
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputProcessor
+import com.badlogic.gdx.math.MathUtils
 import com.maklumi.Component.MESSAGE
 import ktx.json.fromJson
 
 class NPCInputComponent : InputComponent(), InputProcessor {
 
     private var frameTime = 0.0f
+    private var delayTime = 0.0f
     private var currentState = Entity.State.WALKING
 
     override fun update(entity: Entity, delta: Float) {
         frameTime += delta
+        delayTime += delta % 10
 
         // if IMMOBILE, don't update anything
         if (currentState == Entity.State.IMMOBILE) {
@@ -21,7 +24,7 @@ class NPCInputComponent : InputComponent(), InputProcessor {
         }
 
         //Change direction after so many seconds
-        if (frameTime > 3f) {
+        if (frameTime > MathUtils.random(1f, 5f)) {
             currentState = Entity.State.nextRandom()
             currentDirection = Entity.Direction.nextRandom()
             frameTime = 0.0f
@@ -58,7 +61,12 @@ class NPCInputComponent : InputComponent(), InputProcessor {
         if (string.size == 1) {
             val code = MESSAGE.valueOf(string.first())
             if (MESSAGE.COLLISION_WITH_MAP == code) currentDirection = Entity.Direction.nextRandom()
-            if (MESSAGE.COLLISION_WITH_ENTITY == code) currentDirection = Entity.Direction.nextRandom()
+            if (MESSAGE.COLLISION_WITH_ENTITY == code) {
+                if (delayTime > 0.5f) {
+                    currentDirection = currentDirection.getOpposite()
+                    delayTime = 0f
+                }
+            }
         }
 
         if (string.size == 2) {

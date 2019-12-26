@@ -14,7 +14,7 @@ class Entity(private val inputComponent: InputComponent,
              private val graphicsComponent: GraphicsComponent) {
 
 
-    private val components = gdxArray<Component>(5).also {
+    private val components = gdxArray<Component>(MAX_COMPONENTS).also {
         it.add(inputComponent)
         it.add(physicsComponent)
         it.add(graphicsComponent)
@@ -22,6 +22,15 @@ class Entity(private val inputComponent: InputComponent,
 
     enum class Direction {
         UP, RIGHT, DOWN, LEFT;
+
+        fun getOpposite(): Direction {
+            return when (this) {
+                LEFT -> RIGHT
+                RIGHT -> LEFT
+                UP -> DOWN
+                else -> UP
+            }
+        }
 
         companion object {
             fun nextRandom(): Direction = values().random()
@@ -52,6 +61,8 @@ class Entity(private val inputComponent: InputComponent,
     fun getCurrentBoundingBox(): Rectangle = physicsComponent.currentBound
 
     companion object {
+
+        const val MAX_COMPONENTS = 5
 
         fun getEntityConfig(configFilePath: String): EntityConfig {
             return json.fromJson(Gdx.files.internal(configFilePath))
