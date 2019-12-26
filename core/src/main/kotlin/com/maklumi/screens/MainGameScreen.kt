@@ -78,12 +78,9 @@ class MainGameScreen : Screen {
 
 
     private fun drawBoundingBox() {
-        val b = player.physicsComponent.currentBound
         shapeRenderer.apply {
             projectionMatrix = camera.combined
-            begin(ShapeRenderer.ShapeType.Filled)
-            color = Color.YELLOW
-            rect(b.x, b.y, b.width, b.height)
+            begin(ShapeRenderer.ShapeType.Line)
             fun debugLayer(layer: MapLayer, clr: Color) {
                 layer.objects.forEach {
                     it as RectangleMapObject
@@ -93,9 +90,9 @@ class MainGameScreen : Screen {
 
                 }
             }
-            if (collisionLayer != null) debugLayer(collisionLayer!!, Color.BLUE)
-            if (portalLayer != null) debugLayer(portalLayer!!, Color.DARK_GRAY)
-            if (spawnsLayer != null) debugLayer(spawnsLayer!!, Color.LIME)
+            if (collisionLayer != null) debugLayer(collisionLayer!!, Color.WHITE)
+            if (portalLayer != null) debugLayer(portalLayer!!, Color.YELLOW)
+            if (spawnsLayer != null) debugLayer(spawnsLayer!!, Color.GOLD)
             end()
         }
 

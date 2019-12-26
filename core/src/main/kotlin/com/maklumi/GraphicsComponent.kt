@@ -1,10 +1,13 @@
 package com.maklumi
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.GridPoint2
 import com.badlogic.gdx.math.Vector2
+import com.maklumi.MapManager.camera
 import ktx.graphics.use
 import ktx.json.fromJson
 import com.badlogic.gdx.utils.Array as gdxArray
@@ -21,7 +24,9 @@ abstract class GraphicsComponent : Component {
     private var currentFrame: TextureRegion? = null
     private var animations = mutableMapOf<AnimationType, Animation<TextureRegion>>()
 
-    fun update(batch: Batch, delta: Float) {
+    private val shapeRenderer = ShapeRenderer()
+
+    fun update(entity: Entity, batch: Batch, delta: Float) {
         frameTime = (frameTime + delta) % 10
 
         when (currentState) {
@@ -50,6 +55,18 @@ abstract class GraphicsComponent : Component {
             it.draw(currentFrame,
                     currentPosition.x,
                     currentPosition.y, 1f, 1f)
+        }
+
+        val myColor = if (entity.physicsComponent is PlayerPhysicsComponent) Color.FIREBRICK
+        else Color.CHARTREUSE
+
+        val rect = entity.getCurrentBoundingBox()
+        shapeRenderer.apply {
+            projectionMatrix = camera.combined
+            begin(ShapeRenderer.ShapeType.Filled)
+            color = myColor
+            rect(rect.x, rect.y, rect.width, rect.height)
+            end()
         }
     }
 

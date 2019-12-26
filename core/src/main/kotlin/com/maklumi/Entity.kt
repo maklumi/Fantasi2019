@@ -39,7 +39,7 @@ class Entity(private val inputComponent: InputComponent,
     fun update(batch: Batch, delta: Float) {
         inputComponent.update(this, delta)
         physicsComponent.update(this, delta)
-        graphicsComponent.update(batch, delta)
+        graphicsComponent.update(this, batch, delta)
     }
 
     fun sendMessage(message: Component.MESSAGE, vararg args: String) {
