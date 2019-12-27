@@ -97,6 +97,7 @@ class MainGameScreen : Screen {
 
     private fun renderPlayerHUD(delta: Float) {
         playerHUD.render(delta)
+        player.inputComponent.update(player, delta)
     }
 
 
@@ -123,6 +124,7 @@ class MainGameScreen : Screen {
 
     @Override
     override fun resize(width: Int, height: Int) {
+        playerHUD.resize(width, height)
     }
 
     @Override
