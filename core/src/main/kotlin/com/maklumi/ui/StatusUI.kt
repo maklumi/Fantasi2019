@@ -1,6 +1,7 @@
 package com.maklumi.ui
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.g2d.NinePatch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.*
@@ -10,7 +11,8 @@ class StatusUI : Group() {
 
     private val textureAtlasPath = "skins/statusui.pack"
     private val textureAtlas = TextureAtlas(textureAtlasPath)
-    private val hudBackgroundImage = Image(textureAtlas.findRegion("HUD_Background"))
+    private val hudBackground = NinePatch(textureAtlas.findRegion("dialog"))
+    private val hudBackgroundImage = Image(hudBackground)
     private val skin = Skin().also { it.load(Gdx.files.internal("skins/uiskin.json")) }
     private val hpBar = Image(textureAtlas.findRegion("HP_Bar"))
     private val mpBar = Image(textureAtlas.findRegion("MP_Bar"))
@@ -87,10 +89,11 @@ class StatusUI : Group() {
         table.add(goldLabel).align(left)
         val goldVal = Label("$gold", skin)
         table.add(goldVal).align(left)
+        table.pad(20f)
 
 //        table.debug()
         hudBackgroundImage.setPosition(-table.prefWidth * 1.2f / 2, -table.prefHeight * 1.2f / 2)
-        hudBackgroundImage.setScale(1.2f * table.prefWidth / hudBackgroundImage.width, 1.2f * table.prefHeight / hudBackgroundImage.height)
+        hudBackgroundImage.setSize(table.prefWidth * 1.2f, table.prefHeight * 1.2f)
         this.addActor(hudBackgroundImage)
         this.addActor(table)
     }
