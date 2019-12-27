@@ -9,11 +9,11 @@ import com.badlogic.gdx.utils.Align.left
 
 class StatusUI : Group() {
 
-    private val textureAtlasPath = "skins/statusui.pack"
+    private val textureAtlasPath = "skins/statusui.atlas"
     private val textureAtlas = TextureAtlas(textureAtlasPath)
     private val hudBackground = NinePatch(textureAtlas.findRegion("dialog"))
     private val hudBackgroundImage = Image(hudBackground)
-    private val skin = Skin().also { it.load(Gdx.files.internal("skins/uiskin.json")) }
+    private val skin = Skin().also { it.load(Gdx.files.internal("skins/statusui.json")) }
     private val hpBar = Image(textureAtlas.findRegion("HP_Bar"))
     private val mpBar = Image(textureAtlas.findRegion("MP_Bar"))
     private val xpBar = Image(textureAtlas.findRegion("XP_Bar"))

@@ -2,12 +2,11 @@ package com.maklumi
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
-import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.math.MathUtils
 import com.maklumi.Component.MESSAGE
 import ktx.json.fromJson
 
-class NPCInputComponent : InputComponent(), InputProcessor {
+class NPCInputComponent : InputComponent() {
 
     private var frameTime = 0.0f
     private var delayTime = 0.0f

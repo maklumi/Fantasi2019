@@ -1,8 +1,9 @@
 package com.maklumi
 
+import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.math.Vector3
 
-abstract class InputComponent : Component {
+abstract class InputComponent : Component, InputProcessor {
 
     protected var currentDirection = Entity.Direction.nextRandom()
 

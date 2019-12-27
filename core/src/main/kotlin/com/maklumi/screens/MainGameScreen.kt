@@ -1,6 +1,7 @@
 package com.maklumi.screens
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
@@ -58,6 +59,11 @@ class MainGameScreen : Screen {
         camera.update()
         hudCamera.setToOrtho(false, physicalWidth, physicalHeight)
         playerHUD = PlayerHUD(hudCamera)
+
+        val multiplexer = InputMultiplexer()
+        multiplexer.addProcessor(playerHUD.stage)
+        multiplexer.addProcessor(player.inputComponent)
+        Gdx.input.inputProcessor = multiplexer
     }
 
     @Override
@@ -65,8 +71,10 @@ class MainGameScreen : Screen {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
-        playerHUD.render(delta)
-        if (debugHUD) return
+        if (debugHUD) {
+            renderPlayerHUD(delta)
+            return
+        }
 
         // world map and camera
         tiledMapRenderer.setView(camera)
@@ -83,6 +91,12 @@ class MainGameScreen : Screen {
         updateMapEntities(tiledMapRenderer.batch, delta)
         // player entity
         player.update(tiledMapRenderer.batch, delta)
+        // head up display
+        playerHUD.render(delta)
+    }
+
+    private fun renderPlayerHUD(delta: Float) {
+        playerHUD.render(delta)
     }
 
 

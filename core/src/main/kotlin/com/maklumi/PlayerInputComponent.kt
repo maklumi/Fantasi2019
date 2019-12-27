@@ -2,13 +2,8 @@ package com.maklumi
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
-import com.badlogic.gdx.InputProcessor
 
-class PlayerInputComponent : InputProcessor, InputComponent() {
-
-    init {
-        Gdx.input.inputProcessor = this
-    }
+class PlayerInputComponent : InputComponent() {
 
     override fun keyDown(keycode: Int): Boolean {
         if (keycode == Input.Keys.LEFT || keycode == Input.Keys.A) {

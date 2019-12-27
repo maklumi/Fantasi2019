@@ -9,7 +9,7 @@ import ktx.json.readValue
 import kotlin.random.Random
 import com.badlogic.gdx.utils.Array as gdxArray
 
-class Entity(private val inputComponent: InputComponent,
+class Entity(val inputComponent: InputComponent,
              val physicsComponent: PhysicsComponent,
              private val graphicsComponent: GraphicsComponent) {
 
