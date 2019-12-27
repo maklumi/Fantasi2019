@@ -23,6 +23,7 @@ import com.maklumi.MapManager.spawnsLayer
 import com.maklumi.MapManager.unitScale
 import com.maklumi.MapManager.updateMapEntities
 import com.maklumi.json
+import com.maklumi.ui.PlayerHUD
 
 
 class MainGameScreen : Screen {
@@ -38,6 +39,9 @@ class MainGameScreen : Screen {
     private var aspectRatio: Float = 0f
 
     private val player = EntityFactory.getEntity(EntityFactory.EntityType.PLAYER)
+    private val hudCamera = OrthographicCamera()
+    private lateinit var playerHUD: PlayerHUD
+    private var debugHUD = true
 
     @Override
     override fun show() {
@@ -52,12 +56,17 @@ class MainGameScreen : Screen {
         // to prevent initial flicker
         camera.position.set(playerStartUnitScaled, 0f)
         camera.update()
+        hudCamera.setToOrtho(false, physicalWidth, physicalHeight)
+        playerHUD = PlayerHUD(hudCamera)
     }
 
     @Override
     override fun render(delta: Float) {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
+
+        playerHUD.render(delta)
+        if (debugHUD) return
 
         // world map and camera
         tiledMapRenderer.setView(camera)
