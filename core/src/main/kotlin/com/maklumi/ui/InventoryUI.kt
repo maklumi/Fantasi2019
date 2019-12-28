@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.Window
+import com.maklumi.InventoryItem
 import com.maklumi.ui.StatusUI.Companion.textureAtlas
 
 class InventoryUI : Window("Inventory Window", StatusUI.skin, "solidbackground") {
@@ -26,8 +27,16 @@ class InventoryUI : Window("Inventory Window", StatusUI.skin, "solidbackground")
             dragAndDrop.addTarget(InventorySlotTarget(inventorySlot))
 
             if (i == 5 || i == 10 || i == 15 || i == 20) {
-                val image = Image(itemsTextureAtlas.findRegion("armor01"))
-                inventorySlot.add(image)
+                val slotItem = InventoryItem(itemsTextureAtlas.findRegion("armor01"), InventoryItem.WEARABLE, "armor01")
+                inventorySlot.add(slotItem)
+
+                dragAndDrop.addSource(InventorySlotSource(inventorySlot))
+            }
+
+            if (i == 1 || i == 13 || i == 25 || i == 30) {
+                val slotItem = InventoryItem(itemsTextureAtlas.findRegion("potions02"),
+                        InventoryItem.CONSUMABLE or InventoryItem.STACKABLE, "potions02")
+                inventorySlot.add(slotItem)
 
                 dragAndDrop.addSource(InventorySlotSource(inventorySlot))
             }

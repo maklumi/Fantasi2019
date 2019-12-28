@@ -1,7 +1,7 @@
 package com.maklumi.ui
 
-import com.maklumi.ui.MyDragAndDrop.Payload
-import com.maklumi.ui.MyDragAndDrop.Source
+import com.maklumi.InventoryItem
+import com.maklumi.ui.MyDragAndDrop.*
 import com.maklumi.ui.MyDragAndDrop.Target
 
 
@@ -12,9 +12,22 @@ class InventorySlotTarget(private var targetSlot: InventorySlot) : Target(target
     }
 
     override fun drop(source: Source?, payload: Payload?, x: Float, y: Float, pointer: Int) {
-       if (payload?.dragActor == null) return
+        if (payload?.dragActor == null) return
 
-       targetSlot.add(payload.dragActor)
+        val sourceActor = payload.dragActor as InventoryItem
+        val targetActor = targetSlot.topItem
+
+        if (!targetSlot.hasItem()) {
+            targetSlot.add(sourceActor)
+        } else {
+            //If the same item and stackable, add
+            if (sourceActor.isStackable() && sourceActor.isSameItemType(targetActor)) {
+                targetSlot.add(sourceActor)
+            } else {
+                //If they aren't the same items or the items aren't stackable, then swap
+                InventorySlot.swapSlots((source as InventorySlotSource).sourceSlot, targetSlot, sourceActor)
+            }
+        }
     }
 
     override fun reset(source: Source?, payload: Payload?) {
