@@ -7,16 +7,16 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Stack
 import com.badlogic.gdx.utils.Align
 import com.maklumi.InventoryItem
-import kotlin.properties.Delegates
 import com.badlogic.gdx.utils.Array as gdxArray
 
-class InventorySlot : Stack() {
+class InventorySlot(
+        private var filterItemType: Int = 0,
+        private var customDecal: Image = Image()
+) : Stack() {
 
-    //All slots have this default image
+    private val background = Stack()
     private val imageBackground = Image(NinePatch(StatusUI.textureAtlas.createPatch("dialog")))
-    var itemCount: Int by Delegates.observable(0) { _, _, newValue ->
-        itemChanged(newValue)
-    }
+    private var itemCount: Int = 0
     private val numItemsLabel = Label("$itemCount", StatusUI.skin, "inventory-item-count")
 
     // used in drag Source, actor cannot be null
@@ -25,15 +25,17 @@ class InventorySlot : Stack() {
 
 
     init {
-        add(imageBackground) // first item
-        numItemsLabel.setAlignment(Align.bottomLeft)
+        background.add(imageBackground)
+        background.add(customDecal)
+        add(background) // first item
+        numItemsLabel.setAlignment(Align.bottomRight)
         numItemsLabel.isVisible = false
         add(numItemsLabel) // second item
     }
 
     override fun add(actor: Actor?) {
         super.add(actor)
-        if (actor != imageBackground && actor != numItemsLabel) itemCount++
+        if (actor != background && actor != numItemsLabel) increaseItemCount()
     }
 
     fun add(actors: gdxArray<Actor>) {
@@ -46,14 +48,31 @@ class InventorySlot : Stack() {
         val items = gdxArray<Actor>()
         while (hasItem()) {
             items.add(children.pop())
-            itemCount--
+            reduceItemCount()
         }
         return items
     }
 
-    private fun itemChanged(newValue: Int) {
-        numItemsLabel.setText(newValue)
-        numItemsLabel.isVisible = newValue > 0
+    fun doesAcceptItemUseType(itemUseType: Int): Boolean {
+        return if (filterItemType == 0) true else filterItemType.and(itemUseType) == itemUseType
+    }
+
+    fun reduceItemCount() {
+        itemCount--
+        numItemsLabel.setText(itemCount)
+        if (background.children.size == 2) background.add(customDecal)
+        checkVisibilityOfItemCount()
+    }
+
+    private fun increaseItemCount() {
+        itemCount++
+        numItemsLabel.setText(itemCount)
+        if (background.children.size > 2) background.children.pop()
+        checkVisibilityOfItemCount()
+    }
+
+    private fun checkVisibilityOfItemCount() {
+        numItemsLabel.isVisible = itemCount > 1
     }
 
     companion object {

@@ -17,6 +17,13 @@ class InventorySlotTarget(private var targetSlot: InventorySlot) : Target(target
         val sourceActor = payload.dragActor as InventoryItem
         val targetActor = targetSlot.topItem
 
+        //First, does the slot accept the source item type?
+        if (!targetSlot.doesAcceptItemUseType(sourceActor.itemUseType)) {
+            val sourceSlot = (source as InventorySlotSource).sourceSlot
+            sourceSlot.add(sourceActor)
+            return
+        }
+
         if (!targetSlot.hasItem()) {
             targetSlot.add(sourceActor)
         } else {

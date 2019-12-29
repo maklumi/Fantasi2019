@@ -13,7 +13,11 @@ class PlayerHUD(camera: Camera) : Screen {
     private val inventoryUI = InventoryUI()
 
     init {
-//        stage.addActor(statusUI)
+        stage.addActor(statusUI)
+
+        val centerX = (stage.width - inventoryUI.width) / 2
+        val centerY = (stage.height - inventoryUI.height) / 2
+        inventoryUI.setPosition(centerX, centerY)
         stage.addActor(inventoryUI)
     }
 
