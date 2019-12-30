@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.NinePatch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Align.left
 
 class StatusUI : Window("Status", skin) {
@@ -20,6 +21,7 @@ class StatusUI : Window("Status", skin) {
     private val hpBar = Image(textureAtlas.findRegion("HP_Bar"))
     private val mpBar = Image(textureAtlas.findRegion("MP_Bar"))
     private val xpBar = Image(textureAtlas.findRegion("XP_Bar"))
+    val inventoryButton = ImageButton(skin, "inventory-button")
 
     private var level = 1
     private var gold = 0
@@ -28,6 +30,12 @@ class StatusUI : Window("Status", skin) {
     private var xp = 0
 
     init {
+        add()
+        add()
+        inventoryButton.imageCell.size(64f)
+        add(inventoryButton).align(Align.right)
+        row()
+
         // health row
         val bar = Image(textureAtlas.findRegion("Bar"))
         hpBar.setPosition(3f, 6f)

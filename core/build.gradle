@@ -7,4 +7,5 @@ dependencies {
 	api "io.github.libktx:ktx-assets:$ktxVersion"
 	api "io.github.libktx:ktx-graphics:$ktxVersion"
 	api "io.github.libktx:ktx-json:$ktxVersion"
+	api "io.github.libktx:ktx-actors:$ktxVersion"
 }

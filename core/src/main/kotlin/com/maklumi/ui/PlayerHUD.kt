@@ -4,6 +4,7 @@ import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.Camera
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.ScreenViewport
+import ktx.actors.onClick
 
 class PlayerHUD(camera: Camera) : Screen {
 
@@ -15,9 +16,11 @@ class PlayerHUD(camera: Camera) : Screen {
     init {
         stage.addActor(statusUI)
 
-        val centerX = (stage.width - inventoryUI.width) / 2
-        val centerY = (stage.height - inventoryUI.height) / 2
-        inventoryUI.setPosition(centerX, centerY)
+        val x = statusUI.width
+        val y = statusUI.height
+        inventoryUI.setPosition(x, y)
+        inventoryUI.isVisible = false
+        statusUI.inventoryButton.onClick { inventoryUI.isVisible = !inventoryUI.isVisible }
         stage.addActor(inventoryUI)
 
         //add tooltips to the stage
