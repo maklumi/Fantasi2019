@@ -60,14 +60,14 @@ class InventorySlot(
     fun reduceItemCount() {
         itemCount--
         numItemsLabel.setText(itemCount)
-        if (background.children.size == 2) background.add(customDecal)
+        if (background.children.size == 1) background.children.add(customDecal)
         checkVisibilityOfItemCount()
     }
 
     private fun increaseItemCount() {
         itemCount++
         numItemsLabel.setText(itemCount)
-        if (background.children.size > 2) background.children.pop()
+        if (background.children.size > 1) background.children.pop()
         checkVisibilityOfItemCount()
     }
 

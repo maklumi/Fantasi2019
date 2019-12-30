@@ -5,8 +5,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 
 class InventoryItem(
         textureRegion: TextureRegion? = null,
-        private var itemAttributes: Int = 0,
-        private var itemID: String = "",
+        var itemAttributes: Int = 0,
+        var itemTypeID: ItemTypeID = ItemTypeID.NOTHING,
         var itemUseType: Int = 0
 ) : Image(textureRegion) {
 
@@ -18,7 +18,7 @@ class InventoryItem(
         operator fun invoke(): Int = value
     }
 
-    enum class ItemType(private val value: Int) {
+    enum class ItemUseType(private val value: Int) {
         RESTORE_HEALTH(1), RESTORE_MP(2), DAMAGE(4),
         WEAPON_ONEHAND(8), WEAPON_TWOHAND(16), WAND_ONEHAND(32),
         WAND_TWOHAND(64), ARMOR_SHIELD(128), ARMOR_HELMET(256),
@@ -27,12 +27,23 @@ class InventoryItem(
         operator fun invoke(): Int = value
     }
 
+    enum class ItemTypeID {
+        ARMOR01, ARMOR02, ARMOR03, ARMOR04, ARMOR05,
+        BOOTS01, BOOTS02, BOOTS03, BOOTS04, BOOTS05,
+        HELMET01, HELMET02, HELMET03, HELMET04, HELMET05,
+        SHIELD01, SHIELD02, SHIELD03, SHIELD04, SHIELD05,
+        WANDS01, WANDS02, WANDS03, WANDS04, WANDS05,
+        WEAPON01, WEAPON02, WEAPON03, WEAPON04, WEAPON05,
+        POTIONS01, POTIONS02, POTIONS03,
+        SCROLL01, SCROLL02, SCROLL03, NOTHING
+    }
+
     fun isStackable(): Boolean {
         return itemAttributes.and(ItemAttribute.STACKABLE()) == ItemAttribute.STACKABLE()
     }
 
     fun isSameItemType(candidateInventoryItem: InventoryItem): Boolean {
-        return itemID.equals(candidateInventoryItem.itemID, true)
+        return itemTypeID == candidateInventoryItem.itemTypeID
     }
 
 }

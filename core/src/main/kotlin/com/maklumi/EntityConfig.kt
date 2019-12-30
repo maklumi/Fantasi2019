@@ -8,6 +8,7 @@ class EntityConfig {
     var state = Entity.State.IDLE
     var direction = Entity.Direction.DOWN
     val animationConfig = Array<AnimationConfig>()
+    var inventory = Array<InventoryItem.ItemTypeID>()
 }
 
 data class AnimationConfig(

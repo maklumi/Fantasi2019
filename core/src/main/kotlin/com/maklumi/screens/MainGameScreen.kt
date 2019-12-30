@@ -59,6 +59,8 @@ class MainGameScreen : Screen {
         camera.update()
         hudCamera.setToOrtho(false, physicalWidth, physicalHeight)
         playerHUD = PlayerHUD(hudCamera)
+        playerHUD.inventoryUI.populateInventory(player.entityConfig.inventory)
+//        playerHUD.inventoryUI.testAllItemLoad()
 
         val multiplexer = InputMultiplexer()
         multiplexer.addProcessor(playerHUD.stage)

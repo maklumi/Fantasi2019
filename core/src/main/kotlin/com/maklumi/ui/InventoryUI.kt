@@ -2,67 +2,59 @@ package com.maklumi.ui
 
 import com.badlogic.gdx.graphics.g2d.NinePatch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
+import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.Window
-import com.maklumi.InventoryItem
-import com.maklumi.InventoryItem.ItemAttribute
-import com.maklumi.InventoryItem.ItemType
+import com.maklumi.InventoryItem.ItemTypeID
+import com.maklumi.InventoryItem.ItemUseType
+import com.maklumi.InventoryItemFactory
 import com.maklumi.ui.StatusUI.Companion.textureAtlas
+import com.badlogic.gdx.utils.Array as gdxArray
 
 class InventoryUI : Window("Inventory Window", StatusUI.skin, "solidbackground") {
 
     private val lengthSlotRow = 10
     private val dragAndDrop = MyDragAndDrop()
-    private val itemsTextureAtlasPath = "skins/items.atlas"
-    private val itemsTextureAtlas = TextureAtlas(itemsTextureAtlasPath)
+
+    companion object {
+        private const val itemsTextureAtlasPath = "skins/items.atlas"
+        val itemsTextureAtlas = TextureAtlas(itemsTextureAtlasPath)
+    }
+
+    private val inventorySlotTable = Table()
+    private val equipSlots = Table()
+    private val playerSlotTable = Table()
+
     private val slotWidth = 52f
     private val slotHeight = 52f
 
     init {
-        // bottom inventory
-        val inventorySlotTable = Table()
-
         // create 50 slots in inventory table
         for (i in 1..50) {
             val inventorySlot = InventorySlot()
             dragAndDrop.addTarget(InventorySlotTarget(inventorySlot))
-
-            if (i == 5 || i == 10 || i == 15 || i == 20) {
-                val slotItem = InventoryItem(itemsTextureAtlas.findRegion("armor01"), ItemAttribute.WEARABLE(), "armor01", ItemType.ARMOR_CHEST())
-                inventorySlot.add(slotItem)
-
-                dragAndDrop.addSource(InventorySlotSource(inventorySlot))
-            }
-
-            if (i == 1 || i == 13 || i == 25 || i == 30) {
-                val slotItem = InventoryItem(itemsTextureAtlas.findRegion("potions02"),
-                        ItemAttribute.CONSUMABLE() or ItemAttribute.STACKABLE(), "potions02", ItemType.RESTORE_MP())
-                inventorySlot.add(slotItem)
-
-                dragAndDrop.addSource(InventorySlotSource(inventorySlot))
-            }
-
             inventorySlotTable.add(inventorySlot).size(slotWidth, slotHeight)
             if (i % lengthSlotRow == 0) inventorySlotTable.row()
         }
 
         // player inventory
-        val headSlot = InventorySlot(ItemType.ARMOR_HELMET(), Image(itemsTextureAtlas.findRegion("inv_helmet")))
+        val headSlot = InventorySlot(ItemUseType.ARMOR_HELMET(), Image(itemsTextureAtlas.findRegion("inv_helmet")))
 
-        val armFilter = ItemType.WEAPON_ONEHAND() or
-                ItemType.WEAPON_TWOHAND() or
-                ItemType.ARMOR_SHIELD() or
-                ItemType.WAND_ONEHAND() or
-                ItemType.WAND_TWOHAND()
+        val armFilter = ItemUseType.WEAPON_ONEHAND() or
+                ItemUseType.WEAPON_TWOHAND() or
+                ItemUseType.ARMOR_SHIELD() or
+                ItemUseType.WAND_ONEHAND() or
+                ItemUseType.WAND_TWOHAND()
 
         val leftArmSlot = InventorySlot(armFilter, Image(itemsTextureAtlas.findRegion("inv_weapon")))
 
         val rightArmSlot = InventorySlot(armFilter, Image(itemsTextureAtlas.findRegion("inv_shield")))
 
-        val chestSlot = InventorySlot(ItemType.ARMOR_CHEST(), Image(itemsTextureAtlas.findRegion("inv_chest")))
+        val chestSlot = InventorySlot(ItemUseType.ARMOR_CHEST(), Image(itemsTextureAtlas.findRegion("inv_chest")))
 
-        val legsSlot = InventorySlot(ItemType.ARMOR_FEET(), Image(itemsTextureAtlas.findRegion("inv_boot")))
+        val legsSlot = InventorySlot(ItemUseType.ARMOR_FEET(), Image(itemsTextureAtlas.findRegion("inv_boot")))
 
         dragAndDrop.addTarget(InventorySlotTarget(headSlot))
         dragAndDrop.addTarget(InventorySlotTarget(leftArmSlot))
@@ -70,7 +62,7 @@ class InventoryUI : Window("Inventory Window", StatusUI.skin, "solidbackground")
         dragAndDrop.addTarget(InventorySlotTarget(rightArmSlot))
         dragAndDrop.addTarget(InventorySlotTarget(legsSlot))
 
-        val equipSlots = Table()
+
         equipSlots.defaults().space(10f)
         equipSlots.add()
         equipSlots.add(headSlot).size(slotWidth, slotHeight)
@@ -84,11 +76,32 @@ class InventoryUI : Window("Inventory Window", StatusUI.skin, "solidbackground")
         equipSlots.add()
         equipSlots.right().add(legsSlot).size(slotWidth, slotHeight)
 
-        val playerSlotTable = Table()
         playerSlotTable.background = Image(NinePatch(textureAtlas.createPatch("dialog"))).drawable
         playerSlotTable.add(equipSlots)
         add(playerSlotTable).padBottom(20f).row()
         add(inventorySlotTable).row()
         pack()
+    }
+
+    fun populateInventory(itemTypeIDs: gdxArray<ItemTypeID>) {
+        val cells: gdxArray<Cell<Actor>> = inventorySlotTable.cells
+        for ((i, itemTypeID) in itemTypeIDs.withIndex()) {
+            val inventorySlot = cells[i].actor as InventorySlot
+            val inventoryItem = InventoryItemFactory.getInventoryItem(itemTypeID)
+            inventorySlot.add(inventoryItem)
+            dragAndDrop.addSource(InventorySlotSource(inventorySlot))
+        }
+    }
+
+    fun testAllItemLoad() {
+        val array = gdxArray<ItemTypeID>()
+        for (itemTypeId in ItemTypeID.values()) {
+            if (itemsTextureAtlas.findRegion("$itemTypeId") == null) {
+                println("InventoryUI-103: Need texture for $itemTypeId")
+                continue
+            }
+            array.add(itemTypeId)
+        }
+        populateInventory(array)
     }
 }

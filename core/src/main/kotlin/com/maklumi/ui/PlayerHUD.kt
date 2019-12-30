@@ -10,7 +10,7 @@ class PlayerHUD(camera: Camera) : Screen {
     private val viewport = ScreenViewport(camera)
     val stage = Stage(viewport)
     private val statusUI = StatusUI()
-    private val inventoryUI = InventoryUI()
+    val inventoryUI = InventoryUI()
 
     init {
         stage.addActor(statusUI)
