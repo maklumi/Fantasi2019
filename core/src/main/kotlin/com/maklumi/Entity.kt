@@ -52,6 +52,10 @@ class Entity(val inputComponent: InputComponent,
         graphicsComponent.update(this, batch, delta)
     }
 
+    fun updateInput(delta: Float) {
+        inputComponent.update(this, delta)
+    }
+
     fun sendMessage(message: Component.MESSAGE, vararg args: String) {
         var fullMessage = message.toString()
         args.forEach { fullMessage += MESSAGE_TOKEN + it }

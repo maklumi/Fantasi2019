@@ -2,6 +2,7 @@ package com.maklumi
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
+import com.maklumi.screens.MainGameScreen.Companion.gameState
 
 class PlayerInputComponent : InputComponent() {
 
@@ -16,6 +17,8 @@ class PlayerInputComponent : InputComponent() {
             keys[Keys.Down] = true
         } else if (keycode == Input.Keys.Q) {
             keys[Keys.Quit] = true
+        } else if (keycode == Input.Keys.P) {
+            keys[Keys.Pause] = true
         }
         return true
     }
@@ -31,6 +34,8 @@ class PlayerInputComponent : InputComponent() {
             keys[Keys.Down] = false
         } else if (keycode == Input.Keys.Q) {
             keys[Keys.Quit] = false
+        } else if (keycode == Input.Keys.P) {
+            keys[Keys.Pause] = false
         }
         return true
     }
@@ -57,6 +62,11 @@ class PlayerInputComponent : InputComponent() {
             }
             keys[Keys.Quit]!! -> {
                 Gdx.app.exit()
+            }
+            keys[Keys.Pause]!! -> {
+                gameState = gameState.toggle()
+                println("PlayerInputComponent-69: $gameState")
+                keys[Keys.Pause] = false
             }
             else -> {
                 entity.sendMessage(Component.MESSAGE.CURRENT_STATE, json.toJson(Entity.State.IDLE))

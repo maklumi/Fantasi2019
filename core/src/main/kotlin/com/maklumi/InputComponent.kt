@@ -7,7 +7,7 @@ abstract class InputComponent : Component, InputProcessor {
 
     protected var currentDirection = Entity.Direction.nextRandom()
 
-    enum class Keys { Left, Right, Up, Down, Quit }
+    enum class Keys { Left, Right, Up, Down, Quit, Pause }
     enum class Mouse { SELECT, DOACTION }
 
     protected val lastMouseCoordinates = Vector3()
@@ -21,7 +21,8 @@ abstract class InputComponent : Component, InputProcessor {
             Keys.Right to false,
             Keys.Up to false,
             Keys.Down to false,
-            Keys.Quit to false)
+            Keys.Quit to false,
+            Keys.Pause to false)
 
     abstract fun update(entity: Entity, delta: Float)
 

@@ -42,7 +42,22 @@ class MainGameScreen : Screen {
     private val player = EntityFactory.getEntity(EntityFactory.EntityType.PLAYER)
     private val hudCamera = OrthographicCamera()
     private lateinit var playerHUD: PlayerHUD
-    private var debugHUD = true
+    private var debugHUD = false
+
+    enum class GameState {
+        RUNNING, PAUSED;
+
+        fun toggle(): GameState {
+            return when (this) {
+                RUNNING -> PAUSED
+                PAUSED -> RUNNING
+            }
+        }
+    }
+
+    companion object {
+        var gameState: GameState = GameState.RUNNING
+    }
 
     @Override
     override fun show() {
@@ -70,6 +85,11 @@ class MainGameScreen : Screen {
 
     @Override
     override fun render(delta: Float) {
+        if (gameState == GameState.PAUSED) {
+            player.updateInput(delta)
+            return
+        }
+
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
@@ -131,10 +151,12 @@ class MainGameScreen : Screen {
 
     @Override
     override fun pause() {
+        gameState = GameState.PAUSED
     }
 
     @Override
     override fun resume() {
+        gameState = GameState.RUNNING
     }
 
     @Override
