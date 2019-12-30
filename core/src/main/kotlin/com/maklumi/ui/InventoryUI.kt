@@ -26,6 +26,7 @@ class InventoryUI : Window("Inventory Window", StatusUI.skin, "solidbackground")
     private val inventorySlotTable = Table()
     private val equipSlots = Table()
     private val playerSlotTable = Table()
+    val tooltip = InventorySlotTooltip()
 
     private val slotWidth = 52f
     private val slotHeight = 52f
@@ -34,6 +35,7 @@ class InventoryUI : Window("Inventory Window", StatusUI.skin, "solidbackground")
         // create 50 slots in inventory table
         for (i in 1..50) {
             val inventorySlot = InventorySlot()
+            inventorySlot.addListener(InventorySlotTooltipListener(tooltip))
             dragAndDrop.addTarget(InventorySlotTarget(inventorySlot))
             inventorySlotTable.add(inventorySlot).size(slotWidth, slotHeight)
             if (i % lengthSlotRow == 0) inventorySlotTable.row()
@@ -55,6 +57,12 @@ class InventoryUI : Window("Inventory Window", StatusUI.skin, "solidbackground")
         val chestSlot = InventorySlot(ItemUseType.ARMOR_CHEST(), Image(itemsTextureAtlas.findRegion("inv_chest")))
 
         val legsSlot = InventorySlot(ItemUseType.ARMOR_FEET(), Image(itemsTextureAtlas.findRegion("inv_boot")))
+
+        headSlot.addListener(InventorySlotTooltipListener(tooltip))
+        leftArmSlot.addListener(InventorySlotTooltipListener(tooltip))
+        rightArmSlot.addListener(InventorySlotTooltipListener(tooltip))
+        chestSlot.addListener(InventorySlotTooltipListener(tooltip))
+        legsSlot.addListener(InventorySlotTooltipListener(tooltip))
 
         dragAndDrop.addTarget(InventorySlotTarget(headSlot))
         dragAndDrop.addTarget(InventorySlotTarget(leftArmSlot))
@@ -92,7 +100,7 @@ class InventoryUI : Window("Inventory Window", StatusUI.skin, "solidbackground")
             dragAndDrop.addSource(InventorySlotSource(inventorySlot))
         }
     }
-
+/*
     fun testAllItemLoad() {
         val array = gdxArray<ItemTypeID>()
         for (itemTypeId in ItemTypeID.values()) {
@@ -104,4 +112,5 @@ class InventoryUI : Window("Inventory Window", StatusUI.skin, "solidbackground")
         }
         populateInventory(array)
     }
+    */
 }

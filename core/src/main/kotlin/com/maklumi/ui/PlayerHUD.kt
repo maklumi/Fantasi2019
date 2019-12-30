@@ -19,6 +19,9 @@ class PlayerHUD(camera: Camera) : Screen {
         val centerY = (stage.height - inventoryUI.height) / 2
         inventoryUI.setPosition(centerX, centerY)
         stage.addActor(inventoryUI)
+
+        //add tooltips to the stage
+        stage.addActor(inventoryUI.tooltip)
     }
 
     override fun show() {}

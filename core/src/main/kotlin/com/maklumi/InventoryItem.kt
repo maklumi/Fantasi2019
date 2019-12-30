@@ -7,7 +7,8 @@ class InventoryItem(
         textureRegion: TextureRegion? = null,
         var itemAttributes: Int = 0,
         var itemTypeID: ItemTypeID = ItemTypeID.NOTHING,
-        var itemUseType: Int = 0
+        var itemUseType: Int = 0,
+        var itemShortDescription: String = ""
 ) : Image(textureRegion) {
 
     enum class ItemAttribute(private val value: Int) {

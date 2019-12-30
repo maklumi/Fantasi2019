@@ -76,7 +76,13 @@ class InventorySlot(
     }
 
     companion object {
-        fun swapSlots(source: InventorySlot, target: InventorySlot, dragActor: Actor) {
+        fun swapSlots(source: InventorySlot, target: InventorySlot, dragActor: InventoryItem) {
+            //check if items can accept each other, otherwise, no swap
+            if (!target.doesAcceptItemUseType(dragActor.itemUseType) ||
+                    !source.doesAcceptItemUseType(target.topItem.itemUseType)) {
+                source.add(dragActor)
+                return
+            }
             val tempArray = source.getAllInventoryItems()
             tempArray.add(dragActor)
             source.add(target.getAllInventoryItems())
