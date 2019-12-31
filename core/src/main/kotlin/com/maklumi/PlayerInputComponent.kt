@@ -65,7 +65,6 @@ class PlayerInputComponent : InputComponent() {
             }
             keys[Keys.Pause]!! -> {
                 gameState = gameState.toggle()
-                println("PlayerInputComponent-69: $gameState")
                 keys[Keys.Pause] = false
             }
             else -> {

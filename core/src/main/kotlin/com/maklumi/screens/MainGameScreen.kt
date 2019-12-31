@@ -12,7 +12,6 @@ import com.badlogic.gdx.maps.objects.RectangleMapObject
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
 import com.maklumi.Component.MESSAGE
 import com.maklumi.EntityFactory
-import com.maklumi.MapFactory
 import com.maklumi.MapManager
 import com.maklumi.MapManager.camera
 import com.maklumi.MapManager.collisionLayer
@@ -24,6 +23,7 @@ import com.maklumi.MapManager.spawnsLayer
 import com.maklumi.MapManager.unitScale
 import com.maklumi.MapManager.updateMapEntities
 import com.maklumi.json
+import com.maklumi.profile.ProfileManager
 import com.maklumi.ui.PlayerHUD
 
 
@@ -65,8 +65,8 @@ class MainGameScreen : Screen {
 
         camera = OrthographicCamera(viewportWidth, viewportHeight)
         camera.setToOrtho(false, 40f, 40f)
-
-        MapManager.loadMap(MapFactory.MapType.TOWN)
+        ProfileManager.profileObservers.add(MapManager)
+        ProfileManager.loadProfile(ProfileManager.DEFAULT_PROFILE)
         MapManager.player = player
         tiledMapRenderer = OrthogonalTiledMapRenderer(currentMap, unitScale)
         // to prevent initial flicker
@@ -152,6 +152,7 @@ class MainGameScreen : Screen {
     @Override
     override fun pause() {
         gameState = GameState.PAUSED
+        ProfileManager.saveProfile()
     }
 
     @Override

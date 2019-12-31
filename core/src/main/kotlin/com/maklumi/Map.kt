@@ -7,7 +7,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Array as gdxArray
 
-abstract class Map(private var mapType: MapFactory.MapType, path: String) {
+abstract class Map(var mapType: MapFactory.MapType, path: String) {
 
     companion object {
         const val unitScale = 1f / 16f
@@ -23,7 +23,7 @@ abstract class Map(private var mapType: MapFactory.MapType, path: String) {
     var portalLayer: MapLayer? = null
     var spawnsLayer: MapLayer? = null
 
-    private val start = Vector2() // last known position on this map in pixels
+    val start = Vector2() // last known position on this map in pixels
     val startUnitScaled: Vector2  // in world unit
         get() = Vector2(start).scl(unitScale)
 
