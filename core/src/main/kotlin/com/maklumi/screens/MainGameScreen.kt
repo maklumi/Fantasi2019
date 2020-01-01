@@ -66,16 +66,15 @@ class MainGameScreen : Screen {
         camera = OrthographicCamera(viewportWidth, viewportHeight)
         camera.setToOrtho(false, 40f, 40f)
         ProfileManager.profileObservers.add(MapManager)
-        ProfileManager.loadProfile(ProfileManager.DEFAULT_PROFILE)
         MapManager.player = player
+        playerHUD = PlayerHUD(hudCamera)
+        ProfileManager.profileObservers.add(playerHUD.inventoryUI)
+        ProfileManager.loadProfile(ProfileManager.DEFAULT_PROFILE)
         tiledMapRenderer = OrthogonalTiledMapRenderer(currentMap, unitScale)
         // to prevent initial flicker
         camera.position.set(playerStartUnitScaled, 0f)
         camera.update()
         hudCamera.setToOrtho(false, physicalWidth, physicalHeight)
-        playerHUD = PlayerHUD(hudCamera)
-        playerHUD.inventoryUI.populateInventory(player.entityConfig.inventory)
-//        playerHUD.inventoryUI.testAllItemLoad()
 
         val multiplexer = InputMultiplexer()
         multiplexer.addProcessor(playerHUD.stage)

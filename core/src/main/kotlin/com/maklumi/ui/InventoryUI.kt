@@ -10,10 +10,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.Window
 import com.maklumi.InventoryItem.ItemTypeID
 import com.maklumi.InventoryItem.ItemUseType
 import com.maklumi.InventoryItemFactory
+import com.maklumi.MapManager
+import com.maklumi.profile.ProfileEvent
+import com.maklumi.profile.ProfileManager
+import com.maklumi.profile.ProfileObserver
 import com.maklumi.ui.StatusUI.Companion.textureAtlas
 import com.badlogic.gdx.utils.Array as gdxArray
 
-class InventoryUI : Window("Inventory Window", StatusUI.skin, "solidbackground") {
+class InventoryUI : Window("Inventory Window", StatusUI.skin, "solidbackground"),
+        ProfileObserver {
 
     private val lengthSlotRow = 10
     private val dragAndDrop = MyDragAndDrop()
@@ -90,7 +95,7 @@ class InventoryUI : Window("Inventory Window", StatusUI.skin, "solidbackground")
         add(inventorySlotTable).row()
         pack()
     }
-
+/*
     fun populateInventory(itemTypeIDs: gdxArray<ItemTypeID>) {
         val cells: gdxArray<Cell<Actor>> = inventorySlotTable.cells
         for ((i, itemTypeID) in itemTypeIDs.withIndex()) {
@@ -99,8 +104,37 @@ class InventoryUI : Window("Inventory Window", StatusUI.skin, "solidbackground")
             inventorySlot.add(inventoryItem)
             dragAndDrop.addSource(InventorySlotSource(inventorySlot))
         }
+    }*/
+
+    private fun populateInventory(targetTable: Table, inventoryItems: gdxArray<InventoryItemLocation>) {
+        val cells: gdxArray<Cell<Actor>> = targetTable.cells
+        for (i in 0 until inventoryItems.size) {
+            val (locationIndex, itemType, numItems) = inventoryItems[i]
+            val itemTypeId = ItemTypeID.valueOf(itemType)
+            val inventorySlot = cells[locationIndex].actor as InventorySlot
+            inventorySlot.clearAllInventoryItems()
+
+            for (index in 0 until numItems) {
+                inventorySlot.add(InventoryItemFactory.getInventoryItem(itemTypeId))
+                dragAndDrop.addSource(InventorySlotSource(inventorySlot))
+            }
+        }
     }
-/*
+
+    private fun getInventoryAt(targetTable: Table): gdxArray<InventoryItemLocation> {
+        val cells: gdxArray<Cell<Actor>> = targetTable.cells
+        val items = gdxArray<InventoryItemLocation>()
+        for (index in 0 until cells.size) {
+            if (cells[index].actor == null) continue
+            val slot = cells[index].actor as InventorySlot
+            val numItems = slot.numItems
+            if (numItems > 0)
+                items.add(InventoryItemLocation(index, slot.topItem.itemTypeID.toString(), numItems))
+        }
+        return items
+    }
+
+    /*
     fun testAllItemLoad() {
         val array = gdxArray<ItemTypeID>()
         for (itemTypeId in ItemTypeID.values()) {
@@ -113,4 +147,35 @@ class InventoryUI : Window("Inventory Window", StatusUI.skin, "solidbackground")
         populateInventory(array)
     }
     */
+
+    override fun onNotify(event: ProfileEvent) {
+        when (event) {
+            ProfileEvent.PROFILE_LOADED -> {
+                // inventory slot
+                val inventory = ProfileManager.getProperty<gdxArray<InventoryItemLocation>>("playerInventory")
+                if (inventory != null && inventory.size > 0) {
+                    populateInventory(inventorySlotTable, inventory)
+                } else {
+                    //add default items if nothing is found
+                    val items: gdxArray<ItemTypeID> = MapManager.player.entityConfig.inventory
+                    println("InvUI ${items.size}")
+                    val itemLocations = gdxArray<InventoryItemLocation>()
+                    for (i in 0 until items.size) {
+                        itemLocations.add(InventoryItemLocation(i, items.get(i).toString(), 1))
+                    }
+                    populateInventory(inventorySlotTable, itemLocations)
+                }
+
+                // equip slot
+                val equipInventory = ProfileManager.getProperty<gdxArray<InventoryItemLocation>>("playerEquipInventory")
+                if (equipInventory != null && equipInventory.size > 0) {
+                    populateInventory(equipSlots, equipInventory)
+                }
+            }
+            ProfileEvent.SAVING_PROFILE -> {
+                ProfileManager.setProperty("playerInventory", getInventoryAt(inventorySlotTable))
+                ProfileManager.setProperty("playerEquipInventory", getInventoryAt(equipSlots))
+            }
+        }
+    }
 }

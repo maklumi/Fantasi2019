@@ -18,6 +18,8 @@ class InventorySlot(
     private val imageBackground = Image(NinePatch(StatusUI.textureAtlas.createPatch("dialog")))
     private var itemCount: Int = 0
     private val numItemsLabel = Label("$itemCount", StatusUI.skin, "inventory-item-count")
+    val numItems: Int
+        get() = maxOf(children.size - 2, 0)
 
     // used in drag Source, actor cannot be null
     val topItem: InventoryItem
@@ -62,6 +64,15 @@ class InventorySlot(
         numItemsLabel.setText(itemCount)
         if (background.children.size == 1) background.children.add(customDecal)
         checkVisibilityOfItemCount()
+    }
+
+    fun clearAllInventoryItems() {
+        if (hasItem()) {
+            repeat(numItems) {
+                children.pop()
+                reduceItemCount()
+            }
+        }
     }
 
     private fun increaseItemCount() {
