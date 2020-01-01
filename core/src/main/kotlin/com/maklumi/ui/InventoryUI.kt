@@ -1,7 +1,6 @@
 package com.maklumi.ui
 
 import com.badlogic.gdx.graphics.g2d.NinePatch
-import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Image
@@ -11,23 +10,19 @@ import com.maklumi.InventoryItem.ItemTypeID
 import com.maklumi.InventoryItem.ItemUseType
 import com.maklumi.InventoryItemFactory
 import com.maklumi.MapManager
+import com.maklumi.Utility.ITEMS_TEXTUREATLAS
+import com.maklumi.Utility.STATUSUI_SKIN
+import com.maklumi.Utility.STATUSUI_TEXTUREATLAS
 import com.maklumi.profile.ProfileEvent
 import com.maklumi.profile.ProfileManager
 import com.maklumi.profile.ProfileObserver
-import com.maklumi.ui.StatusUI.Companion.textureAtlas
 import com.badlogic.gdx.utils.Array as gdxArray
 
-class InventoryUI : Window("Inventory Window", StatusUI.skin, "solidbackground"),
+class InventoryUI : Window("Inventory Window", STATUSUI_SKIN, "solidbackground"),
         ProfileObserver {
 
     private val lengthSlotRow = 10
     private val dragAndDrop = MyDragAndDrop()
-
-    companion object {
-        private const val itemsTextureAtlasPath = "skins/items.atlas"
-        val itemsTextureAtlas = TextureAtlas(itemsTextureAtlasPath)
-    }
-
     private val inventorySlotTable = Table()
     private val equipSlots = Table()
     private val playerSlotTable = Table()
@@ -47,7 +42,7 @@ class InventoryUI : Window("Inventory Window", StatusUI.skin, "solidbackground")
         }
 
         // player inventory
-        val headSlot = InventorySlot(ItemUseType.ARMOR_HELMET(), Image(itemsTextureAtlas.findRegion("inv_helmet")))
+        val headSlot = InventorySlot(ItemUseType.ARMOR_HELMET(), Image(ITEMS_TEXTUREATLAS.findRegion("inv_helmet")))
 
         val armFilter = ItemUseType.WEAPON_ONEHAND() or
                 ItemUseType.WEAPON_TWOHAND() or
@@ -55,13 +50,13 @@ class InventoryUI : Window("Inventory Window", StatusUI.skin, "solidbackground")
                 ItemUseType.WAND_ONEHAND() or
                 ItemUseType.WAND_TWOHAND()
 
-        val leftArmSlot = InventorySlot(armFilter, Image(itemsTextureAtlas.findRegion("inv_weapon")))
+        val leftArmSlot = InventorySlot(armFilter, Image(ITEMS_TEXTUREATLAS.findRegion("inv_weapon")))
 
-        val rightArmSlot = InventorySlot(armFilter, Image(itemsTextureAtlas.findRegion("inv_shield")))
+        val rightArmSlot = InventorySlot(armFilter, Image(ITEMS_TEXTUREATLAS.findRegion("inv_shield")))
 
-        val chestSlot = InventorySlot(ItemUseType.ARMOR_CHEST(), Image(itemsTextureAtlas.findRegion("inv_chest")))
+        val chestSlot = InventorySlot(ItemUseType.ARMOR_CHEST(), Image(ITEMS_TEXTUREATLAS.findRegion("inv_chest")))
 
-        val legsSlot = InventorySlot(ItemUseType.ARMOR_FEET(), Image(itemsTextureAtlas.findRegion("inv_boot")))
+        val legsSlot = InventorySlot(ItemUseType.ARMOR_FEET(), Image(ITEMS_TEXTUREATLAS.findRegion("inv_boot")))
 
         headSlot.addListener(InventorySlotTooltipListener(tooltip))
         leftArmSlot.addListener(InventorySlotTooltipListener(tooltip))
@@ -89,7 +84,7 @@ class InventoryUI : Window("Inventory Window", StatusUI.skin, "solidbackground")
         equipSlots.add()
         equipSlots.right().add(legsSlot).size(slotWidth, slotHeight)
 
-        playerSlotTable.background = Image(NinePatch(textureAtlas.createPatch("dialog"))).drawable
+        playerSlotTable.background = Image(NinePatch(STATUSUI_TEXTUREATLAS.createPatch("dialog"))).drawable
         playerSlotTable.add(equipSlots)
         add(playerSlotTable).padBottom(20f).row()
         add(inventorySlotTable).row()
@@ -158,7 +153,6 @@ class InventoryUI : Window("Inventory Window", StatusUI.skin, "solidbackground")
                 } else {
                     //add default items if nothing is found
                     val items: gdxArray<ItemTypeID> = MapManager.player.entityConfig.inventory
-                    println("InvUI ${items.size}")
                     val itemLocations = gdxArray<InventoryItemLocation>()
                     for (i in 0 until items.size) {
                         itemLocations.add(InventoryItemLocation(i, items.get(i).toString(), 1))

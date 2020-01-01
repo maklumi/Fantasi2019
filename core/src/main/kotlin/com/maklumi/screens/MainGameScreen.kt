@@ -69,7 +69,7 @@ class MainGameScreen : Screen {
         MapManager.player = player
         playerHUD = PlayerHUD(hudCamera)
         ProfileManager.profileObservers.add(playerHUD.inventoryUI)
-        ProfileManager.loadProfile(ProfileManager.DEFAULT_PROFILE)
+        ProfileManager.loadProfile()
         tiledMapRenderer = OrthogonalTiledMapRenderer(currentMap, unitScale)
         // to prevent initial flicker
         camera.position.set(playerStartUnitScaled, 0f)

@@ -1,26 +1,20 @@
 package com.maklumi.ui
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.NinePatch
-import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Align.left
+import com.maklumi.Utility.STATUSUI_SKIN
+import com.maklumi.Utility.STATUSUI_TEXTUREATLAS
 
-class StatusUI : Window("Status", skin) {
+class StatusUI : Window("Status", STATUSUI_SKIN) {
 
-    companion object {
-        private const val textureAtlasPath = "skins/statusui.atlas"
-        val textureAtlas = TextureAtlas(textureAtlasPath)
-        val skin = Skin(Gdx.files.internal("skins/statusui.json"), textureAtlas)
-    }
-
-    private val hudBackground = NinePatch(textureAtlas.findRegion("dialog"))
+    private val hudBackground = NinePatch(STATUSUI_TEXTUREATLAS.findRegion("dialog"))
     private val hudBackgroundImage = Image(hudBackground)
-    private val hpBar = Image(textureAtlas.findRegion("HP_Bar"))
-    private val mpBar = Image(textureAtlas.findRegion("MP_Bar"))
-    private val xpBar = Image(textureAtlas.findRegion("XP_Bar"))
+    private val hpBar = Image(STATUSUI_TEXTUREATLAS.findRegion("HP_Bar"))
+    private val mpBar = Image(STATUSUI_TEXTUREATLAS.findRegion("MP_Bar"))
+    private val xpBar = Image(STATUSUI_TEXTUREATLAS.findRegion("XP_Bar"))
     val inventoryButton = ImageButton(skin, "inventory-button")
 
     private var level = 1
@@ -37,7 +31,7 @@ class StatusUI : Window("Status", skin) {
         row()
 
         // health row
-        val bar = Image(textureAtlas.findRegion("Bar"))
+        val bar = Image(STATUSUI_TEXTUREATLAS.findRegion("Bar"))
         hpBar.setPosition(3f, 6f)
         val group = WidgetGroup()
         group.addActor(bar) // decor
@@ -51,7 +45,7 @@ class StatusUI : Window("Status", skin) {
         row()
 
         // magic row
-        val bar2 = Image(textureAtlas.findRegion("Bar"))
+        val bar2 = Image(STATUSUI_TEXTUREATLAS.findRegion("Bar"))
         mpBar.setPosition(3f, 6f)
         val group2 = WidgetGroup()
         group2.addActor(bar2)
@@ -65,7 +59,7 @@ class StatusUI : Window("Status", skin) {
         row()
 
         // experience row
-        val bar3 = Image(textureAtlas.findRegion("Bar"))
+        val bar3 = Image(STATUSUI_TEXTUREATLAS.findRegion("Bar"))
         xpBar.setPosition(3f, 6f)
         val group3 = WidgetGroup()
         group3.addActor(bar3)

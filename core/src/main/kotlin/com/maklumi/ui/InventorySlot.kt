@@ -7,6 +7,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Stack
 import com.badlogic.gdx.utils.Align
 import com.maklumi.InventoryItem
+import com.maklumi.Utility.STATUSUI_SKIN
+import com.maklumi.Utility.STATUSUI_TEXTUREATLAS
 import com.badlogic.gdx.utils.Array as gdxArray
 
 class InventorySlot(
@@ -15,9 +17,9 @@ class InventorySlot(
 ) : Stack() {
 
     private val background = Stack()
-    private val imageBackground = Image(NinePatch(StatusUI.textureAtlas.createPatch("dialog")))
+    private val imageBackground = Image(NinePatch(STATUSUI_TEXTUREATLAS.createPatch("dialog")))
     private var itemCount: Int = 0
-    private val numItemsLabel = Label("$itemCount", StatusUI.skin, "inventory-item-count")
+    private val numItemsLabel = Label("$itemCount", STATUSUI_SKIN, "inventory-item-count")
     val numItems: Int
         get() = maxOf(children.size - 2, 0)
 
