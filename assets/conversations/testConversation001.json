@@ -1,0 +1,60 @@
+{
+  associatedChoices: {
+    802: [
+      {
+        class: com.maklumi.dialog.ConversationChoice
+        sourceId: 802
+        destinationId: 500
+        choicePhrase: Go to beginning
+      }
+    ]
+    250: [
+      {
+        class: com.maklumi.dialog.ConversationChoice
+        sourceId: 250
+        choicePhrase: MUHAHAHAHA
+      }
+    ]
+    601: [
+      {
+        class: com.maklumi.dialog.ConversationChoice
+        sourceId: 601
+        destinationId: 500
+        choicePhrase: Go to beginning
+      }
+    ]
+    500: [
+      {
+        class: com.maklumi.dialog.ConversationChoice
+        sourceId: 500
+        destinationId: 601
+        choicePhrase: YES
+      }
+      {
+        class: com.maklumi.dialog.ConversationChoice
+        sourceId: 500
+        destinationId: 802
+        choicePhrase: NO
+      }
+    ]
+  }
+  conversations: {
+    802: {
+      id: 802
+      dialog: Too bad!
+    }
+    250: {
+      id: 250
+      dialog: I am unconnected
+    }
+    601: {
+      id: 601
+      dialog: BOOM! Bombs dropping everywhere
+    }
+    500: {
+      id: 500
+      dialog: Do you want to play a game?
+    }
+  }
+  currentConversationID: 500
+}

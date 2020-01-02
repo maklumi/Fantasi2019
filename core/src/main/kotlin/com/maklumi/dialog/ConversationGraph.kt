@@ -1,48 +1,52 @@
 package com.maklumi.dialog
 
+import java.util.*
+
 class ConversationGraph(
-        private val conversations: MutableMap<Int, Conversation>,
-        var currentConversation: Conversation
+        private val conversations: Hashtable<Int, Conversation>,
+        var currentConversationID: Int
 ) {
 
-    private val associatedChoices = mutableMapOf<Conversation, ArrayList<Conversation>>()
+    private val associatedChoices = Hashtable<Int, ArrayList<ConversationChoice>>()
 
-    private var numChoices = 0
+    private fun currentConversation(): Conversation? = getConversationByID(currentConversationID)
 
-    fun addChoice(sourceConversation: Conversation, targetConversation: Conversation) {
-        var arrayList = associatedChoices[sourceConversation]
+    fun addChoice(conversationChoice: ConversationChoice) {
+        var arrayList = associatedChoices[conversationChoice.sourceId]
         if (arrayList == null) {
-            associatedChoices[sourceConversation] = ArrayList()
-            arrayList = associatedChoices[sourceConversation]!!
+            associatedChoices[conversationChoice.sourceId] = ArrayList()
+            arrayList = associatedChoices[conversationChoice.sourceId]!!
         }
-        arrayList.add(targetConversation)
-        numChoices++
+        arrayList.add(conversationChoice)
     }
 
-    fun currentChoices(): ArrayList<Conversation> = associatedChoices[currentConversation]!!
+    fun currentChoices(): ArrayList<ConversationChoice>? = associatedChoices[currentConversationID]
 
-    fun getConversationByID(id: Int): Conversation? = conversations[id]
+    fun getConversationByID(id: Int): Conversation? {
+        val conversation = conversations[id]
+        return if (conversation == null) {
+            println("Conversation $id is not valid.")
+            null
+        } else conversation
+    }
+
+    fun displayCurrentConversation(): String? = currentConversation()?.dialog
 
     override fun toString(): String {
+        val numChoices = associatedChoices.size
+
         val builder = StringBuilder()
         builder.append("Number conversations: " + conversations.size + ", Number of choices:" + numChoices)
         builder.append(System.getProperty("line.separator"))
         for ((chat, arrayList) in associatedChoices) {
-            builder.append(String.format("[%d]: ", chat.id))
+            builder.append(String.format("[%d]: ", chat))
 
             for (choice in arrayList) {
-                builder.append(String.format("%d ", choice.id))
+                builder.append(String.format("%d ", choice.destinationId))
             }
 
             builder.append(System.getProperty("line.separator"))
         }
         return builder.toString()
     }
-    /*
-    Number conversations: 4, Number of choices:4
-[500]: 601 802
-[802]: 500
-[601]: 500
-[250]:
-     */
 }
