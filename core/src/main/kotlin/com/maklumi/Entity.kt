@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.utils.JsonValue
+import com.maklumi.dialog.UIObserver
 import ktx.json.fromJson
 import ktx.json.readValue
 import kotlin.random.Random
@@ -61,6 +62,11 @@ class Entity(val inputComponent: InputComponent,
         args.forEach { fullMessage += MESSAGE_TOKEN + it }
 
         components.forEach { it.receiveMessage(fullMessage) }
+    }
+
+    fun addUiObserver(conversationObserver: UIObserver) {
+        physicsComponent.uiObservers.add(conversationObserver)
+        graphicsComponent.uiObservers.add(conversationObserver)
     }
 
     fun getCurrentBoundingBox(): Rectangle = physicsComponent.currentBound

@@ -55,12 +55,14 @@ object ProfileManager : ProfileSubject() {
     }
 
     fun loadProfile() {
-        val fullProfileFileName = profileName + SAVEGAME_SUFFIX
+        var fullProfileFileName = profileName + SAVEGAME_SUFFIX
         val doesProfileFileExist = Gdx.files.internal(fullProfileFileName).exists()
 
         if (!doesProfileFileExist) {
-            println("File doesn't exist!")
-            return
+            println("File doesn't exist! Default created.")
+            profileName = DEFAULT_PROFILE
+            writeProfileToStorage(profileName, "{}", true)
+            fullProfileFileName = DEFAULT_PROFILE + SAVEGAME_SUFFIX
         }
 
         profiles[profileName] = Gdx.files.internal(fullProfileFileName)

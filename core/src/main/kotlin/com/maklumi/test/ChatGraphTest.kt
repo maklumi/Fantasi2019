@@ -7,7 +7,7 @@ import com.maklumi.dialog.ConversationGraph
 import java.util.*
 
 object ChatGraphTest {
-    private var chats = Hashtable<Int, Conversation>()
+    private var chats = Hashtable<String, Conversation>()
     private lateinit var graph: ConversationGraph
 
     private var prompt = ""
@@ -15,22 +15,22 @@ object ChatGraphTest {
     @JvmStatic
     fun main(args: Array<String>) {
         val start = Conversation()
-        start.id = 500
+        start.id = "500"
         start.dialog = "Do you want to play a game?"
 //        start.choicePhrase = "Go to beginning"
 
         val yesAnswer = Conversation()
-        yesAnswer.id = 601
+        yesAnswer.id = "601"
         yesAnswer.dialog = "BOOM! Bombs dropping everywhere"
 //        yesAnswer.choicePhrase = "YES"
 
         val noAnswer = Conversation()
-        noAnswer.id = 802
+        noAnswer.id = "802"
         noAnswer.dialog = "Too bad!"
 //        noAnswer.choicePhrase = "NO"
 
         val unconnected = Conversation()
-        unconnected.id = 250
+        unconnected.id = "250"
         unconnected.dialog = "I am unconnected"
 //        unconnected.choicePhrase = "MUHAHAHAHA"
 
@@ -71,7 +71,7 @@ object ChatGraphTest {
         graph.addChoice(startChoice2)
         graph.addChoice(unconnectedChoice)
 
-        println(Json().prettyPrint(graph))
+        println(graph.toJson())
         println(graph.toString())
 
         println(graph.displayCurrentConversation())
@@ -94,7 +94,7 @@ object ChatGraphTest {
         if (prompt == "q") return null
 
         return try {
-            graph.getConversationByID(Integer.parseInt(prompt))
+            graph.getConversationByID(prompt)
         } catch (nfe: NumberFormatException) {
             null
         }

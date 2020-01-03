@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.collision.Ray
 import com.maklumi.Component.MESSAGE
 import com.maklumi.MapManager.camera
 import com.maklumi.MapManager.getCurrentMapEntities
+import com.maklumi.dialog.UIObserver.UIEvent
 import ktx.json.fromJson
 
 class PlayerPhysicsComponent : PhysicsComponent() {
@@ -86,6 +87,7 @@ class PlayerPhysicsComponent : PhysicsComponent() {
                     //Picked/Selected
 //                    println("PPC87: Selected Entity ${mapEntity.entityConfig.entityID}")
                     mapEntity.sendMessage(MESSAGE.ENTITY_SELECTED)
+                    notify(json.toJson(mapEntity.entityConfig), UIEvent.LOAD_CONVERSATION)
                 }
             }
         }

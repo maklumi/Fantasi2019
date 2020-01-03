@@ -1,6 +1,6 @@
 package com.maklumi.dialog
 
 class Conversation {
-    var id: Int = -1
+    var id: String = ""
     var dialog: String = ""
 }

@@ -1,13 +1,15 @@
 package com.maklumi.dialog
 
+import com.badlogic.gdx.utils.Json
+import com.badlogic.gdx.utils.JsonWriter
 import java.util.*
 
 class ConversationGraph(
-        private val conversations: Hashtable<Int, Conversation>,
-        var currentConversationID: Int
+        private val conversations: Hashtable<String, Conversation> = Hashtable(),
+        var currentConversationID: String = ""
 ) {
 
-    private val associatedChoices = Hashtable<Int, ArrayList<ConversationChoice>>()
+    private val associatedChoices = Hashtable<String, ArrayList<ConversationChoice>>()
 
     private fun currentConversation(): Conversation? = getConversationByID(currentConversationID)
 
@@ -22,7 +24,7 @@ class ConversationGraph(
 
     fun currentChoices(): ArrayList<ConversationChoice>? = associatedChoices[currentConversationID]
 
-    fun getConversationByID(id: Int): Conversation? {
+    fun getConversationByID(id: String): Conversation? {
         val conversation = conversations[id]
         return if (conversation == null) {
             println("Conversation $id is not valid.")
@@ -39,14 +41,20 @@ class ConversationGraph(
         builder.append("Number conversations: " + conversations.size + ", Number of choices:" + numChoices)
         builder.append(System.getProperty("line.separator"))
         for ((chat, arrayList) in associatedChoices) {
-            builder.append(String.format("[%d]: ", chat))
+            builder.append(String.format("[%s]: ", chat))
 
             for (choice in arrayList) {
-                builder.append(String.format("%d ", choice.destinationId))
+                builder.append(String.format("%s ", choice.destinationId))
             }
 
             builder.append(System.getProperty("line.separator"))
         }
         return builder.toString()
+    }
+
+    fun toJson(): String {
+        val j = Json()
+        j.setOutputType(JsonWriter.OutputType.minimal)
+        return j.prettyPrint(this)
     }
 }

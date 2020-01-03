@@ -6,8 +6,9 @@ import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.maklumi.Component.MESSAGE
 import com.maklumi.MapManager.unitScale
+import com.maklumi.dialog.UISubject
 
-abstract class PhysicsComponent : Component {
+abstract class PhysicsComponent : Component, UISubject() {
 
     protected open val velocity = Vector2(4f, 4f)
     protected val nextPosition = Vector2()

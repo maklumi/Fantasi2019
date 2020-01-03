@@ -9,6 +9,7 @@ class EntityConfig {
     var direction = Entity.Direction.DOWN
     val animationConfig = Array<AnimationConfig>()
     var inventory = Array<InventoryItem.ItemTypeID>()
+    var conversationConfigPath: String = ""
 }
 
 data class AnimationConfig(

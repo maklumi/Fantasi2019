@@ -1,7 +1,9 @@
 package com.maklumi.dialog
 
 class ConversationChoice {
-    var sourceId: Int = -1
-    var destinationId: Int = -1
+    var sourceId: String = ""
+    var destinationId: String = ""
     var choicePhrase: String = ""
+
+    override fun toString(): String = choicePhrase
 }

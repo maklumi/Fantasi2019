@@ -10,11 +10,12 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.GridPoint2
 import com.badlogic.gdx.math.Vector2
 import com.maklumi.MapManager.camera
+import com.maklumi.dialog.UISubject
 import ktx.graphics.use
 import ktx.json.fromJson
 import com.badlogic.gdx.utils.Array as gdxArray
 
-abstract class GraphicsComponent : Component {
+abstract class GraphicsComponent : Component, UISubject() {
 
     private val frameWidth = 16
     private val frameHeight = 16

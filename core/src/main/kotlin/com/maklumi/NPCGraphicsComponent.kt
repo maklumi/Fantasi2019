@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.maklumi.Component.MESSAGE
 import com.maklumi.MapManager.camera
+import com.maklumi.dialog.UIObserver.UIEvent
 
 class NPCGraphicsComponent : GraphicsComponent() {
 
@@ -22,7 +23,12 @@ class NPCGraphicsComponent : GraphicsComponent() {
     }
 
     override fun drawSelected(entity: Entity) {
-        if (!isSelected) return
+        if (!isSelected) {
+            notify(json.toJson(entity.entityConfig), UIEvent.HIDE_CONVERSATION)
+            return
+        } else {
+            notify(json.toJson(entity.entityConfig), UIEvent.SHOW_CONVERSATION)
+        }
         Gdx.gl.glEnable(GL20.GL_BLEND)
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
         val rect = entity.getCurrentBoundingBox()

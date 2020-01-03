@@ -12,6 +12,7 @@ class PlayerHUD(camera: Camera) : Screen {
     val stage = Stage(viewport)
     private val statusUI = StatusUI()
     val inventoryUI = InventoryUI()
+    val conversationUI = ConversationUI()
 
     init {
         stage.addActor(statusUI)
@@ -25,6 +26,12 @@ class PlayerHUD(camera: Camera) : Screen {
 
         //add tooltips to the stage
         stage.addActor(inventoryUI.tooltip)
+
+        conversationUI.isMovable = true
+        conversationUI.isVisible = false
+        conversationUI.setPosition(stage.width / 2f, 0f)
+        conversationUI.setSize(stage.width / 2f, stage.height / 2f)
+        stage.addActor(conversationUI)
     }
 
     override fun show() {}

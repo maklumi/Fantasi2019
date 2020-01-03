@@ -25,7 +25,7 @@ class Fantasi : Game() {
         loadGameScreen = LoadGameScreen(this)
         mainGameScreen = MainGameScreen()
         newGameScreen = NewGameScreen(this)
-        setScreen(mainMenuScreen)
+        setScreen(mainGameScreen)
     }
 
     override fun dispose() {
