@@ -8,8 +8,11 @@ import kotlin.random.Random
 class NPCPhysicsComponent : PhysicsComponent() {
 
     override val velocity: Vector2 = Vector2(1f, 1f).scl(Random.nextInt(1, 5).toFloat())
+    private var counter = 0f
 
     override fun update(entity: Entity, deltaTime: Float) {
+        if (isEntityFarFromPlayer(deltaTime)) entity.sendMessage(MESSAGE.ENTITY_DESELECTED)
+
         if (currentState == Entity.State.IMMOBILE) return
 
         if (isCollisionWithMapLayer(entity, nextBound) == null
@@ -46,5 +49,18 @@ class NPCPhysicsComponent : PhysicsComponent() {
     override fun isCollisionWithMapEntities(entity: Entity): Boolean {
         return super.isCollisionWithMapEntities(entity) or
                 isCollisionWithPlayer(entity)
+    }
+
+    private fun isEntityFarFromPlayer(deltaTime: Float): Boolean {
+        // run check after every 5 seconds
+        counter += deltaTime
+        if (counter < 5f) return false
+        counter = 0f
+
+        val ori = MapManager.player.physicsComponent.currentBound
+        val des = currentBound
+        selectionRay.set(ori.x, ori.y, 0f, des.x, des.y, 0f)
+        val distance = selectionRay.origin.dst(selectionRay.direction)
+        return distance > selectRayMaximumDistance
     }
 }

@@ -2,7 +2,6 @@ package com.maklumi
 
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
-import com.badlogic.gdx.math.collision.Ray
 import com.maklumi.Component.MESSAGE
 import com.maklumi.MapManager.camera
 import com.maklumi.MapManager.getCurrentMapEntities
@@ -13,8 +12,6 @@ class PlayerPhysicsComponent : PhysicsComponent() {
 
     private var mouseSelectCoordinates = Vector3()
     private var isMouseSelectEnabled = false
-    private var selectionRay = Ray(Vector3.Zero, Vector3.Zero)
-    private var selectRayMaximumDistance = 32.0f // 32 world units
 
     override fun update(entity: Entity, deltaTime: Float) {
         if (isCollisionWithMapLayer(entity, nextBound) == null

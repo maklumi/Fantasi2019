@@ -4,17 +4,17 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.Window
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.Align
-import com.maklumi.EntityConfig
-import com.maklumi.Utility
+import com.maklumi.*
 import com.maklumi.dialog.ConversationChoice
 import com.maklumi.dialog.ConversationGraph
 import com.maklumi.dialog.UIObserver
 import com.maklumi.dialog.UIObserver.UIEvent
 import com.maklumi.dialog.UIObserver.UIEvent.*
-import com.maklumi.json
+import ktx.actors.onClick
 import ktx.json.fromJson
 import com.badlogic.gdx.scenes.scene2d.ui.List as ListBox
 
@@ -26,6 +26,7 @@ class ConversationUI : Window("dialog", Utility.STATUSUI_SKIN, "solidbackground"
     private val dialogTextLabel = Label("No Conversation", Utility.STATUSUI_SKIN)
     private var graph = ConversationGraph()
     private var currentEntityID: String = ""
+    private val closeButton = TextButton("X", Utility.STATUSUI_SKIN)
 
     init {
         dialogTextLabel.setWrap(true)
@@ -36,6 +37,17 @@ class ConversationUI : Window("dialog", Utility.STATUSUI_SKIN, "solidbackground"
         scrollPane.fadeScrollBars = false
         scrollPane.setScrollingDisabled(true, false)
         scrollPane.setScrollbarsOnTop(true)
+
+        closeButton.onClick {
+            // deselect all entities and thus will close this actor
+            MapManager.getCurrentMapEntities()
+                    .first { it.entityConfig.entityID == currentEntityID }
+                    .sendMessage(Component.MESSAGE.ENTITY_DESELECTED)
+        }
+
+        add()
+        add(closeButton)
+        row()
 
         defaults().expand().fill()
         add(dialogTextLabel).pad(10f, 10f, 10f, 10f)

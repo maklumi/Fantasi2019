@@ -4,6 +4,8 @@ import com.badlogic.gdx.maps.MapObject
 import com.badlogic.gdx.maps.objects.RectangleMapObject
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.math.Vector3
+import com.badlogic.gdx.math.collision.Ray
 import com.maklumi.Component.MESSAGE
 import com.maklumi.MapManager.unitScale
 import com.maklumi.dialog.UISubject
@@ -20,6 +22,8 @@ abstract class PhysicsComponent : Component, UISubject() {
     protected val nextBound: Rectangle
         get() = Rectangle(nextPosition.x, nextPosition.y, 1f, 0.5f)
 
+    protected var selectionRay = Ray(Vector3.Zero, Vector3.Zero)
+    protected var selectRayMaximumDistance = 3.0f // 32 world units
 
     abstract fun update(entity: Entity, deltaTime: Float)
 
