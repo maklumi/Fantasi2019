@@ -32,10 +32,12 @@ class ConversationUI : Window("dialog", Utility.STATUSUI_SKIN, "solidbackground"
         dialogTextLabel.setWrap(true)
         dialogTextLabel.setAlignment(Align.center)
 
-        val scrollPane = ScrollPane(listBox)
+        val scrollPane = ScrollPane(listBox, Utility.STATUSUI_SKIN, "inventoryPane")
         scrollPane.setOverscroll(false, false)
         scrollPane.fadeScrollBars = false
         scrollPane.setScrollingDisabled(true, false)
+        scrollPane.setForceScroll(true, false)
+        scrollPane.setScrollBarPositions(false, true)
         scrollPane.setScrollbarsOnTop(true)
 
         closeButton.onClick {
@@ -43,6 +45,8 @@ class ConversationUI : Window("dialog", Utility.STATUSUI_SKIN, "solidbackground"
             MapManager.getCurrentMapEntities()
                     .first { it.entityConfig.entityID == currentEntityID }
                     .sendMessage(Component.MESSAGE.ENTITY_DESELECTED)
+            listBox.remove() // so keyboard focus is also remove
+            scrollPane.actor = listBox // then put back so next time it is available
         }
 
         add()
@@ -52,7 +56,7 @@ class ConversationUI : Window("dialog", Utility.STATUSUI_SKIN, "solidbackground"
         defaults().expand().fill()
         add(dialogTextLabel).pad(10f, 10f, 10f, 10f)
         row()
-        add(scrollPane)
+        add(scrollPane).pad(10f, 10f, 10f, 10f)
 
 //        debug()
         pack()
@@ -64,8 +68,8 @@ class ConversationUI : Window("dialog", Utility.STATUSUI_SKIN, "solidbackground"
                 dialogTextLabel.setText(graph.getConversationByID(choice.destinationId)!!.dialog)
                 if (graph.currentChoices() != null) {
                     listBox.setItems(*graph.currentChoices()!!.toTypedArray())
-                    listBox.selectedIndex = -1
                 }
+                listBox.selectedIndex = -1
             }
         }
         )
@@ -81,6 +85,7 @@ class ConversationUI : Window("dialog", Utility.STATUSUI_SKIN, "solidbackground"
         setConversationGraph(graph)
 
         currentEntityID = entityConfig.entityID
+        titleLabel.setText(currentEntityID)
     }
 
     private fun setConversationGraph(graph: ConversationGraph) {
