@@ -41,12 +41,9 @@ class ConversationUI : Window("dialog", Utility.STATUSUI_SKIN, "solidbackground"
         scrollPane.setScrollbarsOnTop(true)
 
         closeButton.onClick {
-            // deselect all entities and thus will close this actor
             MapManager.getCurrentMapEntities()
-                    .first { it.entityConfig.entityID == currentEntityID }
-                    .sendMessage(Component.MESSAGE.ENTITY_DESELECTED)
-            listBox.remove() // so keyboard focus is also remove
-            scrollPane.actor = listBox // then put back so next time it is available
+                    .forEach { it.sendMessage(Component.MESSAGE.ENTITY_DESELECTED) }
+            listBox.clearItems()
         }
 
         add()
@@ -61,17 +58,13 @@ class ConversationUI : Window("dialog", Utility.STATUSUI_SKIN, "solidbackground"
 //        debug()
         pack()
 
-        listBox.addListener(object : ClickListener() {
-            override fun clicked(event: InputEvent, x: Float, y: Float) {
-                val choice = listBox.selected ?: return
-                graph.currentConversationID = choice.destinationId
-                dialogTextLabel.setText(graph.getConversationByID(choice.destinationId)!!.dialog)
-                if (graph.currentChoices() != null) {
-                    listBox.setItems(*graph.currentChoices()!!.toTypedArray())
+        listBox.addListener(
+                object : ClickListener() {
+                    override fun clicked(event: InputEvent, x: Float, y: Float) {
+                        val choice = listBox.selected ?: return
+                        updateConversationDialog(choice.destinationId)
+                    }
                 }
-                listBox.selectedIndex = -1
-            }
-        }
         )
     }
 
@@ -81,20 +74,26 @@ class ConversationUI : Window("dialog", Utility.STATUSUI_SKIN, "solidbackground"
             println("ConversationUI-66: Conversation file for ${entityConfig.entityID} does not exist!")
             return
         }
-        val graph = json.fromJson<ConversationGraph>(Gdx.files.internal(fullFilenamePath))
-        setConversationGraph(graph)
+        dialogTextLabel.setText("")
+        listBox.clearItems()
 
+        val graph = json.fromJson<ConversationGraph>(Gdx.files.internal(fullFilenamePath))
         currentEntityID = entityConfig.entityID
+        setConversationGraph(graph)
         titleLabel.setText(currentEntityID)
     }
 
     private fun setConversationGraph(graph: ConversationGraph) {
         this.graph = graph
-        val id = this.graph.currentConversationID
-        val conversation = this.graph.getConversationByID(id) ?: return
-        this.dialogTextLabel.setText(conversation.dialog)
-        if (this.graph.currentChoices() != null)
-            this.listBox.setItems(*this.graph.currentChoices()!!.toTypedArray())
+        updateConversationDialog(graph.currentConversationID)
+    }
+
+    fun updateConversationDialog(id: String) {
+        val conversation = graph.getConversationByID(id) ?: return
+        graph.currentConversationID = id
+        dialogTextLabel.setText(conversation.dialog)
+        val choices = graph.currentChoices()
+        if (choices != null) listBox.setItems(*choices.toTypedArray())
         listBox.selectedIndex = -1
     }
 
@@ -108,7 +107,10 @@ class ConversationUI : Window("dialog", Utility.STATUSUI_SKIN, "solidbackground"
                 if (config.entityID == currentEntityID) isVisible = true
             }
             HIDE_CONVERSATION -> {
-                if (config.entityID == currentEntityID) isVisible = false
+                if (config.entityID == currentEntityID) {
+                    isVisible = false
+                    listBox.clearItems() // make sure keyboard focus also lost
+                }
             }
         }
     }

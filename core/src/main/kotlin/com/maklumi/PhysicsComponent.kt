@@ -23,7 +23,7 @@ abstract class PhysicsComponent : Component, UISubject() {
         get() = Rectangle(nextPosition.x, nextPosition.y, 1f, 0.5f)
 
     protected var selectionRay = Ray(Vector3.Zero, Vector3.Zero)
-    protected var selectRayMaximumDistance = 3.0f // 32 world units
+    protected var selectRayMaximumDistance = 32.0f // 32 world units
 
     abstract fun update(entity: Entity, deltaTime: Float)
 
