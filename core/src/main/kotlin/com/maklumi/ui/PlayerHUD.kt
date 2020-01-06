@@ -5,19 +5,18 @@ import com.badlogic.gdx.graphics.Camera
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.viewport.ScreenViewport
-import com.maklumi.Entity
 import com.maklumi.EntityConfig
 import com.maklumi.MapManager
+import com.maklumi.dialog.ComponentObserver
 import com.maklumi.dialog.ConversationGraph
 import com.maklumi.dialog.ConversationGraphObserver
 import com.maklumi.dialog.ConversationGraphObserver.ConversationCommandEvent
-import com.maklumi.dialog.UIObserver
 import com.maklumi.json
 import ktx.actors.onClick
 import ktx.json.fromJson
 
 class PlayerHUD(camera: Camera) : Screen,
-        UIObserver,
+        ComponentObserver,
         ConversationGraphObserver {
 
     private val viewport = ScreenViewport(camera)
@@ -80,19 +79,19 @@ class PlayerHUD(camera: Camera) : Screen,
         stage.dispose()
     }
 
-    override fun onNotify(value: String, event: UIObserver.UIEvent) {
+    override fun onNotify(value: String, event: ComponentObserver.ComponentEvent) {
         val config = json.fromJson<EntityConfig>(value)
         when (event) {
-            UIObserver.UIEvent.LOAD_CONVERSATION -> {
+            ComponentObserver.ComponentEvent.LOAD_CONVERSATION -> {
                 conversationUI.loadConversation(config)
                 conversationUI.graph.conversationGraphObservers.add(this)
             }
-            UIObserver.UIEvent.SHOW_CONVERSATION -> {
+            ComponentObserver.ComponentEvent.SHOW_CONVERSATION -> {
                 if (config.entityID == conversationUI.currentEntityID) {
                     conversationUI.isVisible = true
                 }
             }
-            UIObserver.UIEvent.HIDE_CONVERSATION -> {
+            ComponentObserver.ComponentEvent.HIDE_CONVERSATION -> {
                 if (config.entityID == conversationUI.currentEntityID) {
                     conversationUI.isVisible = false
                     conversationUI.listBox.clearItems() // make sure keyboard focus also lost
@@ -107,9 +106,9 @@ class PlayerHUD(camera: Camera) : Screen,
                 val table = InventoryUI.getInventoryAt(inventoryUI.inventorySlotTable)
                 storeInventoryUI.loadPlayerInventory(table)
 
-                val blackSmith: Entity = MapManager.getCurrentMapEntities()
-                        .firstOrNull { it.entityConfig.entityID == "TOWN_BLACKSMITH" } ?: return
-
+//                val blackSmith: Entity = MapManager.getCurrentMapEntities()
+//                        .firstOrNull { it.entityConfig.entityID == "TOWN_BLACKSMITH" } ?: return
+                val blackSmith = MapManager.currentSelectedEntity ?: return
                 val itemLocations = Array<InventoryItemLocation>()
                 val itemIDs = blackSmith.entityConfig.inventory
                 for (i in 0 until itemIDs.size) {
@@ -123,6 +122,7 @@ class PlayerHUD(camera: Camera) : Screen,
             }
             ConversationCommandEvent.EXIT_CONVERSATION -> {
                 conversationUI.isVisible = false
+                MapManager.clearCurrentSelectedEntity()
             }
             ConversationCommandEvent.NONE -> {
             }

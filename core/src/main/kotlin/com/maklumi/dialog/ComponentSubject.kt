@@ -2,11 +2,11 @@ package com.maklumi.dialog
 
 import com.badlogic.gdx.utils.Array as gdxArray
 
-open class UISubject {
+open class ComponentSubject {
 
-    val uiObservers = gdxArray<UIObserver>()
+    val uiObservers = gdxArray<ComponentObserver>()
 
-    fun notify(value: String, event: UIObserver.UIEvent) {
+    fun notify(value: String, event: ComponentObserver.ComponentEvent) {
         for (observer in uiObservers) {
             observer.onNotify(value, event)
         }

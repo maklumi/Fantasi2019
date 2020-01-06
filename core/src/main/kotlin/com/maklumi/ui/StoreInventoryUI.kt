@@ -1,13 +1,16 @@
 package com.maklumi.ui
 
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.Window
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Array
+import com.maklumi.MapManager
 import com.maklumi.Utility
 
 class StoreInventoryUI : Window("Inventory Transaction", Utility.STATUSUI_SKIN, "solidbackground"),
@@ -24,7 +27,7 @@ class StoreInventoryUI : Window("Inventory Transaction", Utility.STATUSUI_SKIN, 
     private val inventorySlotTable = Table()
     private val inventorySlotTooltip = InventorySlotTooltip()
     private val dragAndDrop = MyDragAndDrop()
-
+    private val closeButton = TextButton("X", Utility.STATUSUI_SKIN)
     private val buttonTable = Table()
     private val sellButton = TextButton(sell, Utility.STATUSUI_SKIN, "inventory")
     private val buyButton = TextButton(buy, Utility.STATUSUI_SKIN, "inventory")
@@ -80,6 +83,7 @@ class StoreInventoryUI : Window("Inventory Transaction", Utility.STATUSUI_SKIN, 
 //        debug()
 //        defaults().expand().fill()
         add(Label("Store's inventory", skin)).padLeft(10f)
+        add(closeButton).align(Align.right)
         row()
         add(inventorySlotTable).pad(10f, 10f, 10f, 10f)
         row()
@@ -91,6 +95,13 @@ class StoreInventoryUI : Window("Inventory Transaction", Utility.STATUSUI_SKIN, 
         row()
         add(playerInventorySlotTable).pad(10f, 10f, 10f, 10f)
         pack()
+
+        closeButton.addListener(object : ClickListener() {
+            override fun clicked(event: InputEvent?, x: Float, y: Float) {
+                this@StoreInventoryUI.isVisible = false
+                MapManager.clearCurrentSelectedEntity()
+            }
+        })
     }
 
     override fun onNotify(slot: InventorySlot, event: InventorySlotObserver.SlotEvent) {

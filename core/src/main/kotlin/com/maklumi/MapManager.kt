@@ -38,10 +38,21 @@ object MapManager : ProfileObserver {
 
     lateinit var camera: OrthographicCamera
     lateinit var player: Entity
+    var currentSelectedEntity: Entity? = null
 
     fun loadMap(mapType: MapType) {
         gameMap = MapFactory.getMap(mapType)
         isNewMapLoaded = true
+        // unregister observers
+        getCurrentMapEntities().forEach(Entity::unregisterObservers)
+        clearCurrentSelectedEntity()
+    }
+
+    fun clearCurrentSelectedEntity() {
+        currentSelectedEntity?.let {
+            it.sendMessage(Component.MESSAGE.ENTITY_DESELECTED)
+            currentSelectedEntity = null
+        }
     }
 
     fun setClosestStartPosition(pos: Vector2) { // in world unit

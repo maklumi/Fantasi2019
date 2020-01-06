@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.maklumi.Component.MESSAGE
 import com.maklumi.MapManager.camera
-import com.maklumi.dialog.UIObserver.UIEvent
+import com.maklumi.dialog.ComponentObserver.ComponentEvent
 
 class NPCGraphicsComponent : GraphicsComponent() {
 
@@ -31,15 +31,16 @@ class NPCGraphicsComponent : GraphicsComponent() {
 
     override fun drawSelected(entity: Entity) {
         if (isSelected) {
+            MapManager.currentSelectedEntity = entity
             drawCircleAtFoot(entity)
             if (!messageShown) {
-                notify(json.toJson(entity.entityConfig), UIEvent.SHOW_CONVERSATION)
+                notify(json.toJson(entity.entityConfig), ComponentEvent.SHOW_CONVERSATION)
                 messageShown = true
                 messageHidden = false
             }
         } else {
             if (!messageHidden) {
-                notify(json.toJson(entity.entityConfig), UIEvent.HIDE_CONVERSATION)
+                notify(json.toJson(entity.entityConfig), ComponentEvent.HIDE_CONVERSATION)
                 messageShown = false
                 messageHidden = true
             }

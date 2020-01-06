@@ -8,9 +8,9 @@ import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.math.collision.Ray
 import com.maklumi.Component.MESSAGE
 import com.maklumi.MapManager.unitScale
-import com.maklumi.dialog.UISubject
+import com.maklumi.dialog.ComponentSubject
 
-abstract class PhysicsComponent : Component, UISubject() {
+abstract class PhysicsComponent : Component, ComponentSubject() {
 
     protected open val velocity = Vector2(4f, 4f)
     protected val nextPosition = Vector2()

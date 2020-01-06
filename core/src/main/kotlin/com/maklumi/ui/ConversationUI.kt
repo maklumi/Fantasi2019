@@ -8,9 +8,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.Window
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.Align
-import com.maklumi.*
+import com.maklumi.EntityConfig
+import com.maklumi.MapManager
+import com.maklumi.Utility
 import com.maklumi.dialog.ConversationChoice
 import com.maklumi.dialog.ConversationGraph
+import com.maklumi.json
 import ktx.actors.onClick
 import ktx.json.fromJson
 import com.badlogic.gdx.scenes.scene2d.ui.List as ListBox
@@ -37,9 +40,7 @@ class ConversationUI : Window("dialog", Utility.STATUSUI_SKIN, "solidbackground"
         scrollPane.setScrollbarsOnTop(true)
 
         closeButton.onClick {
-            MapManager.getCurrentMapEntities()
-                    .forEach { it.sendMessage(Component.MESSAGE.ENTITY_DESELECTED) }
-            listBox.clearItems()
+            MapManager.clearCurrentSelectedEntity()
         }
 
         add()

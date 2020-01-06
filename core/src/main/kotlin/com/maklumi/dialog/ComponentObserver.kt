@@ -1,10 +1,10 @@
 package com.maklumi.dialog
 
-interface UIObserver {
+interface ComponentObserver {
 
-    fun onNotify(value: String, event: UIEvent)
+    fun onNotify(value: String, event: ComponentEvent)
 
-    enum class UIEvent {
+    enum class ComponentEvent {
         LOAD_CONVERSATION,
         SHOW_CONVERSATION,
         HIDE_CONVERSATION
