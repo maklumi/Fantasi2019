@@ -1,6 +1,7 @@
 package com.maklumi
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 
 class InventoryItem(
@@ -8,7 +9,8 @@ class InventoryItem(
         var itemAttributes: Int = 0,
         var itemTypeID: ItemTypeID = ItemTypeID.NOTHING,
         var itemUseType: Int = 0,
-        var itemShortDescription: String = ""
+        var itemShortDescription: String = "",
+        var itemValue: Int = 0
 ) : Image(textureRegion) {
 
     enum class ItemAttribute(private val value: Int) {
@@ -47,4 +49,8 @@ class InventoryItem(
         return itemTypeID == candidateInventoryItem.itemTypeID
     }
 
+    fun tradeInValue(): Int {
+        //For now, we will set the trade in value of items at about one third their original value
+        return MathUtils.floor(itemValue * .33f) + 2
+    }
 }

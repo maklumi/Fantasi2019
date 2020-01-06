@@ -14,7 +14,7 @@ import com.badlogic.gdx.utils.Array as gdxArray
 class InventorySlot(
         private var filterItemType: Int = 0,
         private var customDecal: Image = Image()
-) : Stack() {
+) : Stack(), InventorySlotSubject {
 
     private val background = Stack()
     private val imageBackground = Image(NinePatch(STATUSUI_TEXTUREATLAS.createPatch("dialog")))
@@ -26,6 +26,8 @@ class InventorySlot(
     // used in drag Source, actor cannot be null
     val topItem: InventoryItem
         get() = if (hasItem()) children.peek() as InventoryItem else InventoryItem()
+
+    override val inventorySlotObservers = gdxArray<InventorySlotObserver>()
 
 
     init {

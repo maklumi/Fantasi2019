@@ -11,21 +11,17 @@ import com.badlogic.gdx.utils.Align
 import com.maklumi.*
 import com.maklumi.dialog.ConversationChoice
 import com.maklumi.dialog.ConversationGraph
-import com.maklumi.dialog.UIObserver
-import com.maklumi.dialog.UIObserver.UIEvent
-import com.maklumi.dialog.UIObserver.UIEvent.*
 import ktx.actors.onClick
 import ktx.json.fromJson
 import com.badlogic.gdx.scenes.scene2d.ui.List as ListBox
 
 
-class ConversationUI : Window("dialog", Utility.STATUSUI_SKIN, "solidbackground"),
-        UIObserver {
+class ConversationUI : Window("dialog", Utility.STATUSUI_SKIN, "solidbackground") {
 
-    private val listBox = ListBox<ConversationChoice>(Utility.STATUSUI_SKIN)
+    val listBox = ListBox<ConversationChoice>(Utility.STATUSUI_SKIN)
     private val dialogTextLabel = Label("No Conversation", Utility.STATUSUI_SKIN)
-    private var graph = ConversationGraph()
-    private var currentEntityID: String = ""
+    var graph = ConversationGraph()
+    var currentEntityID: String = ""
     private val closeButton = TextButton("X", Utility.STATUSUI_SKIN)
 
     init {
@@ -63,12 +59,13 @@ class ConversationUI : Window("dialog", Utility.STATUSUI_SKIN, "solidbackground"
                     override fun clicked(event: InputEvent, x: Float, y: Float) {
                         val choice = listBox.selected ?: return
                         updateConversationDialog(choice.destinationId)
+                        graph.notify(graph, choice.conversationCommandEvent)
                     }
                 }
         )
     }
 
-    private fun loadConversation(entityConfig: EntityConfig) {
+    fun loadConversation(entityConfig: EntityConfig) {
         val fullFilenamePath = entityConfig.conversationConfigPath
         if (fullFilenamePath.isEmpty() || !Gdx.files.internal(fullFilenamePath).exists()) {
             println("ConversationUI-66: Conversation file for ${entityConfig.entityID} does not exist!")
@@ -84,6 +81,7 @@ class ConversationUI : Window("dialog", Utility.STATUSUI_SKIN, "solidbackground"
     }
 
     private fun setConversationGraph(graph: ConversationGraph) {
+        this.graph.conversationGraphObservers.clear()
         this.graph = graph
         updateConversationDialog(graph.currentConversationID)
     }
@@ -97,21 +95,4 @@ class ConversationUI : Window("dialog", Utility.STATUSUI_SKIN, "solidbackground"
         listBox.selectedIndex = -1
     }
 
-    override fun onNotify(value: String, event: UIEvent) {
-        val config = json.fromJson<EntityConfig>(value)
-        when (event) {
-            LOAD_CONVERSATION -> {
-                loadConversation(config)
-            }
-            SHOW_CONVERSATION -> {
-                if (config.entityID == currentEntityID) isVisible = true
-            }
-            HIDE_CONVERSATION -> {
-                if (config.entityID == currentEntityID) {
-                    isVisible = false
-                    listBox.clearItems() // make sure keyboard focus also lost
-                }
-            }
-        }
-    }
 }

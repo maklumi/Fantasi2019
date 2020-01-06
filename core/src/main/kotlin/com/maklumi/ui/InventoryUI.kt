@@ -23,7 +23,7 @@ class InventoryUI : Window("Inventory Window", STATUSUI_SKIN, "solidbackground")
 
     private val lengthSlotRow = 10
     private val dragAndDrop = MyDragAndDrop()
-    private val inventorySlotTable = Table()
+    val inventorySlotTable = Table()
     private val equipSlots = Table()
     private val playerSlotTable = Table()
     val tooltip = InventorySlotTooltip()
@@ -33,7 +33,7 @@ class InventoryUI : Window("Inventory Window", STATUSUI_SKIN, "solidbackground")
 
     init {
         // create 50 slots in inventory table
-        for (i in 1..50) {
+        for (i in 1..numSlots) {
             val inventorySlot = InventorySlot()
             inventorySlot.addListener(InventorySlotTooltipListener(tooltip))
             dragAndDrop.addTarget(InventorySlotTarget(inventorySlot))
@@ -90,58 +90,6 @@ class InventoryUI : Window("Inventory Window", STATUSUI_SKIN, "solidbackground")
         add(inventorySlotTable).row()
         pack()
     }
-/*
-    fun populateInventory(itemTypeIDs: gdxArray<ItemTypeID>) {
-        val cells: gdxArray<Cell<Actor>> = inventorySlotTable.cells
-        for ((i, itemTypeID) in itemTypeIDs.withIndex()) {
-            val inventorySlot = cells[i].actor as InventorySlot
-            val inventoryItem = InventoryItemFactory.getInventoryItem(itemTypeID)
-            inventorySlot.add(inventoryItem)
-            dragAndDrop.addSource(InventorySlotSource(inventorySlot))
-        }
-    }*/
-
-    private fun populateInventory(targetTable: Table, inventoryItems: gdxArray<InventoryItemLocation>) {
-        val cells: gdxArray<Cell<Actor>> = targetTable.cells
-        for (i in 0 until inventoryItems.size) {
-            val (locationIndex, itemType, numItems) = inventoryItems[i]
-            val itemTypeId = ItemTypeID.valueOf(itemType)
-            val inventorySlot = cells[locationIndex].actor as InventorySlot
-            inventorySlot.clearAllInventoryItems()
-
-            for (index in 0 until numItems) {
-                inventorySlot.add(InventoryItemFactory.getInventoryItem(itemTypeId))
-                dragAndDrop.addSource(InventorySlotSource(inventorySlot))
-            }
-        }
-    }
-
-    private fun getInventoryAt(targetTable: Table): gdxArray<InventoryItemLocation> {
-        val cells: gdxArray<Cell<Actor>> = targetTable.cells
-        val items = gdxArray<InventoryItemLocation>()
-        for (index in 0 until cells.size) {
-            if (cells[index].actor == null) continue
-            val slot = cells[index].actor as InventorySlot
-            val numItems = slot.numItems
-            if (numItems > 0)
-                items.add(InventoryItemLocation(index, slot.topItem.itemTypeID.toString(), numItems))
-        }
-        return items
-    }
-
-    /*
-    fun testAllItemLoad() {
-        val array = gdxArray<ItemTypeID>()
-        for (itemTypeId in ItemTypeID.values()) {
-            if (itemsTextureAtlas.findRegion("$itemTypeId") == null) {
-                println("InventoryUI-103: Need texture for $itemTypeId")
-                continue
-            }
-            array.add(itemTypeId)
-        }
-        populateInventory(array)
-    }
-    */
 
     override fun onNotify(event: ProfileEvent) {
         when (event) {
@@ -149,7 +97,7 @@ class InventoryUI : Window("Inventory Window", STATUSUI_SKIN, "solidbackground")
                 // inventory slot
                 val inventory = ProfileManager.getProperty<gdxArray<InventoryItemLocation>>("playerInventory")
                 if (inventory != null && inventory.size > 0) {
-                    populateInventory(inventorySlotTable, inventory)
+                    populateInventory(inventorySlotTable, inventory, dragAndDrop)
                 } else {
                     //add default items if nothing is found
                     val items: gdxArray<ItemTypeID> = MapManager.player.entityConfig.inventory
@@ -157,13 +105,13 @@ class InventoryUI : Window("Inventory Window", STATUSUI_SKIN, "solidbackground")
                     for (i in 0 until items.size) {
                         itemLocations.add(InventoryItemLocation(i, items.get(i).toString(), 1))
                     }
-                    populateInventory(inventorySlotTable, itemLocations)
+                    populateInventory(inventorySlotTable, itemLocations, dragAndDrop)
                 }
 
                 // equip slot
                 val equipInventory = ProfileManager.getProperty<gdxArray<InventoryItemLocation>>("playerEquipInventory")
                 if (equipInventory != null && equipInventory.size > 0) {
-                    populateInventory(equipSlots, equipInventory)
+                    populateInventory(equipSlots, equipInventory, dragAndDrop)
                 }
             }
             ProfileEvent.SAVING_PROFILE -> {
@@ -172,4 +120,40 @@ class InventoryUI : Window("Inventory Window", STATUSUI_SKIN, "solidbackground")
             }
         }
     }
+
+    companion object {
+
+        const val numSlots = 50
+
+        fun populateInventory(targetTable: Table, inventoryItems: gdxArray<InventoryItemLocation>, dragAndDrop: MyDragAndDrop) {
+            val cells: gdxArray<Cell<Actor>> = targetTable.cells
+            for (i in 0 until inventoryItems.size) {
+                val (locationIndex, itemType, numItems) = inventoryItems[i]
+                val itemTypeId = ItemTypeID.valueOf(itemType)
+                val inventorySlot = cells[locationIndex].actor as InventorySlot
+                inventorySlot.clearAllInventoryItems()
+
+                for (index in 0 until numItems) {
+                    val item = InventoryItemFactory.getInventoryItem(itemTypeId)
+                    item.name = targetTable.name
+                    inventorySlot.add(item)
+                    dragAndDrop.addSource(InventorySlotSource(inventorySlot))
+                }
+            }
+        }
+
+        fun getInventoryAt(targetTable: Table): gdxArray<InventoryItemLocation> {
+            val cells: gdxArray<Cell<Actor>> = targetTable.cells
+            val items = gdxArray<InventoryItemLocation>()
+            for (index in 0 until cells.size) {
+                if (cells[index].actor == null) continue
+                val slot = cells[index].actor as InventorySlot
+                val numItems = slot.numItems
+                if (numItems > 0)
+                    items.add(InventoryItemLocation(index, slot.topItem.itemTypeID.toString(), numItems))
+            }
+            return items
+        }
+    }
+
 }

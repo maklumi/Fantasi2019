@@ -7,7 +7,7 @@ import java.util.*
 class ConversationGraph(
         private val conversations: Hashtable<String, Conversation> = Hashtable(),
         var currentConversationID: String = ""
-) {
+) : ConversationGraphSubject() {
 
     private val associatedChoices = Hashtable<String, ArrayList<ConversationChoice>>()
 
