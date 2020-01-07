@@ -5,10 +5,11 @@ import com.badlogic.gdx.graphics.g2d.NinePatch
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Align.left
+import com.badlogic.gdx.utils.Array
 import com.maklumi.Utility.STATUSUI_SKIN
 import com.maklumi.Utility.STATUSUI_TEXTUREATLAS
 
-class StatusUI : Window("Status", STATUSUI_SKIN) {
+class StatusUI : Window("Status", STATUSUI_SKIN), StatusSubject {
 
     private val hudBackground = NinePatch(STATUSUI_TEXTUREATLAS.findRegion("dialog"))
     private val hudBackgroundImage = Image(hudBackground)
@@ -16,9 +17,15 @@ class StatusUI : Window("Status", STATUSUI_SKIN) {
     private val mpBar = Image(STATUSUI_TEXTUREATLAS.findRegion("MP_Bar"))
     private val xpBar = Image(STATUSUI_TEXTUREATLAS.findRegion("XP_Bar"))
     val inventoryButton = ImageButton(skin, "inventory-button")
+    private val goldVal = Label("", skin)
 
     private var level = 1
-    private var gold = 0
+    var gold = 0
+        set(value) {
+            field = value
+            goldVal.setText("$value")
+            notify(value, StatusObserver.StatusEvent.UPDATED_GP)
+        }
     private var hp = 50000
     private var mp = 50
     private var xp = 0
@@ -73,19 +80,18 @@ class StatusUI : Window("Status", STATUSUI_SKIN) {
         row()
 
         // level row
-        val levelLabel = Label("level: ", skin)
+        val levelLabel = Label("level ", skin)
         add(levelLabel).align(left)
         val levelVal = Label("$level", skin)
         add(levelVal).align(left)
         row()
 
         // gold row
-        val goldLabel = Label("gold: ", skin)
+        val goldLabel = Label("gold ", skin)
         add(goldLabel).align(left)
-        val goldVal = Label("$gold", skin)
         add(goldVal).align(left)
         //account for the title padding
-        pad(padTop + 40f, 20f, 20f, 20f)
+        pad(padTop + 40f, 40f, 40f, 40f)
 
 //        debug()
         background(hudBackgroundImage.drawable)
@@ -93,4 +99,5 @@ class StatusUI : Window("Status", STATUSUI_SKIN) {
         pack()
     }
 
+    override val statusObservers = Array<StatusObserver>()
 }

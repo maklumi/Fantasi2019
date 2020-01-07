@@ -6,23 +6,31 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.viewport.ScreenViewport
 import com.maklumi.EntityConfig
+import com.maklumi.InventoryItem
 import com.maklumi.MapManager
 import com.maklumi.dialog.ComponentObserver
 import com.maklumi.dialog.ConversationGraph
 import com.maklumi.dialog.ConversationGraphObserver
 import com.maklumi.dialog.ConversationGraphObserver.ConversationCommandEvent
 import com.maklumi.json
+import com.maklumi.profile.ProfileEvent
+import com.maklumi.profile.ProfileManager
+import com.maklumi.profile.ProfileObserver
+import com.maklumi.ui.StoreInventoryObserver.StoreInventoryEvent
 import ktx.actors.onClick
 import ktx.json.fromJson
 
 class PlayerHUD(camera: Camera) : Screen,
         ComponentObserver,
-        ConversationGraphObserver {
+        ConversationGraphObserver,
+        ProfileObserver,
+        StoreInventoryObserver,
+        StatusObserver {
 
     private val viewport = ScreenViewport(camera)
     val stage = Stage(viewport)
     private val statusUI = StatusUI()
-    val inventoryUI = InventoryUI()
+    private val inventoryUI = InventoryUI()
     private val conversationUI = ConversationUI()
     private val storeInventoryUI = StoreInventoryUI()
 
@@ -50,6 +58,9 @@ class PlayerHUD(camera: Camera) : Screen,
         storeInventoryUI.isVisible = false
         stage.addActor(storeInventoryUI)
         storeInventoryUI.inventoryActors.forEach { stage.addActor(it) }
+
+        statusUI.statusObservers.add(this)
+        storeInventoryUI.storeInventoryObservers.add(this)
     }
 
     override fun show() {}
@@ -106,11 +117,9 @@ class PlayerHUD(camera: Camera) : Screen,
                 val table = InventoryUI.getInventoryAt(inventoryUI.inventorySlotTable)
                 storeInventoryUI.loadPlayerInventory(table)
 
-//                val blackSmith: Entity = MapManager.getCurrentMapEntities()
-//                        .firstOrNull { it.entityConfig.entityID == "TOWN_BLACKSMITH" } ?: return
-                val blackSmith = MapManager.currentSelectedEntity ?: return
+                val blackSmithOrMage = MapManager.currentSelectedEntity ?: return
                 val itemLocations = Array<InventoryItemLocation>()
-                val itemIDs = blackSmith.entityConfig.inventory
+                val itemIDs = blackSmithOrMage.entityConfig.inventory
                 for (i in 0 until itemIDs.size) {
                     itemLocations.add(InventoryItemLocation(i, itemIDs[i].toString(), 1))
                 }
@@ -129,4 +138,58 @@ class PlayerHUD(camera: Camera) : Screen,
         }
     }
 
+    override fun onNotify(event: ProfileEvent) {
+        when (event) {
+            ProfileEvent.PROFILE_LOADED -> {
+                // inventory slot
+                val inventory = ProfileManager.getProperty<Array<InventoryItemLocation>>("playerInventory")
+                if (inventory != null && inventory.size > 0) {
+                    InventoryUI.populateInventory(inventoryUI.inventorySlotTable, inventory, inventoryUI.dragAndDrop)
+                } else {
+                    //add default items if nothing is found
+                    val items: Array<InventoryItem.ItemTypeID> = MapManager.player.entityConfig.inventory
+                    val itemLocations = Array<InventoryItemLocation>()
+                    for (i in 0 until items.size) {
+                        itemLocations.add(InventoryItemLocation(i, items.get(i).toString(), 1))
+                    }
+                    InventoryUI.populateInventory(inventoryUI.inventorySlotTable, itemLocations, inventoryUI.dragAndDrop)
+                }
+
+                // equip slot
+                val equipInventory = ProfileManager.getProperty<Array<InventoryItemLocation>>("playerEquipInventory")
+                if (equipInventory != null && equipInventory.size > 0) {
+                    InventoryUI.populateInventory(inventoryUI.equipSlots, equipInventory, inventoryUI.dragAndDrop)
+                }
+
+                // check gold, if first time, give something
+                val value = ProfileManager.getProperty("currentPlayerGP") ?: 200
+                statusUI.gold = value
+            }
+            ProfileEvent.SAVING_PROFILE -> {
+                ProfileManager.setProperty("playerInventory", InventoryUI.getInventoryAt(inventoryUI.inventorySlotTable))
+                ProfileManager.setProperty("playerEquipInventory", InventoryUI.getInventoryAt(inventoryUI.equipSlots))
+                ProfileManager.setProperty("currentPlayerGP", statusUI.gold)
+            }
+        }
+    }
+
+    override fun onNotify(value: Int, event: StoreInventoryEvent) {
+        when (event) {
+            StoreInventoryEvent.PLAYER_GP_TOTAL_UPDATED -> {
+                statusUI.gold = value
+            }
+            StoreInventoryEvent.PLAYER_INVENTORY_UPDATED -> {
+            }
+        }
+    }
+
+    override fun onNotify(value: Int, event: StatusObserver.StatusEvent) {
+        when (event) {
+            StatusObserver.StatusEvent.UPDATED_GP -> {
+                storeInventoryUI.playerTotal = value
+            }
+            else -> {
+            }
+        }
+    }
 }

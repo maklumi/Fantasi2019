@@ -3,18 +3,18 @@ package com.maklumi.ui
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.ui.Label
-import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.badlogic.gdx.scenes.scene2d.ui.Window
+import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Array
 import com.maklumi.MapManager
 import com.maklumi.Utility
+import com.maklumi.ui.StoreInventoryObserver.StoreInventoryEvent.PLAYER_GP_TOTAL_UPDATED
+import ktx.actors.onClick
 
 class StoreInventoryUI : Window("Inventory Transaction", Utility.STATUSUI_SKIN, "solidbackground"),
-        InventorySlotObserver {
+        InventorySlotObserver,
+        StoreInventorySubject {
 
     private val storeInv = "Store_Inventory"
     private val playerInv = "Player_Inventory"
@@ -37,6 +37,14 @@ class StoreInventoryUI : Window("Inventory Transaction", Utility.STATUSUI_SKIN, 
 
     private val playerInventorySlotTable = Table()
     val inventoryActors = Array<Actor>()
+    override val storeInventoryObservers = Array<StoreInventoryObserver>()
+    var playerTotal = 0
+        set(value) {
+            field = value
+            playerTotalGPLabel.setText("$playerTotalStr : $playerTotal $gp")
+        }
+    private val playerTotalStr = "Player Total"
+    private val playerTotalGPLabel = Label("", Utility.STATUSUI_SKIN)
 
     init {
 //        setFillParent(true)
@@ -48,23 +56,22 @@ class StoreInventoryUI : Window("Inventory Transaction", Utility.STATUSUI_SKIN, 
             slot.name = storeInv
 
             dragAndDrop.addTarget(InventorySlotTarget(slot))
+            inventorySlotTable.name = storeInv
             inventorySlotTable.add(slot).size(52f, 52f)
             if (i % 10 == 0) inventorySlotTable.row()
         }
-
-        sellButton.isDisabled = true
-        sellButton.touchable = Touchable.disabled
-        buyButton.isDisabled = true
-        buyButton.touchable = Touchable.disabled
+        enableButton(sellButton, false)
+        enableButton(buyButton, false)
         buttonTable.defaults().expand().fill()
         buttonTable.add(sellButton).padLeft(10f).padRight(10f)
+        buttonTable.add()
         buttonTable.add(buyButton).padLeft(10f).padRight(10f)
 
         sellTotalLabel.setAlignment(Align.center)
         buyTotalLabel.setAlignment(Align.center)
         totalLabels.defaults().expand().fill()
-        totalLabels.add(sellTotalLabel).padLeft(40f)
-        totalLabels.add(buyTotalLabel).padRight(40f)
+        totalLabels.add(sellTotalLabel).padLeft(40f).padRight(40f)
+        totalLabels.add(buyTotalLabel).padLeft(40f).padRight(40f)
 
         for (i in 1..InventoryUI.numSlots) {
             val slot = InventorySlot()
@@ -73,6 +80,7 @@ class StoreInventoryUI : Window("Inventory Transaction", Utility.STATUSUI_SKIN, 
             slot.name = playerInv
 
             dragAndDrop.addTarget(InventorySlotTarget(slot))
+            playerInventorySlotTable.name = playerInv
             playerInventorySlotTable.add(slot).size(52f, 52f)
             if (i % 10 == 0) playerInventorySlotTable.row()
         }
@@ -94,6 +102,8 @@ class StoreInventoryUI : Window("Inventory Transaction", Utility.STATUSUI_SKIN, 
         add(Label("Player's inventory", skin)).padLeft(10f)
         row()
         add(playerInventorySlotTable).pad(10f, 10f, 10f, 10f)
+        row()
+        add(playerTotalGPLabel)
         pack()
 
         closeButton.addListener(object : ClickListener() {
@@ -102,6 +112,32 @@ class StoreInventoryUI : Window("Inventory Transaction", Utility.STATUSUI_SKIN, 
                 MapManager.clearCurrentSelectedEntity()
             }
         })
+
+        buyButton.onClick {
+            if (fullValue !in 1..playerTotal) return@onClick
+            playerTotal -= fullValue
+            fullValue = 0
+            buyTotalLabel.setText("$buy : $fullValue $gp")
+            enableButton(buyButton, false)
+            if (tradeInVal > 0) enableButton(sellButton, true) else enableButton(sellButton, false)
+            notify(playerTotal, PLAYER_GP_TOTAL_UPDATED)
+        }
+
+        sellButton.onClick {
+            playerTotal += tradeInVal
+            tradeInVal = 0
+            sellTotalLabel.setText("$sell : $tradeInVal $gp")
+            enableButton(sellButton, false)
+            if (playerTotal >= fullValue) enableButton(buyButton, true) else enableButton(buyButton, false)
+            notify(playerTotal, PLAYER_GP_TOTAL_UPDATED)
+
+            // remove sold item
+            inventorySlotTable.cells
+                    .mapNotNull { it.actor as InventorySlot }
+                    .filter { slot -> slot.hasItem() && slot.topItem.name == playerInv }
+                    .forEach { slot -> slot.clearAllInventoryItems(false) }
+
+        }
     }
 
     override fun onNotify(slot: InventorySlot, event: InventorySlotObserver.SlotEvent) {
@@ -111,8 +147,7 @@ class StoreInventoryUI : Window("Inventory Transaction", Utility.STATUSUI_SKIN, 
                     tradeInVal += slot.topItem.tradeInValue()
                     sellTotalLabel.setText("$sell : $tradeInVal $gp")
                     if (tradeInVal > 0) {
-                        sellButton.isDisabled = false
-                        sellButton.touchable = Touchable.enabled
+                        enableButton(sellButton, true)
                     }
                 }
 
@@ -120,8 +155,7 @@ class StoreInventoryUI : Window("Inventory Transaction", Utility.STATUSUI_SKIN, 
                     fullValue += slot.topItem.itemValue
                     buyTotalLabel.setText("$buy : $fullValue $gp")
                     if (fullValue > 0) {
-                        buyButton.isDisabled = false
-                        buyButton.touchable = Touchable.enabled
+                        enableButton(buyButton, true)
                     }
                 }
             }
@@ -131,8 +165,7 @@ class StoreInventoryUI : Window("Inventory Transaction", Utility.STATUSUI_SKIN, 
                     tradeInVal -= slot.topItem.tradeInValue()
                     sellTotalLabel.setText("$sell : $tradeInVal $gp")
                     if (tradeInVal <= 0) {
-                        sellButton.isDisabled = true
-                        sellButton.touchable = Touchable.disabled
+                        enableButton(sellButton, false)
                     }
                 }
 
@@ -140,8 +173,7 @@ class StoreInventoryUI : Window("Inventory Transaction", Utility.STATUSUI_SKIN, 
                     fullValue -= slot.topItem.itemValue
                     buyTotalLabel.setText("$buy : $fullValue $gp")
                     if (fullValue <= 0) {
-                        buyButton.isDisabled = true
-                        buyButton.touchable = Touchable.disabled
+                        enableButton(buyButton, false)
                     }
                 }
             }
@@ -155,4 +187,16 @@ class StoreInventoryUI : Window("Inventory Transaction", Utility.STATUSUI_SKIN, 
     fun loadPlayerInventory(items: Array<InventoryItemLocation>) {
         InventoryUI.populateInventory(playerInventorySlotTable, items, dragAndDrop)
     }
+
+    private fun enableButton(button: Button, enable: Boolean) {
+        if (enable) {
+            button.touchable = Touchable.enabled
+            button.isDisabled = false
+        } else {
+            button.touchable = Touchable.disabled
+            button.isDisabled = true
+        }
+    }
+
+
 }

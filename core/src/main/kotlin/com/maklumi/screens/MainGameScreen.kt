@@ -68,7 +68,7 @@ class MainGameScreen : Screen {
         ProfileManager.profileObservers.add(MapManager)
         MapManager.player = player
         playerHUD = PlayerHUD(hudCamera)
-        ProfileManager.profileObservers.add(playerHUD.inventoryUI)
+        ProfileManager.profileObservers.add(playerHUD)
         ProfileManager.loadProfile()
         player.addUiObserver(playerHUD)
         tiledMapRenderer = OrthogonalTiledMapRenderer(currentMap, unitScale)

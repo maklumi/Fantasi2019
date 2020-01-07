@@ -23,7 +23,12 @@ object InventoryItemFactory {
     fun getInventoryItem(itemTypeID: ItemTypeID): InventoryItem {
         val region = ITEMS_TEXTUREATLAS.findRegion("$itemTypeID")
         val props = inventoryItemList[itemTypeID] as InventoryItem
-        return InventoryItem(region, props.itemAttributes, props.itemTypeID, props.itemUseType, props.itemShortDescription)
+        return InventoryItem(region,
+                props.itemAttributes,
+                props.itemTypeID,
+                props.itemUseType,
+                props.itemShortDescription,
+                props.itemValue)
     }
 
 }

@@ -54,7 +54,7 @@ class InventorySlot(
         val items = gdxArray<Actor>()
         while (hasItem()) {
             items.add(children.pop())
-            reduceItemCount()
+            reduceItemCount(true)
         }
         return items
     }
@@ -63,18 +63,19 @@ class InventorySlot(
         return if (filterItemType == 0) true else filterItemType.and(itemUseType) == itemUseType
     }
 
-    fun reduceItemCount() {
+    fun reduceItemCount(alsoNotify: Boolean) {
         itemCount--
         numItemsLabel.setText(itemCount)
         if (background.children.size == 1) background.children.add(customDecal)
         checkVisibilityOfItemCount()
+        if (alsoNotify) notify(this, InventorySlotObserver.SlotEvent.REMOVED_ITEM)
     }
 
-    fun clearAllInventoryItems() {
+    fun clearAllInventoryItems(broadcast: Boolean) {
         if (hasItem()) {
             repeat(numItems) {
                 children.pop()
-                reduceItemCount()
+                reduceItemCount(broadcast)
             }
         }
     }
@@ -84,6 +85,7 @@ class InventorySlot(
         numItemsLabel.setText(itemCount)
         if (background.children.size > 1) background.children.pop()
         checkVisibilityOfItemCount()
+        notify(this, InventorySlotObserver.SlotEvent.ADDED_ITEM)
     }
 
     private fun checkVisibilityOfItemCount() {
