@@ -33,9 +33,11 @@ class InventorySlot(
     init {
         background.add(imageBackground)
         background.add(customDecal)
+        background.name = "background"
         add(background) // first item
         numItemsLabel.setAlignment(Align.bottomRight)
         numItemsLabel.isVisible = false
+        numItemsLabel.name = "numitems"
         add(numItemsLabel) // second item
     }
 
@@ -79,6 +81,24 @@ class InventorySlot(
             }
         }
     }
+
+    fun getNumItems(name: String): Int {
+        return children.count { it.name.equals(name, true) }
+    }
+
+    fun nameAllInventoryItemsWith(name: String) {
+        // skip first 2 elements
+        children.drop(2).forEach { it.name = name }
+    }
+
+//    fun removeAllInventoryItemsWith(name: String) {
+//        children.drop(2)
+//                .takeWhile { it.name.equals(name, true) }
+//                .forEach {
+//                    children.removeValue(it, true)
+//                    reduceItemCount(true)
+//                }
+//    }
 
     private fun increaseItemCount() {
         itemCount++

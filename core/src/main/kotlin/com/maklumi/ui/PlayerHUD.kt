@@ -162,8 +162,8 @@ class PlayerHUD(camera: Camera) : Screen,
                 }
 
                 // check gold, if first time, give something
-                val value = ProfileManager.getProperty("currentPlayerGP") ?: 200
-                statusUI.gold = value
+//                val value = ProfileManager.getProperty("currentPlayerGP") ?: 200
+                statusUI.gold = 500
             }
             ProfileEvent.SAVING_PROFILE -> {
                 ProfileManager.setProperty("playerInventory", InventoryUI.getInventoryAt(inventoryUI.inventorySlotTable))
@@ -173,12 +173,14 @@ class PlayerHUD(camera: Camera) : Screen,
         }
     }
 
-    override fun onNotify(value: Int, event: StoreInventoryEvent) {
+    override fun onNotify(value: String, event: StoreInventoryEvent) {
         when (event) {
             StoreInventoryEvent.PLAYER_GP_TOTAL_UPDATED -> {
-                statusUI.gold = value
+                statusUI.gold = value.toInt()
             }
             StoreInventoryEvent.PLAYER_INVENTORY_UPDATED -> {
+                val items = json.fromJson<Array<InventoryItemLocation>>(value)
+                InventoryUI.populateInventory(inventoryUI.inventorySlotTable, items, inventoryUI.dragAndDrop)
             }
         }
     }

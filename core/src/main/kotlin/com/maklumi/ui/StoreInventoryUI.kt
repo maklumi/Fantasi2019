@@ -9,7 +9,9 @@ import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Array
 import com.maklumi.MapManager
 import com.maklumi.Utility
+import com.maklumi.json
 import com.maklumi.ui.StoreInventoryObserver.StoreInventoryEvent.PLAYER_GP_TOTAL_UPDATED
+import com.maklumi.ui.StoreInventoryObserver.StoreInventoryEvent.PLAYER_INVENTORY_UPDATED
 import ktx.actors.onClick
 
 class StoreInventoryUI : Window("Inventory Transaction", Utility.STATUSUI_SKIN, "solidbackground"),
@@ -120,7 +122,11 @@ class StoreInventoryUI : Window("Inventory Transaction", Utility.STATUSUI_SKIN, 
             buyTotalLabel.setText("$buy : $fullValue $gp")
             enableButton(buyButton, false)
             if (tradeInVal > 0) enableButton(sellButton, true) else enableButton(sellButton, false)
-            notify(playerTotal, PLAYER_GP_TOTAL_UPDATED)
+            notify(playerTotal.toString(), PLAYER_GP_TOTAL_UPDATED)
+
+            // update the owner of the items
+            InventoryUI.nameInventoryItemWith(playerInventorySlotTable, playerInv)
+            savePlayerInventory()
         }
 
         sellButton.onClick {
@@ -129,7 +135,7 @@ class StoreInventoryUI : Window("Inventory Transaction", Utility.STATUSUI_SKIN, 
             sellTotalLabel.setText("$sell : $tradeInVal $gp")
             enableButton(sellButton, false)
             if (playerTotal >= fullValue) enableButton(buyButton, true) else enableButton(buyButton, false)
-            notify(playerTotal, PLAYER_GP_TOTAL_UPDATED)
+            notify(playerTotal.toString(), PLAYER_GP_TOTAL_UPDATED)
 
             // remove sold item
             inventorySlotTable.cells
@@ -137,6 +143,7 @@ class StoreInventoryUI : Window("Inventory Transaction", Utility.STATUSUI_SKIN, 
                     .filter { slot -> slot.hasItem() && slot.topItem.name == playerInv }
                     .forEach { slot -> slot.clearAllInventoryItems(false) }
 
+            savePlayerInventory()
         }
     }
 
@@ -198,5 +205,12 @@ class StoreInventoryUI : Window("Inventory Transaction", Utility.STATUSUI_SKIN, 
         }
     }
 
+    private fun savePlayerInventory() {
+        // player items
+        val inPlayerInventory = InventoryUI.getInventoryAt(playerInventorySlotTable, playerInv)
+        val inStoreInventory = InventoryUI.getInventoryAt(playerInventorySlotTable, inventorySlotTable, playerInv)
+        inPlayerInventory.addAll(inStoreInventory)
+        notify(json.toJson(inPlayerInventory), PLAYER_INVENTORY_UPDATED)
+    }
 
 }

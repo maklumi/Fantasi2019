@@ -6,7 +6,7 @@ interface StoreInventorySubject {
 
     val storeInventoryObservers: gdxArray<StoreInventoryObserver>
 
-    fun notify(value: Int, event: StoreInventoryObserver.StoreInventoryEvent) {
+    fun notify(value: String, event: StoreInventoryObserver.StoreInventoryEvent) {
         for (observer in storeInventoryObservers) {
             observer.onNotify(value, event)
         }

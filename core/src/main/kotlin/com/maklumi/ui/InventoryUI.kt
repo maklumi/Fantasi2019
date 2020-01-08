@@ -91,6 +91,7 @@ class InventoryUI : Window("Inventory Window", STATUSUI_SKIN, "solidbackground")
         const val numSlots = 50
 
         fun populateInventory(targetTable: Table, inventoryItems: gdxArray<InventoryItemLocation>, dragAndDrop: MyDragAndDrop) {
+            clearInventoryItemsAt(targetTable)
             val cells: gdxArray<Cell<Actor>> = targetTable.cells
             for (i in 0 until inventoryItems.size) {
                 val (locationIndex, itemType, numItems) = inventoryItems[i]
@@ -119,6 +120,45 @@ class InventoryUI : Window("Inventory Window", STATUSUI_SKIN, "solidbackground")
             }
             return items
         }
+
+        private fun clearInventoryItemsAt(table: Table) {
+            table.cells.forEach {
+                (it.actor as InventorySlot?)?.clearAllInventoryItems(false)
+            }
+        }
+
+        fun getInventoryAt(targetTable: Table, name: String): gdxArray<InventoryItemLocation> {
+            val array = gdxArray<InventoryItemLocation>()
+            for ((index, cell) in targetTable.cells.withIndex()) {
+                val slot = cell.actor as InventorySlot? ?: continue
+                val count = slot.getNumItems(name)
+                if (count > 0) array.add(InventoryItemLocation(index, slot.topItem.itemTypeID.toString(), count))
+            }
+            return array
+        }
+
+        fun getInventoryAt(playerTable: Table, storeTable: Table, name: String): gdxArray<InventoryItemLocation> {
+            val targetArray = getInventoryAt(storeTable, name)
+            val sourceCells = playerTable.cells
+            for (item in targetArray) {
+                for ((i, cell) in sourceCells.withIndex()) {
+                    val slot = cell.actor as InventorySlot? ?: continue
+                    val numItems = slot.getNumItems(name)
+                    if (numItems == 0) {
+                        item.locationIndex = i
+                        break
+                    }
+                }
+            }
+            return targetArray
+        }
+
+        fun nameInventoryItemWith(targetTable: Table, name: String) {
+            targetTable.cells.forEach {
+                (it.actor as InventorySlot?)?.nameAllInventoryItemsWith(name)
+            }
+        }
+
     }
 
 }
