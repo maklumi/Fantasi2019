@@ -10,6 +10,7 @@ class EntityConfig {
     val animationConfig = Array<AnimationConfig>()
     var inventory = Array<InventoryItem.ItemTypeID>()
     var conversationConfigPath: String = ""
+    var questConfigPath = ""
 }
 
 data class AnimationConfig(

@@ -2,9 +2,10 @@
 {
 entityID : TOWN_FOLK1
 state : IMMOBILE
-direction : DOWN
-conversationConfigPath : ""
-animationConfig: [
+direction : DOWN,
+conversationConfigPath : "conversations/conversation004.json",
+	questConfigPath : "quests/quest002.json"
+	animationConfig: [
 	{
 	    frameDuration: 1.0
 		animationType: IMMOBILE

@@ -16,6 +16,7 @@ import com.maklumi.json
 import com.maklumi.profile.ProfileEvent
 import com.maklumi.profile.ProfileManager
 import com.maklumi.profile.ProfileObserver
+import com.maklumi.quest.QuestGraph
 import com.maklumi.ui.StoreInventoryObserver.StoreInventoryEvent
 import ktx.actors.onClick
 import ktx.json.fromJson
@@ -33,6 +34,7 @@ class PlayerHUD(camera: Camera) : Screen,
     private val inventoryUI = InventoryUI()
     private val conversationUI = ConversationUI()
     private val storeInventoryUI = StoreInventoryUI()
+    private val questUI = QuestUI()
 
     init {
         statusUI.setPosition(0f, stage.height)
@@ -61,6 +63,14 @@ class PlayerHUD(camera: Camera) : Screen,
 
         statusUI.statusObservers.add(this)
         storeInventoryUI.storeInventoryObservers.add(this)
+
+        questUI.isMovable = true
+        questUI.isVisible = false
+        questUI.setSize(stage.width, stage.height / 2f)
+        questUI.setPosition(x, stage.height - statusUI.height - questUI.height)
+        statusUI.questButton.onClick { questUI.isVisible = !questUI.isVisible }
+        stage.addActor(questUI)
+
     }
 
     override fun show() {}
@@ -135,6 +145,14 @@ class PlayerHUD(camera: Camera) : Screen,
             }
             ConversationCommandEvent.NONE -> {
             }
+            ConversationCommandEvent.ACCEPT_QUEST -> {
+                val selectedEntity = MapManager.currentSelectedEntity ?: return
+                val path = selectedEntity.entityConfig.questConfigPath
+                questUI.addQuest(path)
+
+                conversationUI.isVisible = false
+                MapManager.clearCurrentSelectedEntity()
+            }
         }
     }
 
@@ -164,11 +182,15 @@ class PlayerHUD(camera: Camera) : Screen,
                 // check gold, if first time, give something
 //                val value = ProfileManager.getProperty("currentPlayerGP") ?: 200
                 statusUI.gold = 500
+
+                val quests = ProfileManager.getProperty<Array<QuestGraph>>("playerQuests")
+                quests?.let { questUI.quests.addAll(quests) }
             }
             ProfileEvent.SAVING_PROFILE -> {
                 ProfileManager.setProperty("playerInventory", InventoryUI.getInventoryAt(inventoryUI.inventorySlotTable))
                 ProfileManager.setProperty("playerEquipInventory", InventoryUI.getInventoryAt(inventoryUI.equipSlots))
                 ProfileManager.setProperty("currentPlayerGP", statusUI.gold)
+                ProfileManager.setProperty("playerQuests", questUI.quests)
             }
         }
     }

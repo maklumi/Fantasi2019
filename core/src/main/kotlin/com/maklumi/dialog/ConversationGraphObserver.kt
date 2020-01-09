@@ -7,6 +7,7 @@ interface ConversationGraphObserver {
     enum class ConversationCommandEvent {
         LOAD_STORE_INVENTORY,
         EXIT_CONVERSATION,
+        ACCEPT_QUEST,
         NONE
     }
 }

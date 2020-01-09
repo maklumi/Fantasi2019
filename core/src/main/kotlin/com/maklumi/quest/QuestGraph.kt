@@ -9,6 +9,15 @@ class QuestGraph {
     var questTasks = Hashtable<String, QuestTask>()
     private val questTaskDependencies = Hashtable<String, ArrayList<QuestTaskDependency>>()
 
+    fun allQuestTasks(): Array<QuestTask> {
+        return  questTasks.values.toTypedArray()
+    }
+
+    fun clear() {
+        questTasks.clear()
+        questTaskDependencies.clear()
+    }
+
     fun addDependency(dependency: QuestTaskDependency) {
         var arrayList = questTaskDependencies[dependency.sourceId]
         if (arrayList == null) {
@@ -35,38 +44,19 @@ class QuestGraph {
         return !questTaskDependencies[id].isNullOrEmpty()
     }
 
-    private fun getQuestTaskByID(id: String): QuestTask? {
-        val task = questTasks[id]
-        if (task == null) println("Id $id is not valid!")
-        return task
-    }
+//    private fun getQuestTaskByID(id: String): QuestTask? {
+//        val task = questTasks[id]
+//        if (task == null) println("Id $id is not valid!")
+//        return task
+//    }
 
     override fun toString(): String {
-        val builder = StringBuilder()
-        var numberTotalChoices = 0
-
-        for (id in questTaskDependencies.keys) {
-            builder.append(String.format("[%s]: ", id))
-            builder.append(String.format("[%s]: ", getQuestTaskByID(id)?.taskPhrase))
-
-            for (dependency in questTaskDependencies[id]!!) {
-                numberTotalChoices++
-                builder.append(String.format("%s ", dependency.destinationId))
-            }
-
-            builder.append(System.getProperty("line.separator"))
-        }
-
-        builder.append(String.format("Number quest tasks: %d", questTasks.size))
-        builder.append(String.format(", Number of dependencies: %d", numberTotalChoices))
-        builder.append(System.getProperty("line.separator"))
-
-        return builder.toString()
+        return questTitle
     }
 
     fun toJson(): String {
         val j = Json()
-        j.setOutputType(JsonWriter.OutputType.minimal)
+        j.setOutputType(JsonWriter.OutputType.json)
         return j.prettyPrint(this)
     }
 }

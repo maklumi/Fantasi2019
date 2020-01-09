@@ -17,6 +17,7 @@ class StatusUI : Window("Status", STATUSUI_SKIN), StatusSubject {
     private val mpBar = Image(STATUSUI_TEXTUREATLAS.findRegion("MP_Bar"))
     private val xpBar = Image(STATUSUI_TEXTUREATLAS.findRegion("XP_Bar"))
     val inventoryButton = ImageButton(skin, "inventory-button")
+    val questButton = ImageButton(skin, "quest-button")
     private val goldVal = Label("", skin)
 
     private var level = 1
@@ -33,6 +34,8 @@ class StatusUI : Window("Status", STATUSUI_SKIN), StatusSubject {
     init {
         add()
         add()
+        questButton.imageCell.size(64f)
+        add(questButton).align(Align.right)
         inventoryButton.imageCell.size(64f)
         add(inventoryButton).align(Align.right)
         row()
