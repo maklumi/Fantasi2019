@@ -111,6 +111,8 @@ class StoreInventoryUI : Window("Inventory Transaction", Utility.STATUSUI_SKIN, 
         closeButton.addListener(object : ClickListener() {
             override fun clicked(event: InputEvent?, x: Float, y: Float) {
                 this@StoreInventoryUI.isVisible = false
+                savePlayerInventory()
+                cleanupStoreInventory()
                 MapManager.clearCurrentSelectedEntity()
             }
         })
@@ -120,8 +122,7 @@ class StoreInventoryUI : Window("Inventory Transaction", Utility.STATUSUI_SKIN, 
             playerTotal -= fullValue
             fullValue = 0
             buyTotalLabel.setText("$buy : $fullValue $gp")
-            enableButton(buyButton, false)
-            if (tradeInVal > 0) enableButton(sellButton, true) else enableButton(sellButton, false)
+            checkButtonStates()
             notify(playerTotal.toString(), PLAYER_GP_TOTAL_UPDATED)
 
             // update the owner of the items
@@ -133,8 +134,7 @@ class StoreInventoryUI : Window("Inventory Transaction", Utility.STATUSUI_SKIN, 
             playerTotal += tradeInVal
             tradeInVal = 0
             sellTotalLabel.setText("$sell : $tradeInVal $gp")
-            enableButton(sellButton, false)
-            if (playerTotal >= fullValue) enableButton(buyButton, true) else enableButton(buyButton, false)
+            checkButtonStates()
             notify(playerTotal.toString(), PLAYER_GP_TOTAL_UPDATED)
 
             // remove sold item
@@ -153,17 +153,11 @@ class StoreInventoryUI : Window("Inventory Transaction", Utility.STATUSUI_SKIN, 
                 if (slot.topItem.name == playerInv && slot.name == storeInv) {
                     tradeInVal += slot.topItem.tradeInValue()
                     sellTotalLabel.setText("$sell : $tradeInVal $gp")
-                    if (tradeInVal > 0) {
-                        enableButton(sellButton, true)
-                    }
                 }
 
                 if (slot.topItem.name == storeInv && slot.name == playerInv) {
                     fullValue += slot.topItem.itemValue
                     buyTotalLabel.setText("$buy : $fullValue $gp")
-                    if (fullValue > 0) {
-                        enableButton(buyButton, true)
-                    }
                 }
             }
 
@@ -171,20 +165,15 @@ class StoreInventoryUI : Window("Inventory Transaction", Utility.STATUSUI_SKIN, 
                 if (slot.topItem.name == playerInv && slot.name == storeInv) {
                     tradeInVal -= slot.topItem.tradeInValue()
                     sellTotalLabel.setText("$sell : $tradeInVal $gp")
-                    if (tradeInVal <= 0) {
-                        enableButton(sellButton, false)
-                    }
                 }
 
                 if (slot.topItem.name == storeInv && slot.name == playerInv) {
                     fullValue -= slot.topItem.itemValue
                     buyTotalLabel.setText("$buy : $fullValue $gp")
-                    if (fullValue <= 0) {
-                        enableButton(buyButton, false)
-                    }
                 }
             }
         }
+        checkButtonStates()
     }
 
     fun loadStoreInventory(items: Array<InventoryItemLocation>) {
@@ -213,4 +202,18 @@ class StoreInventoryUI : Window("Inventory Transaction", Utility.STATUSUI_SKIN, 
         notify(json.toJson(inPlayerInventory), PLAYER_INVENTORY_UPDATED)
     }
 
+    private fun checkButtonStates() {
+        if (tradeInVal > 0) enableButton(sellButton, true) else enableButton(sellButton, false)
+        if (fullValue in 1..playerTotal) enableButton(buyButton, true) else enableButton(buyButton, false)
+    }
+
+    private fun cleanupStoreInventory() {
+        fullValue = 0
+        tradeInVal = 0
+        buyTotalLabel.setText("$buy : $fullValue $gp")
+        sellTotalLabel.setText("$sell : $tradeInVal $gp")
+        InventoryUI.removeInventoryItems(storeInv, playerInventorySlotTable)
+        // also remove any player based inventory when exiting
+        InventoryUI.removeInventoryItems(playerInv, inventorySlotTable)
+    }
 }

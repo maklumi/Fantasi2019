@@ -91,14 +91,14 @@ class InventorySlot(
         children.drop(2).forEach { it.name = name }
     }
 
-//    fun removeAllInventoryItemsWith(name: String) {
-//        children.drop(2)
-//                .takeWhile { it.name.equals(name, true) }
-//                .forEach {
-//                    children.removeValue(it, true)
-//                    reduceItemCount(true)
-//                }
-//    }
+    fun removeAllInventoryItemsWith(name: String) {
+        children.drop(2)
+                .takeWhile { it.name.equals(name, true) }
+                .forEach {
+                    children.removeValue(it, true)
+                    reduceItemCount(true)
+                }
+    }
 
     private fun increaseItemCount() {
         itemCount++

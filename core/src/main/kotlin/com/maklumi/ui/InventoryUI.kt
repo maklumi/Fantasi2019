@@ -140,15 +140,21 @@ class InventoryUI : Window("Inventory Window", STATUSUI_SKIN, "solidbackground")
         fun getInventoryAt(playerTable: Table, storeTable: Table, name: String): gdxArray<InventoryItemLocation> {
             val targetArray = getInventoryAt(storeTable, name)
             val sourceCells = playerTable.cells
+            var counter = 0
             for (item in targetArray) {
                 for ((i, cell) in sourceCells.withIndex()) {
+                    counter = i
                     val slot = cell.actor as InventorySlot? ?: continue
                     val numItems = slot.getNumItems(name)
                     if (numItems == 0) {
                         item.locationIndex = i
+                        counter++
                         break
                     }
                 }
+                // If we run out of room when buying items and still left items to be sold,
+                // then we will stack remaining items in the last slot.
+                if (counter == sourceCells.size) item.locationIndex = counter - 1
             }
             return targetArray
         }
@@ -159,6 +165,12 @@ class InventoryUI : Window("Inventory Window", STATUSUI_SKIN, "solidbackground")
             }
         }
 
+        fun removeInventoryItems(name: String, inventoryTable: Table) {
+            inventoryTable.cells.forEach {
+                val slot = it.actor as InventorySlot?
+                slot?.removeAllInventoryItemsWith(name)
+            }
+        }
     }
 
 }
