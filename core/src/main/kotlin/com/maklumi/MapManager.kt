@@ -8,7 +8,8 @@ import com.badlogic.gdx.math.Vector2
 import com.maklumi.MapFactory.MapType
 import com.maklumi.MapFactory.MapType.*
 import com.maklumi.profile.ProfileEvent
-import com.maklumi.profile.ProfileEvent.*
+import com.maklumi.profile.ProfileEvent.PROFILE_LOADED
+import com.maklumi.profile.ProfileEvent.SAVING_PROFILE
 import com.maklumi.profile.ProfileManager
 import com.maklumi.profile.ProfileObserver
 import com.badlogic.gdx.utils.Array as gdxArray
@@ -32,6 +33,9 @@ object MapManager : ProfileObserver {
 
     val spawnsLayer: MapLayer?
         get() = gameMap.spawnsLayer
+
+    val currentMapType: MapType
+        get() = gameMap.mapType
 
     val playerStartUnitScaled: Vector2
         get() = gameMap.startUnitScaled
@@ -89,4 +93,13 @@ object MapManager : ProfileObserver {
             }
         }
     }
+
+    fun getQuestItemSpawnPositions(objectName: String, objectTaskID: String): gdxArray<Vector2> {
+        return gameMap.getQuestItemSpawnPositions(objectName, objectTaskID)
+    }
+
+    fun addMapEntities(entities: gdxArray<Entity>) {
+        gameMap.mapEntities.addAll(entities)
+    }
+
 }

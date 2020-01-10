@@ -2,15 +2,74 @@ package com.maklumi.quest
 
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonWriter
+import com.maklumi.Entity
+import com.maklumi.MapManager
+import com.maklumi.quest.QuestTask.QuestTaskPropertyType.TARGET_LOCATION
+import com.maklumi.quest.QuestTask.QuestTaskPropertyType.TARGET_TYPE
+import com.maklumi.quest.QuestTask.QuestType.*
 import java.util.*
+import com.badlogic.gdx.utils.Array as gdxArray
 
 class QuestGraph {
     var questTitle = "No quest title"
     var questTasks = Hashtable<String, QuestTask>()
     private val questTaskDependencies = Hashtable<String, ArrayList<QuestTaskDependency>>()
+    var questID: String = ""
+    var isQuestComplete: String = "false"
 
-    fun allQuestTasks(): Array<QuestTask> {
-        return  questTasks.values.toTypedArray()
+    fun update() {
+        for (quest in allQuestTasks()) {
+            //We first want to make sure the task is available and is relevant to current location
+            if (isQuestTaskAvailable(quest.id)) continue
+
+            val taskLocation = quest.taskProperties.get(TARGET_LOCATION.toString())
+            if (!taskLocation.equals(MapManager.currentMapType.toString(), ignoreCase = true) ||
+                    taskLocation.isNullOrEmpty()
+            ) continue
+
+            val taskConfig = quest.taskProperties.get(TARGET_TYPE.toString())
+            if (taskConfig.isNullOrEmpty()) continue
+
+            when (quest.questType) {
+                FETCH -> {
+                    val questItems = gdxArray<Entity>()
+                    val positions = MapManager.getQuestItemSpawnPositions(questID, quest.id)
+                    positions.forEach { pos ->
+                        questItems.add(com.maklumi.Map.initEntityNPC(pos, Entity.getEntityConfig(taskConfig)))
+                    }
+                    MapManager.addMapEntities(questItems)
+                }
+                RETURN -> {
+                }
+                DISCOVER -> {
+                }
+                NOTYPE -> {
+                }
+            }
+        }
+    }
+
+    private fun isQuestTaskAvailable(id: String): Boolean {
+        getQuestTaskByID(id) ?: return false
+        val list = questTaskDependencies[id] ?: return false
+        for (dep in list) {
+            val depTask = getQuestTaskByID(dep.destinationId) ?: continue
+            if (depTask.isTaskComplete()) continue
+            if (dep.sourceId.equals(id, true)) return false
+        }
+        return true
+    }
+
+    private fun getQuestTaskByID(id: String): QuestTask? {
+        val task = questTasks[id]
+        if (task == null) println("Id $id is not valid!")
+        return task
+    }
+
+    fun allQuestTasks(): gdxArray<QuestTask> {
+        val quests = gdxArray<QuestTask>()
+        questTasks.values.forEach { quests.add(it) }
+        return quests
     }
 
     fun clear() {
@@ -43,12 +102,6 @@ class QuestGraph {
     private fun doesQuestTaskHaveDependencies(id: String): Boolean {
         return !questTaskDependencies[id].isNullOrEmpty()
     }
-
-//    private fun getQuestTaskByID(id: String): QuestTask? {
-//        val task = questTasks[id]
-//        if (task == null) println("Id $id is not valid!")
-//        return task
-//    }
 
     override fun toString(): String {
         return questTitle

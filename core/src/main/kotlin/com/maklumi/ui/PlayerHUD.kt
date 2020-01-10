@@ -190,7 +190,7 @@ class PlayerHUD(camera: Camera) : Screen,
                 ProfileManager.setProperty("playerInventory", InventoryUI.getInventoryAt(inventoryUI.inventorySlotTable))
                 ProfileManager.setProperty("playerEquipInventory", InventoryUI.getInventoryAt(inventoryUI.equipSlots))
                 ProfileManager.setProperty("currentPlayerGP", statusUI.gold)
-                ProfileManager.setProperty("playerQuests", questUI.quests)
+//                ProfileManager.setProperty("playerQuests", questUI.quests)
             }
         }
     }
@@ -215,5 +215,9 @@ class PlayerHUD(camera: Camera) : Screen,
             else -> {
             }
         }
+    }
+
+    fun mapChanged() {
+        questUI.mapChanged()
     }
 }

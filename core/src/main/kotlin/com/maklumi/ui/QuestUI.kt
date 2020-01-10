@@ -28,13 +28,6 @@ class QuestUI : Window("Quest Log", Utility.STATUSUI_SKIN, "solidbackground") {
         val tasksLabel = Label("Tasks:", skin)
         add(tasksLabel).align(Align.left)
         row()
-//        val temps = Array<String>()
-//        temps.add("1) First, sear your meats in a little oil over medium-high heat", "" +
-//                "until well-browned. Use a deep Dutch oven or heavy soup pot.",
-//                "If you're using a roast, sirloin steak, or short rib, cube the meat.",
-//                "Then make sure it's well-browned on all sides. Remove the meat.")
-//        listQuests.setItems(temps)
-//        listTasks.setItems(temps)
 
         val scrollPane = ScrollPane(listQuests, skin, "inventoryPane")
         scrollPane.setOverscroll(false, false)
@@ -80,5 +73,15 @@ class QuestUI : Window("Quest Log", Utility.STATUSUI_SKIN, "solidbackground") {
         val tasks = graph.allQuestTasks().map { it.taskPhrase }.toTypedArray()
         listTasks.setItems(*tasks)
         listTasks.selectedIndex = -1
+    }
+
+    fun mapChanged() {
+        //populate items if quests have them
+        for (quest in quests) {
+            if (!quest.isQuestComplete.toBoolean()) {
+                quest.update()
+            }
+        }
+        updateQuests()
     }
 }

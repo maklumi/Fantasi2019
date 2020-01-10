@@ -108,6 +108,7 @@ class MainGameScreen : Screen {
             MapManager.getCurrentMapEntities().forEach {
                 it.addUiObserver(playerHUD)
             }
+            playerHUD.mapChanged()
         }
         tiledMapRenderer.render()
 

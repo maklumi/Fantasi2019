@@ -16,12 +16,28 @@ abstract class Map(var mapType: MapFactory.MapType, path: String) {
         private const val MAP_SPAWNS_LAYER = "MAP_SPAWNS_LAYER"
         private const val PLAYER_START = "PLAYER_START"
         private const val NPC_START = "NPC_START"
+        private const val QUEST_ITEM_SPAWN_LAYER = "MAP_QUEST_ITEM_SPAWN_LAYER"
+        private const val QUEST_DISCOVER_LAYER = "MAP_QUEST_DISCOVER_LAYER"
+
+        fun initEntityNPC(position: Vector2, entityConfig: EntityConfig): Entity {
+            val entity = EntityFactory.getEntity(EntityFactory.EntityType.NPC)
+            entity.apply {
+                this.entityConfig = entityConfig
+                sendMessage(Component.MESSAGE.LOAD_ANIMATIONS, json.toJson(entityConfig))
+                sendMessage(Component.MESSAGE.INIT_START_POSITION, json.toJson(position))
+                sendMessage(Component.MESSAGE.INIT_STATE, json.toJson(entityConfig.state))
+                sendMessage(Component.MESSAGE.INIT_DIRECTION, json.toJson(entityConfig.direction))
+            }
+            return entity
+        }
     }
 
     var currentMap: TiledMap? = null
     var collisionLayer: MapLayer? = null
     var portalLayer: MapLayer? = null
     var spawnsLayer: MapLayer? = null
+    private var questItemSpawnLayer: MapLayer? = null
+    private var questDiscoverLayer: MapLayer? = null
 
     val start = Vector2() // last known position on this map in pixels
     val startUnitScaled: Vector2  // in world unit
@@ -44,8 +60,10 @@ abstract class Map(var mapType: MapFactory.MapType, path: String) {
         collisionLayer = currentMap?.layers?.get(MAP_COLLISION_LAYER)
         portalLayer = currentMap?.layers?.get(MAP_PORTAL_LAYER)
         spawnsLayer = currentMap?.layers?.get(MAP_SPAWNS_LAYER)
+        questItemSpawnLayer = currentMap?.layers?.get(QUEST_ITEM_SPAWN_LAYER)
+        questDiscoverLayer = currentMap?.layers?.get(QUEST_DISCOVER_LAYER)
         setClosestStartPosition(Vector2())
-        println("Map-loadmap: loadmap($mapType)")
+//        println("Map-loadmap: loadmap($mapType)")
     }
 
     fun setClosestStartPosition(worldOrigin: Vector2) {
@@ -69,6 +87,26 @@ abstract class Map(var mapType: MapFactory.MapType, path: String) {
     }
 
     abstract fun updateMapEntities(batch: Batch, delta: Float)
+
+    fun getQuestItemSpawnPositions(objectName: String, objectTaskID: String): gdxArray<Vector2> {
+        val positions = gdxArray<Vector2>()
+        val mapObjects = questItemSpawnLayer?.objects ?: return gdxArray()
+
+        for (mapObj in mapObjects) {
+            val name = mapObj.name
+            val taskID = mapObj.properties.get("taskID") as String?
+            if (name.isNullOrEmpty() || taskID.isNullOrEmpty() ||
+                    !name.equals(objectName, true) ||
+                    !taskID.equals(objectTaskID, true)) continue
+            //Get center of rectangle
+            val rectCenter = Vector2()
+            (mapObj as RectangleMapObject).rectangle.getCenter(rectCenter)
+            //scale by the unit to convert from map coordinates
+            rectCenter.scl(unitScale)
+            positions.add(rectCenter)
+        }
+        return positions
+    }
 
     private fun getNPCStartPositions(): gdxArray<Vector2> {
         val positions = gdxArray<Vector2>()

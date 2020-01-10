@@ -3,19 +3,45 @@
   "questTasks": {
     "4": {
       "id": "4",
-      "taskPhrase": "Find the area where the Tuskan beast feasts"
+      "taskPhrase": "Find the area where the Tuskan beast feasts",
+      "questType": "DISCOVER",
+      "taskProperties": {
+        "TARGET_TYPE": "BEAST_AREA",
+        "TARGET_LOCATION": "TOP_WORLD",
+        "IS_TASK_COMPLETE": "FALSE"
+      }
     },
     "3": {
       "id": "3",
-      "taskPhrase": "Collect 5 furs"
+      "taskPhrase": "Collect 5 furs",
+      "questType": "FETCH",
+      "taskProperties": {
+        "TARGET_NUM": "5",
+        "TARGET_TYPE": "FUR01",
+        "TARGET_LOCATION": "TOP_WORLD",
+        "IS_TASK_COMPLETE": "FALSE"
+      }
     },
     "2": {
       "id": "2",
-      "taskPhrase": "Collect 5 horns"
+      "taskPhrase": "Collect 5 horns",
+      "questType": "FETCH",
+      "taskProperties": {
+        "TARGET_NUM": "5",
+        "TARGET_TYPE": "HORNS01",
+        "TARGET_LOCATION": "TOP_WORLD",
+        "IS_TASK_COMPLETE": "FALSE"
+      }
     },
     "1": {
       "id": "1",
-      "taskPhrase": "Come back to me with the items"
+      "taskPhrase": "Come back to me with the items",
+      "questType": "RETURN",
+      "taskProperties": {
+        "TARGET_TYPE": "TOWN_FOLK02",
+        "TARGET_LOCATION": "TOWN",
+        "IS_TASK_COMPLETE": "FALSE"
+      }
     }
   },
   "questTaskDependencies": {
@@ -45,5 +71,7 @@
         "destinationId": "3"
       }
     ]
-  }
+  },
+  "questID": "1",
+  "isQuestComplete": "FALSE"
 }

@@ -3,11 +3,24 @@
   "questTasks": {
     "2": {
       "id": "2",
-      "taskPhrase": "Please collect 5 herbs for cooking"
+      "taskPhrase": "Please collect 5 herbs for cooking",
+      "questType": "FETCH",
+      "taskProperties": {
+        "TARGET_NUM": "5",
+        "TARGET_TYPE": "scripts/quest_herbs.json",
+        "TARGET_LOCATION": "TOWN",
+        "IS_TASK_COMPLETE": "false"
+      }
     },
     "1": {
       "id": "1",
-      "taskPhrase": "Come back to me with the herbs"
+      "taskPhrase": "Come back to me with the herbs",
+      "questType": "RETURN",
+      "taskProperties": {
+        "TARGET_TYPE": "TOWN_FOLK1",
+        "TARGET_LOCATION": "TOWN",
+        "IS_TASK_COMPLETE": "false"
+      }
     }
   },
   "questTaskDependencies": {
@@ -18,5 +31,7 @@
         "destinationId": "2"
       }
     ]
-  }
+  },
+  "questID": "2",
+  "isQuestComplete": "FALSE"
 }
