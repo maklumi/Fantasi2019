@@ -119,6 +119,13 @@ object MapManager : ProfileObserver {
 
     fun removeMapQuestEntity(entity: Entity) {
         entity.unregisterObservers()
+        @Suppress("UNCHECKED_CAST")
+        val positions = ProfileManager.properties.get(entity.entityConfig.itemTypeID.toString()) as gdxArray<Vector2>?
+        if (positions != null) {
+            val temp = positions.first { it.x == entity.currentPosition.x && it.y == entity.currentPosition.y }
+            positions.removeValue(temp, true)
+            ProfileManager.properties.put(entity.entityConfig.itemTypeID.toString(), positions)
+        }
         gameMap.mapQuestEntities.removeValue(entity, true)
     }
 

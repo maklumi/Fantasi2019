@@ -3,6 +3,7 @@
   "state": "IMMOBILE",
   "direction": "DOWN",
   "conversationConfigPath": "conversations/conversation005.json",
+  "itemTypeID": "HERB001",
   "animationConfig": [
     {
       "frameDuration": 1.01,

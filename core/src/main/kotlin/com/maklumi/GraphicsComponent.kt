@@ -19,7 +19,7 @@ abstract class GraphicsComponent : Component, ComponentSubject() {
 
     private val frameWidth = 16
     private val frameHeight = 16
-    private val currentPosition = Vector2(0f, 0f)
+    val currentPosition = Vector2(0f, 0f)
     private var currentState = Entity.State.WALKING
     private var currentDirection = Entity.Direction.DOWN
 

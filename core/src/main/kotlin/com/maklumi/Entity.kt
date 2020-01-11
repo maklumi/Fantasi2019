@@ -3,6 +3,7 @@ package com.maklumi
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Rectangle
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.JsonValue
 import com.maklumi.dialog.ComponentObserver
 import ktx.json.fromJson
@@ -15,6 +16,9 @@ class Entity(val inputComponent: InputComponent,
              private val graphicsComponent: GraphicsComponent) {
 
     var entityConfig = EntityConfig()
+
+    val currentPosition: Vector2
+        get() = graphicsComponent.currentPosition
 
     private val components = gdxArray<Component>(MAX_COMPONENTS).also {
         it.add(inputComponent)

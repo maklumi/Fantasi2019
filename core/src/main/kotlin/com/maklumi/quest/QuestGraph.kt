@@ -1,9 +1,12 @@
 package com.maklumi.quest
 
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonWriter
 import com.maklumi.Entity
+import com.maklumi.Map
 import com.maklumi.MapManager
+import com.maklumi.profile.ProfileManager
 import com.maklumi.quest.QuestTask.QuestTaskPropertyType.TARGET_LOCATION
 import com.maklumi.quest.QuestTask.QuestTaskPropertyType.TARGET_TYPE
 import com.maklumi.quest.QuestTask.QuestType.*
@@ -34,10 +37,23 @@ class QuestGraph {
                 FETCH -> {
                     val questItems = gdxArray<Entity>()
                     val positions = MapManager.getQuestItemSpawnPositions(questID, quest.id)
-                    positions.forEach { pos ->
-                        questItems.add(com.maklumi.Map.initEntityNPC(pos, Entity.getEntityConfig(taskConfig)))
+                    val config = Entity.getEntityConfig(taskConfig)
+                    @Suppress("UNCHECKED_CAST")
+                    val questPosition = ProfileManager.properties.get(config.itemTypeID.toString()) as gdxArray<Vector2>?
+                    if (questPosition == null) {
+                        for (pos in positions) {
+                            val item = Map.initEntityNPC(pos, config)
+                            questItems.add(item)
+                        }
+                    } else {
+                        for (pos in questPosition) {
+                            val item = Map.initEntityNPC(pos, config)
+                            questItems.add(item)
+                        }
                     }
                     MapManager.addMapQuestEntities(questItems)
+                    ProfileManager.properties.put(config.itemTypeID.toString(), positions)
+                    println("QuestGraph56 " + ProfileManager.properties.get(config.itemTypeID.toString()))
                 }
                 RETURN -> {
                 }
