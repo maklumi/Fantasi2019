@@ -9,6 +9,7 @@ interface ConversationGraphObserver {
         EXIT_CONVERSATION,
         ACCEPT_QUEST,
         NONE,
-        ADD_ENTITY_TO_INVENTORY
+        ADD_ENTITY_TO_INVENTORY,
+        RETURN_QUEST
     }
 }

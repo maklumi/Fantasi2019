@@ -14,17 +14,17 @@ class TownMap : Map(MapFactory.MapType.TOWN, "maps/town.tmx") {
     init {
         // init NPC
         npcStartPositions.forEach { position ->
-            val guard = initEntityNPC(position, Entity.getEntityConfig(townGuardWalking))
+            val guard = initEntityNPC(position, Entity.loadEntityConfigBy(townGuardWalking))
             mapEntities.add(guard)
         }
         // init other special NPC
-        val smith = initEntitySpecial(Entity.getEntityConfig(townBlacksmith))
-        val mage = initEntitySpecial(Entity.getEntityConfig(townMage))
-        val keeper = initEntitySpecial(Entity.getEntityConfig(townInnKeeper))
+        val smith = initEntitySpecial(Entity.loadEntityConfigBy(townBlacksmith))
+        val mage = initEntitySpecial(Entity.loadEntityConfigBy(townMage))
+        val keeper = initEntitySpecial(Entity.loadEntityConfigBy(townInnKeeper))
         mapEntities.add(smith, mage, keeper)
         // town folks have their configs in one file
         Entity.getEntityConfigs(townFolk)
-                .forEach { mapEntities.add(initEntitySpecial(it)) }
+                .forEach { mapEntities.add(initEntitySpecial(Entity.loadEntityConfig(it))) }
     }
 
     private fun initEntitySpecial(entityConfig: EntityConfig): Entity {

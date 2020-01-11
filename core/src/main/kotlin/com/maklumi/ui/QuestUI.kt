@@ -52,15 +52,21 @@ class QuestUI : Window("Quest Log", Utility.STATUSUI_SKIN, "solidbackground") {
         }
     }
 
-    fun addQuest(questConfigPath: String) {
+    fun addQuest(questConfigPath: String): Boolean {
         if (questConfigPath.isEmpty() || !Gdx.files.internal(questConfigPath).exists()) {
             println("QuestUI62: Quest file does not exist!")
-            return
+            return false
         }
 
         val graph = json.fromJson<QuestGraph>(Gdx.files.internal(questConfigPath))
+        if (doesQuestAlreadyExist(graph)) return false
         quests.add(graph)
         updateQuestsItemList()
+        return true
+    }
+
+    private fun doesQuestAlreadyExist(graph: QuestGraph): Boolean {
+        return quests.any { it.questID.equals(graph.questID, true) }
     }
 
     private fun updateQuestsItemList() {
@@ -94,5 +100,10 @@ class QuestUI : Window("Quest Log", Utility.STATUSUI_SKIN, "solidbackground") {
             }
         }
         updateQuestsItemList()
+    }
+
+    companion object {
+        const val RETURN_QUEST = "conversations/return_quest.json"
+        const val FINISHED_QUEST = "conversations/quest_finished.json"
     }
 }

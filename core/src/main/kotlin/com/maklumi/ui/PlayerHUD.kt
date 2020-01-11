@@ -147,12 +147,18 @@ class PlayerHUD(camera: Camera) : Screen,
             }
             ConversationCommandEvent.ACCEPT_QUEST -> {
                 val selectedEntity = MapManager.currentSelectedEntity ?: return
-                val path = selectedEntity.entityConfig.questConfigPath
-                questUI.addQuest(path)
+                val config = selectedEntity.entityConfig
+                val path = config.questConfigPath
+                val isQuestAdded = questUI.addQuest(path)
+                if (isQuestAdded) {
+                    //Update conversation dialog
+                    config.conversationConfigPath = QuestUI.RETURN_QUEST
+                    ProfileManager.properties.put(config.entityID, config)
+                    updateEntityObservers()
+                }
 
                 conversationUI.isVisible = false
                 MapManager.clearCurrentSelectedEntity()
-                updateEntityObservers()
             }
             ConversationCommandEvent.ADD_ENTITY_TO_INVENTORY -> {
                 val selectedEntity = MapManager.currentSelectedEntity ?: return
@@ -162,6 +168,14 @@ class PlayerHUD(camera: Camera) : Screen,
                 selectedEntity.unregisterObservers()
                 conversationUI.isVisible = false
                 questUI.updateQuests()
+            }
+            ConversationCommandEvent.RETURN_QUEST -> {
+                val selectedEntity = MapManager.currentSelectedEntity ?: return
+                val config = selectedEntity.entityConfig
+                val configReturnProperty = ProfileManager.getProperty<EntityConfig>(config.entityID) ?: return
+                configReturnProperty.conversationConfigPath = QuestUI.FINISHED_QUEST
+                conversationUI.isVisible = false
+                MapManager.clearCurrentSelectedEntity()
             }
         }
     }

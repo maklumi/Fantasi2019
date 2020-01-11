@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.JsonValue
 import com.maklumi.dialog.ComponentObserver
+import com.maklumi.profile.ProfileManager
 import ktx.json.fromJson
 import ktx.json.readValue
 import kotlin.random.Random
@@ -93,6 +94,17 @@ class Entity(val inputComponent: InputComponent,
             val jsonValues = json.fromJson<ArrayList<JsonValue>>(Gdx.files.internal(configFilePath))
             jsonValues.forEach { configs.add(json.readValue<EntityConfig>(it)) }
             return configs
+        }
+
+        fun loadEntityConfigBy(configPath: String): EntityConfig {
+            val entityConfig = getEntityConfig(configPath)
+            val serializedConfig = ProfileManager.getProperty<EntityConfig>(entityConfig.entityID)
+            return serializedConfig ?: entityConfig
+        }
+
+        fun loadEntityConfig(entityConfig: EntityConfig): EntityConfig {
+            val serializedConfig = ProfileManager.getProperty<EntityConfig>(entityConfig.entityID)
+            return serializedConfig ?: entityConfig
         }
     }
 }
