@@ -37,7 +37,7 @@ class QuestGraph {
                     positions.forEach { pos ->
                         questItems.add(com.maklumi.Map.initEntityNPC(pos, Entity.getEntityConfig(taskConfig)))
                     }
-                    MapManager.addMapEntities(questItems)
+                    MapManager.addMapQuestEntities(questItems)
                 }
                 RETURN -> {
                 }

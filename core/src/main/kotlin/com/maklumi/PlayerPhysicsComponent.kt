@@ -2,6 +2,7 @@ package com.maklumi
 
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
+import com.badlogic.gdx.utils.Array as gdxArray
 import com.maklumi.Component.MESSAGE
 import com.maklumi.MapManager.camera
 import com.maklumi.MapManager.getCurrentMapEntities
@@ -60,8 +61,11 @@ class PlayerPhysicsComponent : PhysicsComponent() {
     }
 
     private fun selectMapEntityCandidate() {
-        val currentEntities = getCurrentMapEntities()
-
+        val mapEntities = getCurrentMapEntities()
+        val questEntities = MapManager.getCurrentMapQuestEntities()
+        val currentEntities = gdxArray<Entity>()
+        currentEntities.addAll(mapEntities)
+        currentEntities.addAll(questEntities)
         //Convert screen coordinates to world coordinates
         camera.unproject(mouseSelectCoordinates)
 //        println(" PPC: Mouse Coordinates $mouseSelectCoordinates ")
@@ -90,5 +94,6 @@ class PlayerPhysicsComponent : PhysicsComponent() {
         }
 
         isMouseSelectEnabled = false
+        currentEntities.clear()
     }
 }

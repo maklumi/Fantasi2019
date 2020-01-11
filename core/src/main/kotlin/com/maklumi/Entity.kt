@@ -64,7 +64,7 @@ class Entity(val inputComponent: InputComponent,
         components.forEach { it.receiveMessage(fullMessage) }
     }
 
-    fun addUiObserver(conversationObserver: ComponentObserver) {
+    fun registerObserver(conversationObserver: ComponentObserver) {
         physicsComponent.uiObservers.add(conversationObserver)
         graphicsComponent.uiObservers.add(conversationObserver)
     }

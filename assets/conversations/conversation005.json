@@ -1,0 +1,35 @@
+{
+  "associatedChoices": {
+    "1": [
+      {
+        "class": "com.maklumi.dialog.ConversationChoice",
+        "sourceId": "1",
+        "destinationId": "2",
+        "choicePhrase": "Yes",
+        "conversationCommandEvent": "ADD_ENTITY_TO_INVENTORY"
+      },
+      {
+        "class": "com.maklumi.dialog.ConversationChoice",
+        "sourceId": "1",
+        "destinationId": "3",
+        "choicePhrase": "No",
+        "conversationCommandEvent": "EXIT_CONVERSATION"
+      }
+    ]
+  },
+  "conversations": {
+    "3": {
+      "id": "3",
+      "dialog": "Ok"
+    },
+    "2": {
+      "id": "2",
+      "dialog": "Ok"
+    },
+    "1": {
+      "id": "1",
+      "dialog": "Would you like to pick up the item?"
+    }
+  },
+  "currentConversationID": "1"
+}

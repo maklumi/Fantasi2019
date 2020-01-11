@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Window
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Array
+import com.maklumi.MapManager
 import com.maklumi.Utility
 import com.maklumi.json
 import com.maklumi.quest.QuestGraph
@@ -76,6 +77,7 @@ class QuestUI : Window("Quest Log", Utility.STATUSUI_SKIN, "solidbackground") {
     }
 
     fun mapChanged() {
+        MapManager.clearAllMapQuestEntities()
         //populate items if quests have them
         for (quest in quests) {
             if (!quest.isQuestComplete.toBoolean()) {

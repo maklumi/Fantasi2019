@@ -42,5 +42,8 @@ class TownMap : Map(MapFactory.MapType.TOWN, "maps/town.tmx") {
         for (i in 0 until mapEntities.size) {
             mapEntities[i].update(batch, delta)
         }
+        mapQuestEntities.forEach {
+            it.update(batch, delta)
+        }
     }
 }

@@ -1,9 +1,12 @@
 package com.maklumi.test
 
 import com.badlogic.gdx.utils.Json
+import com.badlogic.gdx.utils.JsonWriter
 import com.maklumi.dialog.Conversation
 import com.maklumi.dialog.ConversationChoice
 import com.maklumi.dialog.ConversationGraph
+import com.maklumi.dialog.ConversationGraphObserver.ConversationCommandEvent.ADD_ENTITY_TO_INVENTORY
+import com.maklumi.dialog.ConversationGraphObserver.ConversationCommandEvent.EXIT_CONVERSATION
 import java.util.*
 
 object ChatGraphTest {
@@ -71,17 +74,51 @@ object ChatGraphTest {
         graph.addChoice(startChoice2)
         graph.addChoice(unconnectedChoice)
 
-        println(graph.toJson())
-        println(graph.toString())
+//        println(graph.toJson())
+//        println(graph.toString())
+//
+//        println(graph.displayCurrentConversation())
+//        while (prompt != "q") {
+//            val nextChat = nextChoice()
+//            if (nextChat != null) {
+//                graph.currentConversationID = nextChat.id
+//                println(graph.displayCurrentConversation())
+//            }
+//        }
 
-        println(graph.displayCurrentConversation())
-        while (prompt != "q") {
-            val nextChat = nextChoice()
-            if (nextChat != null) {
-                graph.currentConversationID = nextChat.id
-                println(graph.displayCurrentConversation())
-            }
-        }
+        val first = Conversation()
+        first.id = "1"
+        first.dialog = "Would you like to pick up the item?"
+        val second = Conversation()
+        second.id = "2"
+        second.dialog = "Ok"
+        val third = Conversation()
+        third.id = "3"
+        third.dialog = "Ok"
+
+        val chits = Hashtable<String, Conversation>()
+        chits[first.id] = first
+        chits[second.id] = second
+        chits[third.id] = third
+
+        val c1 = ConversationChoice()
+        c1.sourceId = "1"
+        c1.destinationId = "2"
+        c1.choicePhrase = "Yes"
+        c1.conversationCommandEvent = ADD_ENTITY_TO_INVENTORY
+        val c2 = ConversationChoice()
+        c2.sourceId = "1"
+        c2.destinationId = "3"
+        c2.choicePhrase = "No"
+        c2.conversationCommandEvent = EXIT_CONVERSATION
+
+        graph = ConversationGraph(chits, first.id)
+        graph.addChoice(c1)
+        graph.addChoice(c2)
+
+        val j = Json()
+        j.setOutputType(JsonWriter.OutputType.json)
+        println(j.prettyPrint(graph))
     }
 
     private fun nextChoice(): Conversation? {

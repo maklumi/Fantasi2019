@@ -8,6 +8,7 @@ interface ConversationGraphObserver {
         LOAD_STORE_INVENTORY,
         EXIT_CONVERSATION,
         ACCEPT_QUEST,
-        NONE
+        NONE,
+        ADD_ENTITY_TO_INVENTORY
     }
 }

@@ -46,6 +46,7 @@ abstract class Map(var mapType: MapFactory.MapType, path: String) {
     val npcStartPositions: gdxArray<Vector2>
     protected val specialNPCStartPositions: MutableMap<String, Vector2>
     var mapEntities: gdxArray<Entity> = gdxArray()
+    var mapQuestEntities: gdxArray<Entity> = gdxArray()
 
     init {
         loadMap(path)

@@ -152,6 +152,15 @@ class PlayerHUD(camera: Camera) : Screen,
 
                 conversationUI.isVisible = false
                 MapManager.clearCurrentSelectedEntity()
+                updateEntityObservers()
+            }
+            ConversationCommandEvent.ADD_ENTITY_TO_INVENTORY -> {
+                val selectedEntity = MapManager.currentSelectedEntity ?: return
+                inventoryUI.addEntityToInventory(selectedEntity)
+                MapManager.clearCurrentSelectedEntity()
+                MapManager.removeMapQuestEntity(selectedEntity)
+                selectedEntity.unregisterObservers()
+                conversationUI.isVisible = false
             }
         }
     }
@@ -217,7 +226,9 @@ class PlayerHUD(camera: Camera) : Screen,
         }
     }
 
-    fun mapChanged() {
+    fun updateEntityObservers() {
+        MapManager.unregisterCurrentMapEntityObservers()
         questUI.mapChanged()
+        MapManager.registerCurrentMapEntityObservers(this)
     }
 }

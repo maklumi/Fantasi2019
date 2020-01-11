@@ -6,6 +6,7 @@ class CastleDoomMap : Map(MapFactory.MapType.CASTLE_OF_DOOM, "maps/castle_of_doo
 
     override fun updateMapEntities(batch: Batch, delta: Float) {
         mapEntities.forEach { it.update(batch, delta) }
+        mapQuestEntities.forEach { it.update(batch, delta) }
     }
 
 }

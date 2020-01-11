@@ -7,6 +7,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap
 import com.badlogic.gdx.math.Vector2
 import com.maklumi.MapFactory.MapType
 import com.maklumi.MapFactory.MapType.*
+import com.maklumi.dialog.ComponentObserver
 import com.maklumi.profile.ProfileEvent
 import com.maklumi.profile.ProfileEvent.PROFILE_LOADED
 import com.maklumi.profile.ProfileEvent.SAVING_PROFILE
@@ -98,8 +99,29 @@ object MapManager : ProfileObserver {
         return gameMap.getQuestItemSpawnPositions(objectName, objectTaskID)
     }
 
-    fun addMapEntities(entities: gdxArray<Entity>) {
-        gameMap.mapEntities.addAll(entities)
+    fun addMapQuestEntities(entities: gdxArray<Entity>) {
+        gameMap.mapQuestEntities.addAll(entities)
     }
+
+    fun clearAllMapQuestEntities() {
+        gameMap.mapQuestEntities.clear()
+    }
+
+    fun registerCurrentMapEntityObservers(observer: ComponentObserver) {
+        gameMap.mapEntities.forEach { it.registerObserver(observer) }
+        gameMap.mapQuestEntities.forEach { it.registerObserver(observer) }
+    }
+
+    fun unregisterCurrentMapEntityObservers() {
+        gameMap.mapEntities.forEach(Entity::unregisterObservers)
+        gameMap.mapQuestEntities.forEach(Entity::unregisterObservers)
+    }
+
+    fun removeMapQuestEntity(entity: Entity) {
+        entity.unregisterObservers()
+        gameMap.mapQuestEntities.removeValue(entity, true)
+    }
+
+    fun getCurrentMapQuestEntities(): gdxArray<Entity> = gameMap.mapQuestEntities
 
 }

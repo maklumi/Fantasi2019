@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.Window
+import com.maklumi.Entity
 import com.maklumi.InventoryItem.ItemTypeID
 import com.maklumi.InventoryItem.ItemUseType
 import com.maklumi.InventoryItemFactory
@@ -84,6 +85,31 @@ class InventoryUI : Window("Inventory Window", STATUSUI_SKIN, "solidbackground")
         add(playerSlotTable).padBottom(20f).row()
         add(inventorySlotTable).row()
         pack()
+    }
+
+    fun addEntityToInventory(entity: Entity) {
+        val sourceCells = inventorySlotTable.cells
+        val cell = sourceCells.first { it.actor != null && (it.actor as InventorySlot).numItems == 0 }
+        val inventoryItem = InventoryItemFactory.getInventoryItem(ItemTypeID.valueOf(entity.entityConfig.entityID))
+        val slot = cell.actor as InventorySlot
+        slot.add(inventoryItem)
+        dragAndDrop.addSource(InventorySlotSource(slot))
+//        var counter = 0
+//        for (index in 0 until sourceCells.size) {
+//            counter = index
+//            val inventorySlot = sourceCells.get(index).actor as InventorySlot? ?: continue
+//            val numItems = inventorySlot.numItems
+//            if (numItems == 0) {
+//                val inventoryItem = InventoryItemFactory.getInventoryItem(ItemTypeID.valueOf(entity.entityConfig.entityID))
+//                inventorySlot.add(inventoryItem)
+//                dragAndDrop.addSource(InventorySlotSource(inventorySlot))
+//                break
+//            }
+//        }
+//        if (counter == sourceCells.size) {
+//            //No empty slot available
+//            println("MESSAGE THAT INVENTORY IS FULL")
+//        }
     }
 
     companion object {

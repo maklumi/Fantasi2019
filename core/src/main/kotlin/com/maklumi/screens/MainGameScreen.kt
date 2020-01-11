@@ -70,7 +70,7 @@ class MainGameScreen : Screen {
         playerHUD = PlayerHUD(hudCamera)
         ProfileManager.profileObservers.add(playerHUD)
         ProfileManager.loadProfile()
-        player.addUiObserver(playerHUD)
+        player.registerObserver(playerHUD)
         tiledMapRenderer = OrthogonalTiledMapRenderer(currentMap, unitScale)
         // to prevent initial flicker
         camera.position.set(playerStartUnitScaled, 0f)
@@ -106,9 +106,9 @@ class MainGameScreen : Screen {
             isNewMapLoaded = false
             // also register conversation observer for others
             MapManager.getCurrentMapEntities().forEach {
-                it.addUiObserver(playerHUD)
+                it.registerObserver(playerHUD)
             }
-            playerHUD.mapChanged()
+            playerHUD.updateEntityObservers()
         }
         tiledMapRenderer.render()
 

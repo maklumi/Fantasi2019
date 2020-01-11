@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.collision.Ray
 import com.maklumi.Component.MESSAGE
 import com.maklumi.MapManager.unitScale
 import com.maklumi.dialog.ComponentSubject
+import com.badlogic.gdx.utils.Array as gdxArray
 
 abstract class PhysicsComponent : Component, ComponentSubject() {
 
@@ -48,7 +49,11 @@ abstract class PhysicsComponent : Component, ComponentSubject() {
     }
 
     protected open fun isCollisionWithMapEntities(entity: Entity): Boolean {
-        val entities = MapManager.getCurrentMapEntities()
+        val mapEntities = MapManager.getCurrentMapEntities()
+        val questEntities = MapManager.getCurrentMapQuestEntities()
+        val entities = gdxArray<Entity>()
+        entities.addAll(mapEntities)
+        entities.addAll(questEntities)
         var isCollisionWithMapEntities = false
 
         for (mapEntity in entities) {
@@ -61,6 +66,7 @@ abstract class PhysicsComponent : Component, ComponentSubject() {
                 break
             }
         }
+        entities.clear()
         return isCollisionWithMapEntities
     }
 
