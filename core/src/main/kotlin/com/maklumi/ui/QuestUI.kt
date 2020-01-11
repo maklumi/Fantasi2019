@@ -60,10 +60,10 @@ class QuestUI : Window("Quest Log", Utility.STATUSUI_SKIN, "solidbackground") {
 
         val graph = json.fromJson<QuestGraph>(Gdx.files.internal(questConfigPath))
         quests.add(graph)
-        updateQuests()
+        updateQuestsItemList()
     }
 
-    private fun updateQuests() {
+    private fun updateQuestsItemList() {
         listQuests.clearItems()
         listQuests.setItems(quests)
         listQuests.selectedIndex = -1
@@ -76,14 +76,23 @@ class QuestUI : Window("Quest Log", Utility.STATUSUI_SKIN, "solidbackground") {
         listTasks.selectedIndex = -1
     }
 
-    fun mapChanged() {
+    fun initQuests() {
         MapManager.clearAllMapQuestEntities()
         //populate items if quests have them
+        for (quest in quests) {
+            if (!quest.isQuestComplete.toBoolean()) {
+                quest.init()
+            }
+        }
+        updateQuestsItemList()
+    }
+
+    fun updateQuests() {
         for (quest in quests) {
             if (!quest.isQuestComplete.toBoolean()) {
                 quest.update()
             }
         }
-        updateQuests()
+        updateQuestsItemList()
     }
 }

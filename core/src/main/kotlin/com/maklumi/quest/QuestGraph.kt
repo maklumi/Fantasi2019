@@ -20,7 +20,7 @@ class QuestGraph {
     var questID: String = ""
     var isQuestComplete: String = "false"
 
-    fun update() {
+    fun init() {
         for (quest in allQuestTasks()) {
             //We first want to make sure the task is available and is relevant to current location
             if (isQuestTaskAvailable(quest.id)) continue
@@ -53,13 +53,43 @@ class QuestGraph {
                     }
                     MapManager.addMapQuestEntities(questItems)
                     ProfileManager.properties.put(config.itemTypeID.toString(), positions)
-                    println("QuestGraph56 " + ProfileManager.properties.get(config.itemTypeID.toString()))
+                }
+                else -> {
+                }
+            }
+        }
+    }
+
+    fun update() {
+        for (quest in allQuestTasks()) {
+            //We first want to make sure the task is available and is relevant to current location
+            if (isQuestTaskAvailable(quest.id)) continue
+
+            val taskLocation = quest.taskProperties.get(TARGET_LOCATION.toString())
+            if (!taskLocation.equals(MapManager.currentMapType.toString(), ignoreCase = true) ||
+                    taskLocation.isNullOrEmpty()
+            ) continue
+
+            val taskConfig = quest.taskProperties.get(TARGET_TYPE.toString())
+            if (taskConfig.isNullOrEmpty()) continue
+
+            when (quest.questType) {
+                FETCH -> {
+                    val config = Entity.getEntityConfig(taskConfig)
+                    @Suppress("UNCHECKED_CAST")
+                    val questPosition = ProfileManager.properties.get(config.itemTypeID.toString()) as gdxArray<Vector2>?
+                            ?: return
+                    // Case where all the items have been picked up
+                    if (questPosition.size <= 1) {
+                        quest.setTaskComplete()
+                        println("QG85 TASK : " + quest.id + " is complete!")
+                    }
                 }
                 RETURN -> {
+                    println("QuestGraph89: Return ready for quest ${quest.id}")
                 }
-                DISCOVER -> {
-                }
-                NOTYPE -> {
+                else -> {
+
                 }
             }
         }

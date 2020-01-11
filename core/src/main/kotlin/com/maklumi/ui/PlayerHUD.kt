@@ -161,6 +161,7 @@ class PlayerHUD(camera: Camera) : Screen,
                 MapManager.removeMapQuestEntity(selectedEntity)
                 selectedEntity.unregisterObservers()
                 conversationUI.isVisible = false
+                questUI.updateQuests()
             }
         }
     }
@@ -228,7 +229,7 @@ class PlayerHUD(camera: Camera) : Screen,
 
     fun updateEntityObservers() {
         MapManager.unregisterCurrentMapEntityObservers()
-        questUI.mapChanged()
+        questUI.initQuests()
         MapManager.registerCurrentMapEntityObservers(this)
     }
 }

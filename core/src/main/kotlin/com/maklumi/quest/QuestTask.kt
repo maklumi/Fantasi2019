@@ -24,4 +24,8 @@ class QuestTask {
         }
         return isComplete.toBoolean()
     }
+
+    fun setTaskComplete() {
+        taskProperties.put(QuestTaskPropertyType.IS_TASK_COMPLETE.toString(), "true")
+    }
 }
