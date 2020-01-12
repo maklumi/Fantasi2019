@@ -30,7 +30,8 @@
         "sourceId": "1",
         "destinationId": "2"
       }
-    ]
+    ],
+    "2": []
   },
   "questID": "2",
   "isQuestComplete": "FALSE"

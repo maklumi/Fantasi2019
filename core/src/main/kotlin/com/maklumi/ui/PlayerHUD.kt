@@ -149,10 +149,11 @@ class PlayerHUD(camera: Camera) : Screen,
                 val selectedEntity = MapManager.currentSelectedEntity ?: return
                 val config = selectedEntity.entityConfig
                 val path = config.questConfigPath
-                val isQuestAdded = questUI.addQuest(path)
-                if (isQuestAdded) {
+                val questGraph = questUI.loadQuest(path)
+                if (questGraph != null) {
                     //Update conversation dialog
                     config.conversationConfigPath = QuestUI.RETURN_QUEST
+                    config.currentQuestID = questGraph.questID
                     ProfileManager.properties.put(config.entityID, config)
                     updateEntityObservers()
                 }
@@ -162,7 +163,7 @@ class PlayerHUD(camera: Camera) : Screen,
             }
             ConversationCommandEvent.ADD_ENTITY_TO_INVENTORY -> {
                 val selectedEntity = MapManager.currentSelectedEntity ?: return
-                inventoryUI.addEntityToInventory(selectedEntity)
+                inventoryUI.addEntityToInventory(selectedEntity, selectedEntity.entityConfig.currentQuestID)
                 MapManager.clearCurrentSelectedEntity()
                 MapManager.removeMapQuestEntity(selectedEntity)
                 selectedEntity.unregisterObservers()
@@ -173,7 +174,11 @@ class PlayerHUD(camera: Camera) : Screen,
                 val selectedEntity = MapManager.currentSelectedEntity ?: return
                 val config = selectedEntity.entityConfig
                 val configReturnProperty = ProfileManager.getProperty<EntityConfig>(config.entityID) ?: return
-                configReturnProperty.conversationConfigPath = QuestUI.FINISHED_QUEST
+                if (questUI.isQuestReadyForReturn(configReturnProperty.currentQuestID)) {
+                    inventoryUI.removeQuestItemFromInventory(configReturnProperty.currentQuestID)
+                    configReturnProperty.conversationConfigPath = QuestUI.FINISHED_QUEST
+                    ProfileManager.properties.put(configReturnProperty.entityID, configReturnProperty)
+                }
                 conversationUI.isVisible = false
                 MapManager.clearCurrentSelectedEntity()
             }

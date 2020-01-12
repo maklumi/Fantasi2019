@@ -87,29 +87,26 @@ class InventoryUI : Window("Inventory Window", STATUSUI_SKIN, "solidbackground")
         pack()
     }
 
-    fun addEntityToInventory(entity: Entity) {
+    fun addEntityToInventory(entity: Entity, itemName: String) {
         val sourceCells = inventorySlotTable.cells
         val cell = sourceCells.first { it.actor != null && (it.actor as InventorySlot).numItems == 0 }
         val inventoryItem = InventoryItemFactory.getInventoryItem(ItemTypeID.valueOf(entity.entityConfig.entityID))
+        inventoryItem.name = itemName
         val slot = cell.actor as InventorySlot
         slot.add(inventoryItem)
         dragAndDrop.addSource(InventorySlotSource(slot))
-//        var counter = 0
-//        for (index in 0 until sourceCells.size) {
-//            counter = index
-//            val inventorySlot = sourceCells.get(index).actor as InventorySlot? ?: continue
-//            val numItems = inventorySlot.numItems
-//            if (numItems == 0) {
-//                val inventoryItem = InventoryItemFactory.getInventoryItem(ItemTypeID.valueOf(entity.entityConfig.entityID))
-//                inventorySlot.add(inventoryItem)
-//                dragAndDrop.addSource(InventorySlotSource(inventorySlot))
-//                break
-//            }
-//        }
-//        if (counter == sourceCells.size) {
-//            //No empty slot available
-//            println("MESSAGE THAT INVENTORY IS FULL")
-//        }
+    }
+
+    fun removeQuestItemFromInventory(questID: String) {
+        val sourceCells = inventorySlotTable.cells
+        for (index in 0 until sourceCells.size) {
+            val inventorySlot = sourceCells.get(index).actor as InventorySlot? ?: continue
+            val item = inventorySlot.topItem
+            val inventoryItemName = item.name
+            if (inventoryItemName != null && inventoryItemName == questID) {
+                inventorySlot.clearAllInventoryItems(false)
+            }
+        }
     }
 
     companion object {
@@ -127,7 +124,7 @@ class InventoryUI : Window("Inventory Window", STATUSUI_SKIN, "solidbackground")
 
                 for (index in 0 until numItems) {
                     val item = InventoryItemFactory.getInventoryItem(itemTypeId)
-                    item.name = targetTable.name
+                    if (item.name == null) item.name = targetTable.name
                     inventorySlot.add(item)
                     dragAndDrop.addSource(InventorySlotSource(inventorySlot))
                 }

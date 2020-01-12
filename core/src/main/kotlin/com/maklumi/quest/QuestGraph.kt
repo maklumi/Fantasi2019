@@ -9,7 +9,8 @@ import com.maklumi.MapManager
 import com.maklumi.profile.ProfileManager
 import com.maklumi.quest.QuestTask.QuestTaskPropertyType.TARGET_LOCATION
 import com.maklumi.quest.QuestTask.QuestTaskPropertyType.TARGET_TYPE
-import com.maklumi.quest.QuestTask.QuestType.*
+import com.maklumi.quest.QuestTask.QuestType.FETCH
+import com.maklumi.quest.QuestTask.QuestType.RETURN
 import java.util.*
 import com.badlogic.gdx.utils.Array as gdxArray
 
@@ -21,38 +22,42 @@ class QuestGraph {
     var isQuestComplete: String = "false"
 
     fun init() {
-        for (quest in allQuestTasks()) {
+        loop@ for (quest in allQuestTasks()) {
+
+            if (quest.isTaskComplete()) continue
+
             //We first want to make sure the task is available and is relevant to current location
-            if (isQuestTaskAvailable(quest.id)) continue
+            if (!isQuestTaskAvailable(quest.id)) continue
 
             val taskLocation = quest.taskProperties.get(TARGET_LOCATION.toString())
             if (!taskLocation.equals(MapManager.currentMapType.toString(), ignoreCase = true) ||
                     taskLocation.isNullOrEmpty()
             ) continue
 
-            val taskConfig = quest.taskProperties.get(TARGET_TYPE.toString())
-            if (taskConfig.isNullOrEmpty()) continue
-
             when (quest.questType) {
                 FETCH -> {
                     val questItems = gdxArray<Entity>()
                     val positions = MapManager.getQuestItemSpawnPositions(questID, quest.id)
+                    val taskConfig = quest.taskProperties.get(TARGET_TYPE.toString())
+                    if (taskConfig.isNullOrEmpty()) continue@loop
                     val config = Entity.getEntityConfig(taskConfig)
                     @Suppress("UNCHECKED_CAST")
-                    val questPosition = ProfileManager.properties.get(config.itemTypeID.toString()) as gdxArray<Vector2>?
+                    val questPosition = ProfileManager.properties.get(config.entityID) as gdxArray<Vector2>?
                     if (questPosition == null) {
                         for (pos in positions) {
                             val item = Map.initEntityNPC(pos, config)
+                            item.entityConfig.currentQuestID = questID
                             questItems.add(item)
                         }
                     } else {
                         for (pos in questPosition) {
                             val item = Map.initEntityNPC(pos, config)
+                            item.entityConfig.currentQuestID = questID
                             questItems.add(item)
                         }
                     }
                     MapManager.addMapQuestEntities(questItems)
-                    ProfileManager.properties.put(config.itemTypeID.toString(), positions)
+                    ProfileManager.properties.put(config.entityID, positions)
                 }
                 else -> {
                 }
@@ -61,24 +66,25 @@ class QuestGraph {
     }
 
     fun update() {
-        for (quest in allQuestTasks()) {
+        loop@ for (quest in allQuestTasks()) {
+            if (quest.isTaskComplete()) continue
+
             //We first want to make sure the task is available and is relevant to current location
-            if (isQuestTaskAvailable(quest.id)) continue
+            if (!isQuestTaskAvailable(quest.id)) continue
 
             val taskLocation = quest.taskProperties.get(TARGET_LOCATION.toString())
             if (!taskLocation.equals(MapManager.currentMapType.toString(), ignoreCase = true) ||
                     taskLocation.isNullOrEmpty()
             ) continue
 
-            val taskConfig = quest.taskProperties.get(TARGET_TYPE.toString())
-            if (taskConfig.isNullOrEmpty()) continue
-
             when (quest.questType) {
                 FETCH -> {
+                    val taskConfig = quest.taskProperties.get(TARGET_TYPE.toString())
+                    if (taskConfig.isNullOrEmpty()) continue@loop
                     val config = Entity.getEntityConfig(taskConfig)
                     @Suppress("UNCHECKED_CAST")
-                    val questPosition = ProfileManager.properties.get(config.itemTypeID.toString()) as gdxArray<Vector2>?
-                            ?: return
+                    val questPosition = ProfileManager.properties.get(config.entityID) as gdxArray<Vector2>?
+                            ?: continue@loop
                     // Case where all the items have been picked up
                     if (questPosition.size <= 1) {
                         quest.setTaskComplete()
@@ -157,5 +163,21 @@ class QuestGraph {
         val j = Json()
         j.setOutputType(JsonWriter.OutputType.json)
         return j.prettyPrint(this)
+    }
+
+    fun updateQuestForReturn(): Boolean {
+        var readyTask: QuestTask? = null
+        //First, see if all tasks are available, meaning no blocking dependencies
+        for (task in allQuestTasks()) {
+            if (!isQuestTaskAvailable(task.id)) return false
+            if (!task.isTaskComplete()) {
+                if (task.questType == RETURN) {
+                    readyTask = task
+                } else return false
+            }
+        }
+        if (readyTask == null) return false
+        readyTask.setTaskComplete()
+        return true
     }
 }

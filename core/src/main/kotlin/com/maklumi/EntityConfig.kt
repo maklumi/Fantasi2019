@@ -13,6 +13,7 @@ class EntityConfig {
     var conversationConfigPath: String = ""
     var questConfigPath = ""
     var itemTypeID: ItemTypeID = ItemTypeID.NOTHING
+    var currentQuestID = ""
 }
 
 data class AnimationConfig(
