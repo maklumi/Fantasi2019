@@ -2,6 +2,7 @@ package com.maklumi.ui
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.NinePatch
+import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Align.left
@@ -19,6 +20,7 @@ class StatusUI : Window("Status", STATUSUI_SKIN), StatusSubject {
     val inventoryButton = ImageButton(skin, "inventory-button")
     val questButton = ImageButton(skin, "quest-button")
     private val goldVal = Label("", skin)
+    private val xpValueLabel = Label("", skin)
 
     private var level = 1
     var gold = 0
@@ -29,7 +31,14 @@ class StatusUI : Window("Status", STATUSUI_SKIN), StatusSubject {
         }
     private var hp = 50000
     private var mp = 50
-    private var xp = 0
+    var xp = 0
+        set(value) {
+            field = value
+            xpValueLabel.setText("$value")
+            notify(value, StatusObserver.StatusEvent.UPDATED_XP)
+            updateBar(xpBar, field, xpCurrentMax)
+        }
+    var xpCurrentMax = 100
 
     init {
         add()
@@ -78,8 +87,7 @@ class StatusUI : Window("Status", STATUSUI_SKIN), StatusSubject {
 
         val xpLabel = Label(" xp: ", skin)
         add(xpLabel)
-        val xp = Label("$xp", skin)
-        add(xp).align(left)
+        add(xpValueLabel).align(left)
         row()
 
         // level row
@@ -103,4 +111,10 @@ class StatusUI : Window("Status", STATUSUI_SKIN), StatusSubject {
     }
 
     override val statusObservers = Array<StatusObserver>()
+
+    private fun updateBar(bar: Image, current: Int, max: Int) {
+        val value = MathUtils.clamp(current, 0, max)
+        val percentage = MathUtils.clamp(value / max.toFloat(), 0f, 100f)
+        bar.setSize(hpBar.width * percentage, hpBar.height)
+    }
 }

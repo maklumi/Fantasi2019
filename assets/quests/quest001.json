@@ -1,5 +1,7 @@
 {
   "questTitle": "Beast Feast Leftovers",
+  goldReward: 100,
+  xpReward: 100,
   "questTasks": {
     "4": {
       "id": "4",

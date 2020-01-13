@@ -83,7 +83,7 @@ class QuestUI : Window("Quest Log", Utility.STATUSUI_SKIN, "solidbackground") {
         return true
     }
 
-    private fun getQuestByID(questGraphID: String): QuestGraph? {
+    fun getQuestByID(questGraphID: String): QuestGraph? {
         return quests.firstOrNull { it.questID.equals(questGraphID, true) }
     }
 

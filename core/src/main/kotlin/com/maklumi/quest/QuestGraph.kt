@@ -20,6 +20,8 @@ class QuestGraph {
     private val questTaskDependencies = Hashtable<String, ArrayList<QuestTaskDependency>>()
     var questID: String = ""
     var isQuestComplete: String = "false"
+    var goldReward: Int = 0
+    var xpReward: Int = 0
 
     fun init() {
         loop@ for (quest in allQuestTasks()) {

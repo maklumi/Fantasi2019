@@ -1,5 +1,7 @@
 {
   "questTitle": "Herbs for Cooking",
+  goldReward: 20,
+  xpReward: 20,
   "questTasks": {
     "2": {
       "id": "2",

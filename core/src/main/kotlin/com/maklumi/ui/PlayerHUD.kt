@@ -193,8 +193,12 @@ class PlayerHUD(camera: Camera) : Screen,
                 val selectedEntity = MapManager.currentSelectedEntity ?: return
                 val config = selectedEntity.entityConfig
                 val configReturnProperty = ProfileManager.getProperty<EntityConfig>(config.entityID) ?: return
-                if (questUI.isQuestReadyForReturn(configReturnProperty.currentQuestID)) {
-                    inventoryUI.removeQuestItemFromInventory(configReturnProperty.currentQuestID)
+                val questID = configReturnProperty.currentQuestID
+                if (questUI.isQuestReadyForReturn(questID)) {
+                    val quest = questUI.getQuestByID(questID)
+                    statusUI.xp += quest!!.xpReward
+                    statusUI.gold += quest.goldReward
+                    inventoryUI.removeQuestItemFromInventory(questID)
                     configReturnProperty.conversationConfigPath = QuestUI.FINISHED_QUEST
                     ProfileManager.properties.put(configReturnProperty.entityID, configReturnProperty)
                 }
@@ -231,6 +235,9 @@ class PlayerHUD(camera: Camera) : Screen,
 //                val value = ProfileManager.getProperty("currentPlayerGP") ?: 200
                 statusUI.gold = 500
 
+                statusUI.xpCurrentMax = ProfileManager.getProperty("currentPlayerXPMax") ?: 200
+                statusUI.xp = ProfileManager.getProperty("currentPlayerXP") ?: 0
+
                 val quests = ProfileManager.getProperty<Array<QuestGraph>>("playerQuests")
                 quests?.let { questUI.quests.addAll(quests) }
             }
@@ -239,6 +246,8 @@ class PlayerHUD(camera: Camera) : Screen,
                 ProfileManager.setProperty("playerEquipInventory", InventoryUI.getInventoryFiltered(inventoryUI.equipSlots))
                 ProfileManager.setProperty("currentPlayerGP", statusUI.gold)
 //                ProfileManager.setProperty("playerQuests", questUI.quests)
+                ProfileManager.setProperty("currentPlayerXP", statusUI.xp)
+                ProfileManager.setProperty("currentPlayerXPMax", statusUI.xpCurrentMax)
             }
         }
     }
