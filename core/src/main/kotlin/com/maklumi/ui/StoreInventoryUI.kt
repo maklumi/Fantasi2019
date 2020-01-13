@@ -10,6 +10,8 @@ import com.badlogic.gdx.utils.Array
 import com.maklumi.MapManager
 import com.maklumi.Utility
 import com.maklumi.json
+import com.maklumi.ui.InventoryUI.Companion.PLAYER_INVENTORY
+import com.maklumi.ui.InventoryUI.Companion.STORE_INVENTORY
 import com.maklumi.ui.StoreInventoryObserver.StoreInventoryEvent.PLAYER_GP_TOTAL_UPDATED
 import com.maklumi.ui.StoreInventoryObserver.StoreInventoryEvent.PLAYER_INVENTORY_UPDATED
 import ktx.actors.onClick
@@ -18,8 +20,6 @@ class StoreInventoryUI : Window("Inventory Transaction", Utility.STATUSUI_SKIN, 
         InventorySlotObserver,
         StoreInventorySubject {
 
-    private val storeInv = "Store_Inventory"
-    private val playerInv = "Player_Inventory"
     private val sell = "SELL"
     private val buy = "BUY"
     private val gp = " GP"
@@ -55,10 +55,10 @@ class StoreInventoryUI : Window("Inventory Transaction", Utility.STATUSUI_SKIN, 
             val slot = InventorySlot()
             slot.addListener(InventorySlotTooltipListener(inventorySlotTooltip))
             slot.inventorySlotObservers.add(this)
-            slot.name = storeInv
+            slot.name = STORE_INVENTORY
 
             dragAndDrop.addTarget(InventorySlotTarget(slot))
-            inventorySlotTable.name = storeInv
+            inventorySlotTable.name = STORE_INVENTORY
             inventorySlotTable.add(slot).size(52f, 52f)
             if (i % 10 == 0) inventorySlotTable.row()
         }
@@ -79,10 +79,10 @@ class StoreInventoryUI : Window("Inventory Transaction", Utility.STATUSUI_SKIN, 
             val slot = InventorySlot()
             slot.addListener(InventorySlotTooltipListener(inventorySlotTooltip))
             slot.inventorySlotObservers.add(this)
-            slot.name = playerInv
+            slot.name = PLAYER_INVENTORY
 
             dragAndDrop.addTarget(InventorySlotTarget(slot))
-            playerInventorySlotTable.name = playerInv
+            playerInventorySlotTable.name = PLAYER_INVENTORY
             playerInventorySlotTable.add(slot).size(52f, 52f)
             if (i % 10 == 0) playerInventorySlotTable.row()
         }
@@ -126,7 +126,7 @@ class StoreInventoryUI : Window("Inventory Transaction", Utility.STATUSUI_SKIN, 
             notify(playerTotal.toString(), PLAYER_GP_TOTAL_UPDATED)
 
             // update the owner of the items
-            InventoryUI.nameInventoryItemWith(playerInventorySlotTable, playerInv)
+            InventoryUI.nameInventoryItemWith(playerInventorySlotTable, PLAYER_INVENTORY)
             savePlayerInventory()
         }
 
@@ -140,7 +140,7 @@ class StoreInventoryUI : Window("Inventory Transaction", Utility.STATUSUI_SKIN, 
             // remove sold item
             inventorySlotTable.cells
                     .mapNotNull { it.actor as InventorySlot }
-                    .filter { slot -> slot.hasItem() && slot.topItem.name == playerInv }
+                    .filter { slot -> slot.hasItem() && slot.topItem.name == PLAYER_INVENTORY }
                     .forEach { slot -> slot.clearAllInventoryItems(false) }
 
             savePlayerInventory()
@@ -150,24 +150,25 @@ class StoreInventoryUI : Window("Inventory Transaction", Utility.STATUSUI_SKIN, 
     override fun onNotify(slot: InventorySlot, event: InventorySlotObserver.SlotEvent) {
         when (event) {
             InventorySlotObserver.SlotEvent.ADDED_ITEM -> {
-                if (slot.topItem.name == playerInv && slot.name == storeInv) {
+                if (slot.topItem.name == PLAYER_INVENTORY && slot.name == STORE_INVENTORY) {
                     tradeInVal += slot.topItem.tradeInValue()
                     sellTotalLabel.setText("$sell : $tradeInVal $gp")
                 }
 
-                if (slot.topItem.name == storeInv && slot.name == playerInv) {
+                //moving from store inventory to player inventory to buy
+                if (slot.topItem.name == STORE_INVENTORY && slot.name == PLAYER_INVENTORY) {
                     fullValue += slot.topItem.itemValue
                     buyTotalLabel.setText("$buy : $fullValue $gp")
                 }
             }
 
             InventorySlotObserver.SlotEvent.REMOVED_ITEM -> {
-                if (slot.topItem.name == playerInv && slot.name == storeInv) {
+                if (slot.topItem.name == PLAYER_INVENTORY && slot.name == STORE_INVENTORY) {
                     tradeInVal -= slot.topItem.tradeInValue()
                     sellTotalLabel.setText("$sell : $tradeInVal $gp")
                 }
 
-                if (slot.topItem.name == storeInv && slot.name == playerInv) {
+                if (slot.topItem.name == STORE_INVENTORY && slot.name == PLAYER_INVENTORY) {
                     fullValue -= slot.topItem.itemValue
                     buyTotalLabel.setText("$buy : $fullValue $gp")
                 }
@@ -177,11 +178,11 @@ class StoreInventoryUI : Window("Inventory Transaction", Utility.STATUSUI_SKIN, 
     }
 
     fun loadStoreInventory(items: Array<InventoryItemLocation>) {
-        InventoryUI.populateInventory(inventorySlotTable, items, dragAndDrop)
+        InventoryUI.populateInventory(inventorySlotTable, items, dragAndDrop, PLAYER_INVENTORY, true)
     }
 
     fun loadPlayerInventory(items: Array<InventoryItemLocation>) {
-        InventoryUI.populateInventory(playerInventorySlotTable, items, dragAndDrop)
+        InventoryUI.populateInventory(playerInventorySlotTable, items, dragAndDrop, STORE_INVENTORY, false)
     }
 
     private fun enableButton(button: Button, enable: Boolean) {
@@ -196,10 +197,10 @@ class StoreInventoryUI : Window("Inventory Transaction", Utility.STATUSUI_SKIN, 
 
     private fun savePlayerInventory() {
         // player items
-        val inPlayerInventory = InventoryUI.getInventoryAt(playerInventorySlotTable, playerInv)
-        val inStoreInventory = InventoryUI.getInventoryAt(playerInventorySlotTable, inventorySlotTable, playerInv)
-        inPlayerInventory.addAll(inStoreInventory)
-        notify(json.toJson(inPlayerInventory), PLAYER_INVENTORY_UPDATED)
+        val inplayerInventory = InventoryUI.getInventoryFiltered(playerInventorySlotTable, STORE_INVENTORY)
+        val inStoreInventory = InventoryUI.getInventoryFiltered(playerInventorySlotTable, inventorySlotTable, STORE_INVENTORY)
+        inplayerInventory.addAll(inStoreInventory)
+        notify(json.toJson(inplayerInventory), PLAYER_INVENTORY_UPDATED)
     }
 
     private fun checkButtonStates() {
@@ -212,8 +213,8 @@ class StoreInventoryUI : Window("Inventory Transaction", Utility.STATUSUI_SKIN, 
         tradeInVal = 0
         buyTotalLabel.setText("$buy : $fullValue $gp")
         sellTotalLabel.setText("$sell : $tradeInVal $gp")
-        InventoryUI.removeInventoryItems(storeInv, playerInventorySlotTable)
+        InventoryUI.removeInventoryItems(STORE_INVENTORY, playerInventorySlotTable)
         // also remove any player based inventory when exiting
-        InventoryUI.removeInventoryItems(playerInv, inventorySlotTable)
+        InventoryUI.removeInventoryItems(PLAYER_INVENTORY, inventorySlotTable)
     }
 }

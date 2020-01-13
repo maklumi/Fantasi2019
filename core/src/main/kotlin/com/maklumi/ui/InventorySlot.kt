@@ -82,9 +82,9 @@ class InventorySlot(
         }
     }
 
-    fun getNumItems(name: String): Int {
-        return children.count { it.name.equals(name, true) }
-    }
+//    fun getNumItems(name: String): Int {
+//        return children.count { it.name.equals(name, true) }
+//    }
 
     fun nameAllInventoryItemsWith(name: String) {
         // skip first 2 elements

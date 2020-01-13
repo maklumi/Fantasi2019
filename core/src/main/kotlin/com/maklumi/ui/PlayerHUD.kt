@@ -3,16 +3,14 @@ package com.maklumi.ui
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.Camera
 import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.viewport.ScreenViewport
-import com.maklumi.EntityConfig
-import com.maklumi.InventoryItem
-import com.maklumi.MapManager
+import com.maklumi.*
 import com.maklumi.dialog.ComponentObserver
 import com.maklumi.dialog.ConversationGraph
 import com.maklumi.dialog.ConversationGraphObserver
 import com.maklumi.dialog.ConversationGraphObserver.ConversationCommandEvent
-import com.maklumi.json
 import com.maklumi.profile.ProfileEvent
 import com.maklumi.profile.ProfileManager
 import com.maklumi.profile.ProfileObserver
@@ -35,6 +33,20 @@ class PlayerHUD(camera: Camera) : Screen,
     private val conversationUI = ConversationUI()
     private val storeInventoryUI = StoreInventoryUI()
     private val questUI = QuestUI()
+    private val messageBoxUI = object : Dialog("Message", Utility.STATUSUI_SKIN, "solidbackground") {
+        init {
+            button("OK")
+            text("Your inventory is full!")
+            isVisible = false
+            pack()
+        }
+
+        override fun result(obj: Any?) {
+            cancel()
+            isVisible = false
+        }
+
+    }
 
     init {
         statusUI.setPosition(0f, stage.height)
@@ -70,7 +82,8 @@ class PlayerHUD(camera: Camera) : Screen,
         questUI.setPosition(x, stage.height - statusUI.height - questUI.height)
         statusUI.questButton.onClick { questUI.isVisible = !questUI.isVisible }
         stage.addActor(questUI)
-
+        messageBoxUI.setPosition(stage.width / 2f - messageBoxUI.width / 2f, stage.height / 2f - messageBoxUI.height / 2f)
+        stage.addActor(messageBoxUI)
     }
 
     override fun show() {}
@@ -124,14 +137,14 @@ class PlayerHUD(camera: Camera) : Screen,
     override fun onNotify(graph: ConversationGraph, event: ConversationCommandEvent) {
         when (event) {
             ConversationCommandEvent.LOAD_STORE_INVENTORY -> {
-                val table = InventoryUI.getInventoryAt(inventoryUI.inventorySlotTable)
+                val table = InventoryUI.getInventoryFiltered(inventoryUI.inventorySlotTable)
                 storeInventoryUI.loadPlayerInventory(table)
 
                 val blackSmithOrMage = MapManager.currentSelectedEntity ?: return
                 val itemLocations = Array<InventoryItemLocation>()
                 val itemIDs = blackSmithOrMage.entityConfig.inventory
                 for (i in 0 until itemIDs.size) {
-                    itemLocations.add(InventoryItemLocation(i, itemIDs[i].toString(), 1))
+                    itemLocations.add(InventoryItemLocation(i, itemIDs[i].toString(), 1, InventoryUI.PLAYER_INVENTORY))
                 }
                 storeInventoryUI.loadStoreInventory(itemLocations)
 
@@ -163,12 +176,18 @@ class PlayerHUD(camera: Camera) : Screen,
             }
             ConversationCommandEvent.ADD_ENTITY_TO_INVENTORY -> {
                 val selectedEntity = MapManager.currentSelectedEntity ?: return
-                inventoryUI.addEntityToInventory(selectedEntity, selectedEntity.entityConfig.currentQuestID)
-                MapManager.clearCurrentSelectedEntity()
-                MapManager.removeMapQuestEntity(selectedEntity)
-                selectedEntity.unregisterObservers()
-                conversationUI.isVisible = false
-                questUI.updateQuests()
+                if (inventoryUI.doesInventoryHaveSpace()) {
+                    inventoryUI.addEntityToInventory(selectedEntity, selectedEntity.entityConfig.currentQuestID)
+                    MapManager.clearCurrentSelectedEntity()
+                    MapManager.removeMapQuestEntity(selectedEntity)
+                    selectedEntity.unregisterObservers()
+                    conversationUI.isVisible = false
+                    questUI.updateQuests()
+                } else {
+                    MapManager.clearCurrentSelectedEntity()
+                    conversationUI.isVisible = false
+                    messageBoxUI.isVisible = true
+                }
             }
             ConversationCommandEvent.RETURN_QUEST -> {
                 val selectedEntity = MapManager.currentSelectedEntity ?: return
@@ -191,21 +210,21 @@ class PlayerHUD(camera: Camera) : Screen,
                 // inventory slot
                 val inventory = ProfileManager.getProperty<Array<InventoryItemLocation>>("playerInventory")
                 if (inventory != null && inventory.size > 0) {
-                    InventoryUI.populateInventory(inventoryUI.inventorySlotTable, inventory, inventoryUI.dragAndDrop)
+                    InventoryUI.populateInventory(inventoryUI.inventorySlotTable, inventory, inventoryUI.dragAndDrop, InventoryUI.PLAYER_INVENTORY, false)
                 } else {
                     //add default items if nothing is found
                     val items: Array<InventoryItem.ItemTypeID> = MapManager.player.entityConfig.inventory
                     val itemLocations = Array<InventoryItemLocation>()
                     for (i in 0 until items.size) {
-                        itemLocations.add(InventoryItemLocation(i, items.get(i).toString(), 1))
+                        itemLocations.add(InventoryItemLocation(i, items.get(i).toString(), 1, InventoryUI.PLAYER_INVENTORY))
                     }
-                    InventoryUI.populateInventory(inventoryUI.inventorySlotTable, itemLocations, inventoryUI.dragAndDrop)
+                    InventoryUI.populateInventory(inventoryUI.inventorySlotTable, itemLocations, inventoryUI.dragAndDrop, InventoryUI.PLAYER_INVENTORY, false)
                 }
 
                 // equip slot
                 val equipInventory = ProfileManager.getProperty<Array<InventoryItemLocation>>("playerEquipInventory")
                 if (equipInventory != null && equipInventory.size > 0) {
-                    InventoryUI.populateInventory(inventoryUI.equipSlots, equipInventory, inventoryUI.dragAndDrop)
+                    InventoryUI.populateInventory(inventoryUI.equipSlots, equipInventory, inventoryUI.dragAndDrop, InventoryUI.PLAYER_INVENTORY, false)
                 }
 
                 // check gold, if first time, give something
@@ -216,8 +235,8 @@ class PlayerHUD(camera: Camera) : Screen,
                 quests?.let { questUI.quests.addAll(quests) }
             }
             ProfileEvent.SAVING_PROFILE -> {
-                ProfileManager.setProperty("playerInventory", InventoryUI.getInventoryAt(inventoryUI.inventorySlotTable))
-                ProfileManager.setProperty("playerEquipInventory", InventoryUI.getInventoryAt(inventoryUI.equipSlots))
+                ProfileManager.setProperty("playerInventory", InventoryUI.getInventoryFiltered(inventoryUI.inventorySlotTable))
+                ProfileManager.setProperty("playerEquipInventory", InventoryUI.getInventoryFiltered(inventoryUI.equipSlots))
                 ProfileManager.setProperty("currentPlayerGP", statusUI.gold)
 //                ProfileManager.setProperty("playerQuests", questUI.quests)
             }
@@ -231,7 +250,7 @@ class PlayerHUD(camera: Camera) : Screen,
             }
             StoreInventoryEvent.PLAYER_INVENTORY_UPDATED -> {
                 val items = json.fromJson<Array<InventoryItemLocation>>(value)
-                InventoryUI.populateInventory(inventoryUI.inventorySlotTable, items, inventoryUI.dragAndDrop)
+                InventoryUI.populateInventory(inventoryUI.inventorySlotTable, items, inventoryUI.dragAndDrop, InventoryUI.PLAYER_INVENTORY, false)
             }
         }
     }

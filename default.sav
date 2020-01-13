@@ -1,0 +1,124 @@
+{
+castleOfDoomMapStartPosition: {
+	class: com.badlogic.gdx.math.Vector2
+	x: 150
+	y: 10
+}
+topWorldMapStartPosition: {
+	class: com.badlogic.gdx.math.Vector2
+	x: 256
+	y: 336
+}
+playerEquipInventory: [
+	{
+		class: com.maklumi.ui.InventoryItemLocation
+		locationIndex: 1
+		itemTypeAtLocation: HELMET04
+		numberItemsAtLocation: 1
+	}
+	{
+		class: com.maklumi.ui.InventoryItemLocation
+		locationIndex: 4
+		itemTypeAtLocation: SHIELD04
+		numberItemsAtLocation: 1
+	}
+]
+townMapStartPosition: {
+	class: com.badlogic.gdx.math.Vector2
+	x: 208
+	y: 16
+}
+currentPlayerGP: {
+	class: java.lang.Integer
+	value: 500
+}
+playerInventory: [
+	{
+		class: com.maklumi.ui.InventoryItemLocation
+		itemTypeAtLocation: ARMOR04
+		numberItemsAtLocation: 1
+	}
+	{
+		class: com.maklumi.ui.InventoryItemLocation
+		locationIndex: 1
+		itemTypeAtLocation: BOOTS03
+		numberItemsAtLocation: 1
+	}
+	{
+		class: com.maklumi.ui.InventoryItemLocation
+		locationIndex: 4
+		itemTypeAtLocation: POTIONS01
+		numberItemsAtLocation: 1
+	}
+	{
+		class: com.maklumi.ui.InventoryItemLocation
+		locationIndex: 5
+		itemTypeAtLocation: POTIONS01
+		numberItemsAtLocation: 1
+	}
+	{
+		class: com.maklumi.ui.InventoryItemLocation
+		locationIndex: 6
+		itemTypeAtLocation: POTIONS01
+		numberItemsAtLocation: 1
+	}
+	{
+		class: com.maklumi.ui.InventoryItemLocation
+		locationIndex: 7
+		itemTypeAtLocation: SCROLL01
+		numberItemsAtLocation: 1
+	}
+	{
+		class: com.maklumi.ui.InventoryItemLocation
+		locationIndex: 8
+		itemTypeAtLocation: SCROLL01
+		numberItemsAtLocation: 1
+	}
+	{
+		class: com.maklumi.ui.InventoryItemLocation
+		locationIndex: 9
+		itemTypeAtLocation: SCROLL01
+		numberItemsAtLocation: 1
+	}
+	{
+		class: com.maklumi.ui.InventoryItemLocation
+		locationIndex: 10
+		itemTypeAtLocation: SHIELD02
+		numberItemsAtLocation: 1
+	}
+	{
+		class: com.maklumi.ui.InventoryItemLocation
+		locationIndex: 11
+		itemTypeAtLocation: WANDS02
+		numberItemsAtLocation: 1
+	}
+	{
+		class: com.maklumi.ui.InventoryItemLocation
+		locationIndex: 12
+		itemTypeAtLocation: WEAPON01
+		numberItemsAtLocation: 1
+	}
+	{
+		class: com.maklumi.ui.InventoryItemLocation
+		locationIndex: 26
+		itemTypeAtLocation: HELMET05
+		numberItemsAtLocation: 1
+	}
+	{
+		class: com.maklumi.ui.InventoryItemLocation
+		locationIndex: 27
+		itemTypeAtLocation: HELMET05
+		numberItemsAtLocation: 1
+	}
+	{
+		class: com.maklumi.ui.InventoryItemLocation
+		locationIndex: 35
+		itemTypeAtLocation: POTIONS01
+		numberItemsAtLocation: 1
+	}
+]
+currentMapType: {
+	class: com.maklumi.MapFactory$MapType
+	value: TOWN
+}
+}

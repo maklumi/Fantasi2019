@@ -109,29 +109,40 @@ class InventoryUI : Window("Inventory Window", STATUSUI_SKIN, "solidbackground")
         }
     }
 
+    fun doesInventoryHaveSpace(): Boolean {
+        val sourceCells = inventorySlotTable.cells
+        return sourceCells.any { it.actor != null && (it.actor as InventorySlot).numItems == 0 }
+    }
+
     companion object {
 
         const val numSlots = 50
+        const val PLAYER_INVENTORY = "Player_Inventory"
+        const val STORE_INVENTORY = "Store_Inventory"
 
-        fun populateInventory(targetTable: Table, inventoryItems: gdxArray<InventoryItemLocation>, dragAndDrop: MyDragAndDrop) {
+        fun populateInventory(targetTable: Table, inventoryItems: gdxArray<InventoryItemLocation>, dragAndDrop: MyDragAndDrop,
+                              defaultName: String, disableNonDefaultItems: Boolean) {
             clearInventoryItemsAt(targetTable)
             val cells: gdxArray<Cell<Actor>> = targetTable.cells
             for (i in 0 until inventoryItems.size) {
-                val (locationIndex, itemType, numItems) = inventoryItems[i]
+                val (locationIndex, itemType, numItems, itemNameProperty) = inventoryItems[i]
                 val itemTypeId = ItemTypeID.valueOf(itemType)
                 val inventorySlot = cells[locationIndex].actor as InventorySlot
                 inventorySlot.clearAllInventoryItems(true)
 
                 for (index in 0 until numItems) {
                     val item = InventoryItemFactory.getInventoryItem(itemTypeId)
-                    if (item.name == null) item.name = targetTable.name
+                    item.name = if (item.name.isNullOrEmpty()) defaultName else itemNameProperty
                     inventorySlot.add(item)
-                    dragAndDrop.addSource(InventorySlotSource(inventorySlot))
+                    if (item.name.equals(defaultName, true))
+                        dragAndDrop.addSource(InventorySlotSource(inventorySlot))
+                    else if (!disableNonDefaultItems)
+                        dragAndDrop.addSource(InventorySlotSource(inventorySlot))
                 }
             }
         }
 
-        fun getInventoryAt(targetTable: Table): gdxArray<InventoryItemLocation> {
+        fun getInventoryFiltered(targetTable: Table): gdxArray<InventoryItemLocation> {
             val cells: gdxArray<Cell<Actor>> = targetTable.cells
             val items = gdxArray<InventoryItemLocation>()
             for (index in 0 until cells.size) {
@@ -139,7 +150,8 @@ class InventoryUI : Window("Inventory Window", STATUSUI_SKIN, "solidbackground")
                 val slot = cells[index].actor as InventorySlot
                 val numItems = slot.numItems
                 if (numItems > 0)
-                    items.add(InventoryItemLocation(index, slot.topItem.itemTypeID.toString(), numItems))
+                    items.add(InventoryItemLocation(index, slot.topItem.itemTypeID.toString(), numItems,
+                            slot.topItem.name))
             }
             return items
         }
@@ -150,25 +162,26 @@ class InventoryUI : Window("Inventory Window", STATUSUI_SKIN, "solidbackground")
             }
         }
 
-        fun getInventoryAt(targetTable: Table, name: String): gdxArray<InventoryItemLocation> {
-            val array = gdxArray<InventoryItemLocation>()
-            for ((index, cell) in targetTable.cells.withIndex()) {
-                val slot = cell.actor as InventorySlot? ?: continue
-                val count = slot.getNumItems(name)
-                if (count > 0) array.add(InventoryItemLocation(index, slot.topItem.itemTypeID.toString(), count))
-            }
-            return array
-        }
+//        fun getInventoryAt(targetTable: Table, name: String): gdxArray<InventoryItemLocation> {
+//            val array = gdxArray<InventoryItemLocation>()
+//            for ((index, cell) in targetTable.cells.withIndex()) {
+//                val slot = cell.actor as InventorySlot? ?: continue
+//                val count = slot.getNumItems(name)
+//                if (count > 0) array.add(InventoryItemLocation(index, slot.topItem.itemTypeID.toString(), count,
+//                        slot.name))
+//            }
+//            return array
+//        }
 
-        fun getInventoryAt(playerTable: Table, storeTable: Table, name: String): gdxArray<InventoryItemLocation> {
-            val targetArray = getInventoryAt(storeTable, name)
+        fun getInventoryFiltered(playerTable: Table, storeTable: Table, filterOutName: String): gdxArray<InventoryItemLocation> {
+            val targetArray = getInventoryFiltered(storeTable, filterOutName)
             val sourceCells = playerTable.cells
             var counter = 0
             for (item in targetArray) {
                 for ((i, cell) in sourceCells.withIndex()) {
                     counter = i
                     val slot = cell.actor as InventorySlot? ?: continue
-                    val numItems = slot.getNumItems(name)
+                    val numItems = slot.numItems
                     if (numItems == 0) {
                         item.locationIndex = i
                         counter++
@@ -180,6 +193,23 @@ class InventoryUI : Window("Inventory Window", STATUSUI_SKIN, "solidbackground")
                 if (counter == sourceCells.size) item.locationIndex = counter - 1
             }
             return targetArray
+        }
+
+        fun getInventoryFiltered(targetTable: Table, filterOutName: String): gdxArray<InventoryItemLocation> {
+            val cells = targetTable.cells
+            val items = gdxArray<InventoryItemLocation>()
+            for (i in 0 until cells.size) {
+                val inventorySlot = cells.get(i).actor as InventorySlot? ?: continue
+                val numItems = inventorySlot.numItems
+                if (numItems > 0) {
+                    val topItemName = inventorySlot.topItem.name
+                    if (topItemName.equals(filterOutName, ignoreCase = true)) continue
+//                    println("[i] $i itemtype: " + inventorySlot.topItem.itemTypeID.toString() + " numItems " + numItems)
+                    items.add(InventoryItemLocation(i, inventorySlot.topItem.itemTypeID.toString(), numItems,
+                            inventorySlot.topItem.name))
+                }
+            }
+            return items
         }
 
         fun nameInventoryItemWith(targetTable: Table, name: String) {
