@@ -15,14 +15,103 @@ playerEquipInventory: [
 		locationIndex: 1
 		itemTypeAtLocation: HELMET04
 		numberItemsAtLocation: 1
+		itemNameProperty: Player_Inventory
 	}
 	{
 		class: com.maklumi.ui.InventoryItemLocation
 		locationIndex: 4
 		itemTypeAtLocation: SHIELD04
 		numberItemsAtLocation: 1
+		itemNameProperty: Player_Inventory
 	}
 ]
+playerQuests: [
+	{
+		class: com.maklumi.quest.QuestGraph
+		questTitle: Beast Feast Leftovers
+		questTasks: {
+			4: {
+				id: 4
+				taskPhrase: Find the area where the Tuskan beast feasts
+				questType: DISCOVER
+				taskProperties: {
+					IS_TASK_COMPLETE: "true"
+					TARGET_LOCATION: TOP_WORLD
+					TARGET_TYPE: BEAST_AREA
+				}
+			}
+			3: {
+				id: 3
+				taskPhrase: Collect 5 furs
+				questType: FETCH
+				taskProperties: {
+					IS_TASK_COMPLETE: "true"
+					TARGET_LOCATION: TOP_WORLD
+					TARGET_TYPE: scripts/quest001_task003.json
+					TARGET_NUM: 5
+				}
+			}
+			2: {
+				id: 2
+				taskPhrase: Collect 5 horns
+				questType: FETCH
+				taskProperties: {
+					IS_TASK_COMPLETE: "true"
+					TARGET_LOCATION: TOP_WORLD
+					TARGET_TYPE: scripts/quest001_task002.json
+					TARGET_NUM: 5
+				}
+			}
+			1: {
+				id: 1
+				taskPhrase: Come back to me with the items
+				questType: RETURN
+				taskProperties: {
+					IS_TASK_COMPLETE: "true"
+					TARGET_LOCATION: TOWN
+					TARGET_TYPE: TOWN_FOLK4
+				}
+			}
+		}
+		questTaskDependencies: {
+			4: []
+			3: [
+				{
+					class: com.maklumi.quest.QuestTaskDependency
+					sourceId: 3
+					destinationId: 4
+				}
+			]
+			2: [
+				{
+					class: com.maklumi.quest.QuestTaskDependency
+					sourceId: 2
+					destinationId: 4
+				}
+			]
+			1: [
+				{
+					class: com.maklumi.quest.QuestTaskDependency
+					sourceId: 1
+					destinationId: 2
+				}
+				{
+					class: com.maklumi.quest.QuestTaskDependency
+					sourceId: 1
+					destinationId: 3
+				}
+			]
+		}
+		questID: 1
+		isQuestComplete: "true"
+		goldReward: 100
+		xpReward: 100
+	}
+]
+currentPlayerXPMax: {
+	class: java.lang.Integer
+	value: 200
+}
 townMapStartPosition: {
 	class: com.badlogic.gdx.math.Vector2
 	x: 208
@@ -30,95 +119,140 @@ townMapStartPosition: {
 }
 currentPlayerGP: {
 	class: java.lang.Integer
-	value: 500
+	value: 600
+}
+currentPlayerXP: {
+	class: java.lang.Integer
+	value: 120
 }
 playerInventory: [
 	{
 		class: com.maklumi.ui.InventoryItemLocation
 		itemTypeAtLocation: ARMOR04
 		numberItemsAtLocation: 1
+		itemNameProperty: Player_Inventory
 	}
 	{
 		class: com.maklumi.ui.InventoryItemLocation
 		locationIndex: 1
 		itemTypeAtLocation: BOOTS03
 		numberItemsAtLocation: 1
+		itemNameProperty: Player_Inventory
 	}
 	{
 		class: com.maklumi.ui.InventoryItemLocation
 		locationIndex: 4
 		itemTypeAtLocation: POTIONS01
 		numberItemsAtLocation: 1
+		itemNameProperty: Player_Inventory
 	}
 	{
 		class: com.maklumi.ui.InventoryItemLocation
 		locationIndex: 5
 		itemTypeAtLocation: POTIONS01
 		numberItemsAtLocation: 1
+		itemNameProperty: Player_Inventory
 	}
 	{
 		class: com.maklumi.ui.InventoryItemLocation
 		locationIndex: 6
 		itemTypeAtLocation: POTIONS01
 		numberItemsAtLocation: 1
+		itemNameProperty: Player_Inventory
 	}
 	{
 		class: com.maklumi.ui.InventoryItemLocation
 		locationIndex: 7
 		itemTypeAtLocation: SCROLL01
 		numberItemsAtLocation: 1
+		itemNameProperty: Player_Inventory
 	}
 	{
 		class: com.maklumi.ui.InventoryItemLocation
 		locationIndex: 8
 		itemTypeAtLocation: SCROLL01
 		numberItemsAtLocation: 1
+		itemNameProperty: Player_Inventory
 	}
 	{
 		class: com.maklumi.ui.InventoryItemLocation
 		locationIndex: 9
 		itemTypeAtLocation: SCROLL01
 		numberItemsAtLocation: 1
+		itemNameProperty: Player_Inventory
 	}
 	{
 		class: com.maklumi.ui.InventoryItemLocation
 		locationIndex: 10
 		itemTypeAtLocation: SHIELD02
 		numberItemsAtLocation: 1
+		itemNameProperty: Player_Inventory
 	}
 	{
 		class: com.maklumi.ui.InventoryItemLocation
 		locationIndex: 11
 		itemTypeAtLocation: WANDS02
 		numberItemsAtLocation: 1
+		itemNameProperty: Player_Inventory
 	}
 	{
 		class: com.maklumi.ui.InventoryItemLocation
 		locationIndex: 12
 		itemTypeAtLocation: WEAPON01
 		numberItemsAtLocation: 1
+		itemNameProperty: Player_Inventory
 	}
 	{
 		class: com.maklumi.ui.InventoryItemLocation
 		locationIndex: 26
 		itemTypeAtLocation: HELMET05
 		numberItemsAtLocation: 1
+		itemNameProperty: Player_Inventory
 	}
 	{
 		class: com.maklumi.ui.InventoryItemLocation
 		locationIndex: 27
 		itemTypeAtLocation: HELMET05
 		numberItemsAtLocation: 1
+		itemNameProperty: Player_Inventory
 	}
 	{
 		class: com.maklumi.ui.InventoryItemLocation
 		locationIndex: 35
 		itemTypeAtLocation: POTIONS01
 		numberItemsAtLocation: 1
+		itemNameProperty: Player_Inventory
 	}
 ]
 currentMapType: {
 	class: com.maklumi.MapFactory$MapType
 	value: TOWN
+}
+TOWN_FOLK4: {
+	class: com.maklumi.EntityConfig
+	entityID: TOWN_FOLK4
+	state: IMMOBILE
+	animationConfig: [
+		{
+			animationType: IMMOBILE
+			texturePaths: [
+				sprites/characters/Player0.png
+				sprites/characters/Player1.png
+			]
+			gridPoints: [
+				{
+					x: 5
+					y: 1
+				}
+				{
+					x: 5
+					y: 1
+				}
+			]
+		}
+	]
+	conversationConfigPath: conversations/quest_finished.json
+	questConfigPath: quests/quest001.json
+	currentQuestID: 1
 }
 }

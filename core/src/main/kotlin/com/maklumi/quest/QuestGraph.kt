@@ -103,7 +103,7 @@ class QuestGraph {
         }
     }
 
-    private fun isQuestTaskAvailable(id: String): Boolean {
+    fun isQuestTaskAvailable(id: String): Boolean {
         getQuestTaskByID(id) ?: return false
         val list = questTaskDependencies[id] ?: return false
         for (dep in list) {
@@ -145,6 +145,11 @@ class QuestGraph {
         }
 
         arrayList.add(dependency)
+    }
+
+    fun setQuestTaskComplete(id: String) {
+        val task = getQuestTaskByID(id) ?: return
+        task.setTaskComplete()
     }
 
     private fun doesCycleExist(dependency: QuestTaskDependency): Boolean {

@@ -1,18 +1,21 @@
 package com.maklumi
 
+import com.badlogic.gdx.maps.objects.RectangleMapObject
+import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
-import com.badlogic.gdx.utils.Array as gdxArray
 import com.maklumi.Component.MESSAGE
 import com.maklumi.MapManager.camera
 import com.maklumi.MapManager.getCurrentMapEntities
 import com.maklumi.dialog.ComponentObserver.ComponentEvent
 import ktx.json.fromJson
+import com.badlogic.gdx.utils.Array as gdxArray
 
 class PlayerPhysicsComponent : PhysicsComponent() {
 
     private var mouseSelectCoordinates = Vector3()
     private var isMouseSelectEnabled = false
+    private var previousDiscovery = ""
 
     override fun update(entity: Entity, deltaTime: Float) {
         if (isCollisionWithMapLayer(entity, nextBound) == null
@@ -27,6 +30,8 @@ class PlayerPhysicsComponent : PhysicsComponent() {
             val mapType = MapFactory.MapType.valueOf(portalHit.name)
             MapManager.loadMap(mapType)
         }
+
+        updateDiscoverLayerActivation(currentBound)
 
         calculateNextPosition(deltaTime)
 
@@ -95,5 +100,30 @@ class PlayerPhysicsComponent : PhysicsComponent() {
 
         isMouseSelectEnabled = false
         currentEntities.clear()
+    }
+
+    private fun updateDiscoverLayerActivation(rect: Rectangle): Boolean {
+        val mapDiscoverLayer = MapManager.questDiscoverLayer ?: return false
+
+        var rectangle: Rectangle?
+
+        for (mapObject in mapDiscoverLayer.objects) {
+            if (mapObject is RectangleMapObject) {
+                rectangle = mapObject.rectangle
+                rect.convertRectWorldToPixel()
+                if (rect.overlaps(rectangle)) {
+                    val questID = mapObject.getName() ?: return false
+                    val questTaskID = mapObject.getProperties().get("taskID") as String?
+                    val msg = questID + MESSAGE_TOKEN + questTaskID
+                    // make sure only notify once
+                    if (previousDiscovery.equals(msg, true)) return true
+                    notify(json.toJson(msg), ComponentEvent.QUEST_LOCATION_DISCOVERED)
+                    previousDiscovery = msg
+                    println("PlayerPhysicComp126 Discover Area Activated")
+                    return true
+                }
+            }
+        }
+        return false
     }
 }

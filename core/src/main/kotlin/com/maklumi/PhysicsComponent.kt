@@ -82,7 +82,7 @@ abstract class PhysicsComponent : Component, ComponentSubject() {
         return false
     }
 
-    private fun Rectangle.convertRectWorldToPixel() {
+    protected fun Rectangle.convertRectWorldToPixel() {
         this.setPosition(this.x / unitScale, this.y / unitScale)
         this.setSize(this.width / unitScale, this.height / unitScale)
     }

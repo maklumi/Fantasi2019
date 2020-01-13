@@ -37,7 +37,7 @@ abstract class Map(var mapType: MapFactory.MapType, path: String) {
     var portalLayer: MapLayer? = null
     var spawnsLayer: MapLayer? = null
     private var questItemSpawnLayer: MapLayer? = null
-    private var questDiscoverLayer: MapLayer? = null
+    var questDiscoverLayer: MapLayer? = null
 
     val start = Vector2() // last known position on this map in pixels
     val startUnitScaled: Vector2  // in world unit

@@ -124,6 +124,18 @@ class QuestUI : Window("Quest Log", Utility.STATUSUI_SKIN, "solidbackground") {
         updateQuestsItemList()
     }
 
+    fun questTaskComplete(questID: String, questTaskID: String) {
+        for (questGraph in quests) {
+            if (questGraph.questID.equals(questID, ignoreCase = true)) {
+                if (questGraph.isQuestTaskAvailable(questTaskID)) {
+                    questGraph.setQuestTaskComplete(questTaskID)
+                } else {
+                    return
+                }
+            }
+        }
+    }
+
     companion object {
         const val RETURN_QUEST = "conversations/return_quest.json"
         const val FINISHED_QUEST = "conversations/quest_finished.json"

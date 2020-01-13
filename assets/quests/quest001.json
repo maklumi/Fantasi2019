@@ -19,7 +19,7 @@
       "questType": "FETCH",
       "taskProperties": {
         "TARGET_NUM": "5",
-        "TARGET_TYPE": "FUR01",
+        "TARGET_TYPE": "scripts/quest001_task003.json",
         "TARGET_LOCATION": "TOP_WORLD",
         "IS_TASK_COMPLETE": "FALSE"
       }
@@ -30,7 +30,7 @@
       "questType": "FETCH",
       "taskProperties": {
         "TARGET_NUM": "5",
-        "TARGET_TYPE": "HORNS01",
+        "TARGET_TYPE": "scripts/quest001_task002.json",
         "TARGET_LOCATION": "TOP_WORLD",
         "IS_TASK_COMPLETE": "FALSE"
       }
@@ -40,13 +40,14 @@
       "taskPhrase": "Come back to me with the items",
       "questType": "RETURN",
       "taskProperties": {
-        "TARGET_TYPE": "TOWN_FOLK02",
+        "TARGET_TYPE": "TOWN_FOLK4",
         "TARGET_LOCATION": "TOWN",
         "IS_TASK_COMPLETE": "FALSE"
       }
     }
   },
   "questTaskDependencies": {
+    4: [],
     "3": [
       {
         "class": "com.maklumi.quest.QuestTaskDependency",

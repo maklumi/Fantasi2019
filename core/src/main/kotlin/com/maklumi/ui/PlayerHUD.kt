@@ -114,22 +114,32 @@ class PlayerHUD(camera: Camera) : Screen,
     }
 
     override fun onNotify(value: String, event: ComponentObserver.ComponentEvent) {
-        val config = json.fromJson<EntityConfig>(value)
         when (event) {
             ComponentObserver.ComponentEvent.LOAD_CONVERSATION -> {
+                val config = json.fromJson<EntityConfig>(value)
                 conversationUI.loadConversation(config)
                 conversationUI.graph.conversationGraphObservers.add(this)
             }
             ComponentObserver.ComponentEvent.SHOW_CONVERSATION -> {
+                val config = json.fromJson<EntityConfig>(value)
                 if (config.entityID == conversationUI.currentEntityID) {
                     conversationUI.isVisible = true
                 }
             }
             ComponentObserver.ComponentEvent.HIDE_CONVERSATION -> {
+                val config = json.fromJson<EntityConfig>(value)
                 if (config.entityID == conversationUI.currentEntityID) {
                     conversationUI.isVisible = false
                     conversationUI.listBox.clearItems() // make sure keyboard focus also lost
                 }
+            }
+            ComponentObserver.ComponentEvent.QUEST_LOCATION_DISCOVERED -> {
+                val string = value.split(MESSAGE_TOKEN)
+                val questID = string[0]
+                val questTaskID = string[1]
+
+                questUI.questTaskComplete(questID, questTaskID)
+                updateEntityObservers()
             }
         }
     }
@@ -245,7 +255,7 @@ class PlayerHUD(camera: Camera) : Screen,
                 ProfileManager.setProperty("playerInventory", InventoryUI.getInventoryFiltered(inventoryUI.inventorySlotTable))
                 ProfileManager.setProperty("playerEquipInventory", InventoryUI.getInventoryFiltered(inventoryUI.equipSlots))
                 ProfileManager.setProperty("currentPlayerGP", statusUI.gold)
-//                ProfileManager.setProperty("playerQuests", questUI.quests)
+                ProfileManager.setProperty("playerQuests", questUI.quests)
                 ProfileManager.setProperty("currentPlayerXP", statusUI.xp)
                 ProfileManager.setProperty("currentPlayerXPMax", statusUI.xpCurrentMax)
             }
