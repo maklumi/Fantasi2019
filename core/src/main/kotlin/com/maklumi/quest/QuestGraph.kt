@@ -4,7 +4,6 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonWriter
 import com.maklumi.Entity
-import com.maklumi.Map
 import com.maklumi.MapManager
 import com.maklumi.profile.ProfileManager
 import com.maklumi.quest.QuestTask.QuestTaskPropertyType.TARGET_LOCATION
@@ -47,13 +46,13 @@ class QuestGraph {
                     val questPosition = ProfileManager.properties.get(config.entityID) as gdxArray<Vector2>?
                     if (questPosition == null) {
                         for (pos in positions) {
-                            val item = Map.initEntityNPC(pos, config)
+                            val item = Entity.initEntityNPC(pos, config)
                             item.entityConfig.currentQuestID = questID
                             questItems.add(item)
                         }
                     } else {
                         for (pos in questPosition) {
-                            val item = Map.initEntityNPC(pos, config)
+                            val item = Entity.initEntityNPC(pos, config)
                             item.entityConfig.currentQuestID = questID
                             questItems.add(item)
                         }

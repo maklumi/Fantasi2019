@@ -18,18 +18,7 @@ abstract class Map(var mapType: MapFactory.MapType, path: String) {
         private const val NPC_START = "NPC_START"
         private const val QUEST_ITEM_SPAWN_LAYER = "MAP_QUEST_ITEM_SPAWN_LAYER"
         private const val QUEST_DISCOVER_LAYER = "MAP_QUEST_DISCOVER_LAYER"
-
-        fun initEntityNPC(position: Vector2, entityConfig: EntityConfig): Entity {
-            val entity = EntityFactory.getEntity(EntityFactory.EntityType.NPC)
-            entity.apply {
-                this.entityConfig = entityConfig
-                sendMessage(Component.MESSAGE.LOAD_ANIMATIONS, json.toJson(entityConfig))
-                sendMessage(Component.MESSAGE.INIT_START_POSITION, json.toJson(position))
-                sendMessage(Component.MESSAGE.INIT_STATE, json.toJson(entityConfig.state))
-                sendMessage(Component.MESSAGE.INIT_DIRECTION, json.toJson(entityConfig.direction))
-            }
-            return entity
-        }
+        private const val ENEMY_SPAWN_LAYER = "MAP_ENEMY_SPAWN_LAYER"
     }
 
     var currentMap: TiledMap? = null
@@ -38,6 +27,7 @@ abstract class Map(var mapType: MapFactory.MapType, path: String) {
     var spawnsLayer: MapLayer? = null
     private var questItemSpawnLayer: MapLayer? = null
     var questDiscoverLayer: MapLayer? = null
+    var enemySpawnLayer: MapLayer? = null
 
     val start = Vector2() // last known position on this map in pixels
     val startUnitScaled: Vector2  // in world unit
@@ -63,6 +53,7 @@ abstract class Map(var mapType: MapFactory.MapType, path: String) {
         spawnsLayer = currentMap?.layers?.get(MAP_SPAWNS_LAYER)
         questItemSpawnLayer = currentMap?.layers?.get(QUEST_ITEM_SPAWN_LAYER)
         questDiscoverLayer = currentMap?.layers?.get(QUEST_DISCOVER_LAYER)
+        enemySpawnLayer = currentMap?.layers?.get(ENEMY_SPAWN_LAYER)
         setClosestStartPosition(Vector2())
 //        println("Map-loadmap: loadmap($mapType)")
     }
@@ -125,18 +116,6 @@ abstract class Map(var mapType: MapFactory.MapType, path: String) {
 
     private fun getOtherNPCStartPositions(): MutableMap<String, Vector2> {
         val positions = mutableMapOf<String, Vector2>()
-
-//        spawnsLayer?.objects?.filter {
-//            !it.name.equals(NPC_START, true) &&
-//                    !it.name.equals(PLAYER_START, true)
-//        }
-//                ?.forEach {
-//                    val rectCenter = Vector2()
-//                    (it as RectangleMapObject).rectangle.getCenter(rectCenter)
-//                    // convert from map coordinates
-//                    rectCenter.scl(unitScale)
-//                    positions[it.name] = rectCenter
-//                }
         spawnsLayer?.objects?.filterNot { it.name == PLAYER_START || it.name == NPC_START }
                 ?.forEach {
                     it as RectangleMapObject

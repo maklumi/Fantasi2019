@@ -108,10 +108,6 @@ playerQuests: [
 		xpReward: 100
 	}
 ]
-currentPlayerXPMax: {
-	class: java.lang.Integer
-	value: 200
-}
 townMapStartPosition: {
 	class: com.badlogic.gdx.math.Vector2
 	x: 208
@@ -119,11 +115,15 @@ townMapStartPosition: {
 }
 currentPlayerGP: {
 	class: java.lang.Integer
-	value: 600
+	value: 500
 }
 currentPlayerXP: {
 	class: java.lang.Integer
 	value: 120
+}
+currentPlayerXPMax: {
+	class: java.lang.Integer
+	value: 200
 }
 playerInventory: [
 	{
@@ -226,7 +226,7 @@ playerInventory: [
 ]
 currentMapType: {
 	class: com.maklumi.MapFactory$MapType
-	value: TOWN
+	value: TOP_WORLD
 }
 TOWN_FOLK4: {
 	class: com.maklumi.EntityConfig

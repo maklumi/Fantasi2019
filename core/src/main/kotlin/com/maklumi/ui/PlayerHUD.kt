@@ -3,6 +3,7 @@ package com.maklumi.ui
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.Camera
 import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.viewport.ScreenViewport
@@ -47,6 +48,7 @@ class PlayerHUD(camera: Camera) : Screen,
         }
 
     }
+    private val battleUI = BattleUI()
 
     init {
         statusUI.setPosition(0f, stage.height)
@@ -84,6 +86,12 @@ class PlayerHUD(camera: Camera) : Screen,
         stage.addActor(questUI)
         messageBoxUI.setPosition(stage.width / 2f - messageBoxUI.width / 2f, stage.height / 2f - messageBoxUI.height / 2f)
         stage.addActor(messageBoxUI)
+        battleUI.setFillParent(true)
+        battleUI.isVisible = false
+        battleUI.isMovable = false
+        battleUI.touchable = Touchable.childrenOnly
+        stage.addActor(battleUI)
+        statusUI.toFront()
     }
 
     override fun show() {}
@@ -140,6 +148,11 @@ class PlayerHUD(camera: Camera) : Screen,
 
                 questUI.questTaskComplete(questID, questTaskID)
                 updateEntityObservers()
+            }
+            ComponentObserver.ComponentEvent.ENEMY_SPAWN_LOCATION_CHANGED -> {
+                battleUI.battleZoneTriggered(value)
+                battleUI.isVisible = true
+                battleUI.toBack()
             }
         }
     }

@@ -2,6 +2,7 @@ package com.maklumi
 
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
+import com.maklumi.Entity.Companion.initEntityNPC
 
 class TownMap : Map(MapFactory.MapType.TOWN, "maps/town.tmx") {
 

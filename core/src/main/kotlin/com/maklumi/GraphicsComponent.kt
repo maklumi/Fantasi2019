@@ -25,7 +25,7 @@ abstract class GraphicsComponent : Component, ComponentSubject() {
 
     private var frameTime = 0f
     private var currentFrame: TextureRegion? = null
-    private var animations = mutableMapOf<AnimationType, Animation<TextureRegion>>()
+    var animations = mutableMapOf<AnimationType, Animation<TextureRegion>>()
 
     private val shapeRenderer = ShapeRenderer()
 

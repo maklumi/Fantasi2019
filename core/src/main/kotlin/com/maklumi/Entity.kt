@@ -1,20 +1,28 @@
 package com.maklumi
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.JsonValue
+import com.maklumi.Component.MESSAGE.*
 import com.maklumi.dialog.ComponentObserver
 import com.maklumi.profile.ProfileManager
 import ktx.json.fromJson
 import ktx.json.readValue
+import java.util.*
 import kotlin.random.Random
 import com.badlogic.gdx.utils.Array as gdxArray
 
 class Entity(val inputComponent: InputComponent,
              val physicsComponent: PhysicsComponent,
              private val graphicsComponent: GraphicsComponent) {
+
+    constructor(entity: Entity) : this(entity.inputComponent, entity.physicsComponent, entity.graphicsComponent) {
+        entityConfig = entity.entityConfig
+    }
 
     var entityConfig = EntityConfig()
 
@@ -81,6 +89,8 @@ class Entity(val inputComponent: InputComponent,
 
     fun getCurrentBoundingBox(): Rectangle = physicsComponent.currentBound
 
+    fun getAnimation(type: AnimationType): Animation<TextureRegion>? = graphicsComponent.animations[type]
+
     companion object {
 
         const val MAX_COMPONENTS = 5
@@ -106,5 +116,33 @@ class Entity(val inputComponent: InputComponent,
             val serializedConfig = ProfileManager.getProperty<EntityConfig>(entityConfig.entityID)
             return serializedConfig ?: entityConfig
         }
+
+        fun initEntityNPC(position: Vector2, config: EntityConfig): Entity {
+            val entity = EntityFactory.getEntity(EntityFactory.EntityType.NPC)
+            entity.apply {
+                entityConfig = config
+                sendMessage(LOAD_ANIMATIONS, json.toJson(config))
+                sendMessage(INIT_START_POSITION, json.toJson(position))
+                sendMessage(INIT_STATE, json.toJson(config.state))
+                sendMessage(INIT_DIRECTION, json.toJson(config.direction))
+            }
+            return entity
+        }
+
+        fun initEntities(configs: gdxArray<EntityConfig>): Hashtable<String, Entity> {
+            val entities = Hashtable<String, Entity>()
+            for (config in configs) {
+                val entity = EntityFactory.getEntity(EntityFactory.EntityType.NPC)
+                entity.entityConfig = config
+                entity.sendMessage(LOAD_ANIMATIONS, json.toJson(entity.entityConfig))
+                entity.sendMessage(INIT_START_POSITION, json.toJson(Vector2()))
+                entity.sendMessage(INIT_STATE, json.toJson(entity.entityConfig.state))
+                entity.sendMessage(INIT_DIRECTION, json.toJson(entity.entityConfig.direction))
+
+                entities[entity.entityConfig.entityID] = entity
+            }
+            return entities
+        }
+
     }
 }

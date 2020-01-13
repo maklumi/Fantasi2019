@@ -16,6 +16,7 @@ class PlayerPhysicsComponent : PhysicsComponent() {
     private var mouseSelectCoordinates = Vector3()
     private var isMouseSelectEnabled = false
     private var previousDiscovery = ""
+    private var previousEnemySpawn = ""
 
     override fun update(entity: Entity, deltaTime: Float) {
         if (isCollisionWithMapLayer(entity, nextBound) == null
@@ -32,6 +33,7 @@ class PlayerPhysicsComponent : PhysicsComponent() {
         }
 
         updateDiscoverLayerActivation(currentBound)
+        updateEnemySpawnLayerActivation(currentBound)
 
         calculateNextPosition(deltaTime)
 
@@ -51,6 +53,8 @@ class PlayerPhysicsComponent : PhysicsComponent() {
                 val pos = json.fromJson(string[1]) as Vector2
                 currentPosition.set(pos)
                 nextPosition.set(pos)
+                previousDiscovery = ""
+                previousEnemySpawn = ""
             }
             MESSAGE.valueOf(string[0]) == MESSAGE.CURRENT_STATE -> {
                 currentState = json.fromJson(string[1])
@@ -119,8 +123,34 @@ class PlayerPhysicsComponent : PhysicsComponent() {
                     if (previousDiscovery.equals(msg, true)) return true
                     notify(json.toJson(msg), ComponentEvent.QUEST_LOCATION_DISCOVERED)
                     previousDiscovery = msg
-                    println("PlayerPhysicComp126 Discover Area Activated")
+                    println("PPC126 Discover Area Activated")
                     return true
+                }
+            }
+        }
+        return false
+    }
+
+    private fun updateEnemySpawnLayerActivation(rect: Rectangle): Boolean {
+        val mapDiscoverLayer = MapManager.enemySpawnLayer ?: return false
+
+        var rectangle: Rectangle?
+
+        for (mapObject in mapDiscoverLayer.objects) {
+            if (mapObject is RectangleMapObject) {
+                rectangle = mapObject.rectangle
+                rect.convertRectWorldToPixel()
+                if (rect.overlaps(rectangle)) {
+                    val enemySpawnID = mapObject.getName() ?: return false
+                    // make sure only notify once
+                    if (previousEnemySpawn.equals(enemySpawnID, true)) return true
+                    previousEnemySpawn = enemySpawnID
+                    notify(enemySpawnID, ComponentEvent.ENEMY_SPAWN_LOCATION_CHANGED)
+                    println("PPC153 Enemy Spawn Area Activated")
+                    return true
+                } else {
+                    //If no collision, reset the value
+                    previousEnemySpawn = ""
                 }
             }
         }

@@ -38,6 +38,9 @@ object MapManager : ProfileObserver {
     val questDiscoverLayer: MapLayer?
         get() = gameMap.questDiscoverLayer
 
+    val enemySpawnLayer: MapLayer?
+        get() = gameMap.enemySpawnLayer
+
     val currentMapType: MapType
         get() = gameMap.mapType
 
