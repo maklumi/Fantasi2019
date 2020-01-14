@@ -2,10 +2,8 @@ package com.maklumi.ui
 
 import com.badlogic.gdx.graphics.g2d.NinePatch
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.ui.Cell
-import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.Window
+import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.utils.Align
 import com.maklumi.Entity
 import com.maklumi.InventoryItem.ItemTypeID
 import com.maklumi.InventoryItem.ItemUseType
@@ -13,9 +11,12 @@ import com.maklumi.InventoryItemFactory
 import com.maklumi.Utility.ITEMS_TEXTUREATLAS
 import com.maklumi.Utility.STATUSUI_SKIN
 import com.maklumi.Utility.STATUSUI_TEXTUREATLAS
+import com.maklumi.ui.InventorySlotObserver.SlotEvent.ADDED_ITEM
+import com.maklumi.ui.InventorySlotObserver.SlotEvent.REMOVED_ITEM
 import com.badlogic.gdx.utils.Array as gdxArray
 
-class InventoryUI : Window("Inventory Window", STATUSUI_SKIN, "solidbackground") {
+class InventoryUI : Window("Inventory Window", STATUSUI_SKIN, "solidbackground"),
+        InventorySlotObserver {
 
     private val lengthSlotRow = 10
     val dragAndDrop = MyDragAndDrop()
@@ -27,7 +28,30 @@ class InventoryUI : Window("Inventory Window", STATUSUI_SKIN, "solidbackground")
     private val slotWidth = 52f
     private val slotHeight = 52f
 
+    private var defVal = 0
+        set(value) {
+            field = value
+            defValLabel.setText(field)
+        }
+    private val defValLabel = Label("", skin)
+    private var atkVal = 0
+        set(value) {
+            field = value
+            atkValLabel.setText(field)
+        }
+    private val atkValLabel = Label("$atkVal", skin)
+
     init {
+        val defLabel = Label("Defense: ", skin)
+        val atkLabel = Label("Attack : ", skin)
+        val labelTable = Table()
+        labelTable.add(defLabel).align(Align.left)
+        labelTable.add(defValLabel).align(Align.center)
+        labelTable.row()
+        labelTable.row()
+        labelTable.add(atkLabel).align(Align.left)
+        labelTable.add(atkValLabel).align(Align.center)
+
         // create 50 slots in inventory table
         for (i in 1..numSlots) {
             val inventorySlot = InventorySlot()
@@ -60,6 +84,9 @@ class InventoryUI : Window("Inventory Window", STATUSUI_SKIN, "solidbackground")
         chestSlot.addListener(InventorySlotTooltipListener(tooltip))
         legsSlot.addListener(InventorySlotTooltipListener(tooltip))
 
+        arrayOf(headSlot, leftArmSlot, rightArmSlot, chestSlot, legsSlot)
+                .forEach { it.inventorySlotObservers.add(this) }
+
         dragAndDrop.addTarget(InventorySlotTarget(headSlot))
         dragAndDrop.addTarget(InventorySlotTarget(leftArmSlot))
         dragAndDrop.addTarget(InventorySlotTarget(chestSlot))
@@ -82,8 +109,11 @@ class InventoryUI : Window("Inventory Window", STATUSUI_SKIN, "solidbackground")
 
         playerSlotTable.background = Image(NinePatch(STATUSUI_TEXTUREATLAS.createPatch("dialog"))).drawable
         playerSlotTable.add(equipSlots)
-        add(playerSlotTable).padBottom(20f).row()
-        add(inventorySlotTable).row()
+        add(playerSlotTable).padBottom(20f)
+        add(labelTable)
+        row()
+        add(inventorySlotTable).colspan(2)
+        row()
         pack()
     }
 
@@ -113,6 +143,22 @@ class InventoryUI : Window("Inventory Window", STATUSUI_SKIN, "solidbackground")
         val sourceCells = inventorySlotTable.cells
         return sourceCells.any { it.actor != null && (it.actor as InventorySlot).numItems == 0 }
     }
+
+    override fun onNotify(slot: InventorySlot, event: InventorySlotObserver.SlotEvent) {
+        when (event) {
+            ADDED_ITEM -> {
+                val item = slot.topItem
+                if (item.isInventoryItemOffensive()) atkVal += item.itemUseTypeValue
+                if (item.isInventoryItemDefensive()) defVal += item.itemUseTypeValue
+            }
+            REMOVED_ITEM -> {
+                val item = slot.topItem
+                if (item.isInventoryItemOffensive()) atkVal -= item.itemUseTypeValue
+                if (item.isInventoryItemDefensive()) defVal -= item.itemUseTypeValue
+            }
+        }
+    }
+
 
     companion object {
 

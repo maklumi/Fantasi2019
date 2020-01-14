@@ -3,7 +3,7 @@ package com.maklumi
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
-import com.badlogic.gdx.utils.JsonWriter
+//import com.badlogic.gdx.utils.JsonWriter
 import com.maklumi.InventoryItem.ItemTypeID
 import com.maklumi.Utility.ITEMS_TEXTUREATLAS
 import ktx.json.fromJson
@@ -30,6 +30,7 @@ object InventoryItemFactory {
                 props.itemAttributes,
                 props.itemTypeID,
                 props.itemUseType,
+                props.itemUseTypeValue,
                 props.itemShortDescription,
                 props.itemValue)
     }

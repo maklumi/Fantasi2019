@@ -3,12 +3,14 @@ package com.maklumi
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.maklumi.InventoryItem.ItemUseType.*
 
 class InventoryItem(
         textureRegion: TextureRegion? = null,
         var itemAttributes: Int = 0,
         var itemTypeID: ItemTypeID = ItemTypeID.NOTHING,
         var itemUseType: Int = 0,
+        var itemUseTypeValue: Int = 0,
         var itemShortDescription: String = "",
         var itemValue: Int = 0
 ) : Image(textureRegion) {
@@ -54,4 +56,20 @@ class InventoryItem(
         //For now, we will set the trade in value of items at about one third their original value
         return MathUtils.floor(itemValue * .33f) + 2
     }
+
+    fun isInventoryItemOffensive(): Boolean {
+        return itemUseType.and(WEAPON_ONEHAND()) == WEAPON_ONEHAND() ||
+                itemUseType.and(WEAPON_TWOHAND()) == WEAPON_TWOHAND() ||
+                itemUseType.and(WAND_ONEHAND()) == WAND_ONEHAND() ||
+                itemUseType.and(WAND_TWOHAND()) == WAND_TWOHAND()
+
+    }
+
+    fun isInventoryItemDefensive(): Boolean {
+        return itemUseType and ARMOR_CHEST() == ARMOR_CHEST() ||
+                itemUseType and ARMOR_HELMET() == ARMOR_HELMET() ||
+                itemUseType and ARMOR_FEET() == ARMOR_FEET() ||
+                itemUseType and ARMOR_SHIELD() == ARMOR_SHIELD()
+    }
+
 }
