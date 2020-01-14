@@ -32,5 +32,141 @@
       ENTITY_ATTACK_POINTS: 40,
       ENTITY_DEFENSE_POINTS: 5
     }
+  },
+  {
+    entityID: MONSTER002,
+    state: IMMOBILE,
+    direction: DOWN,
+    conversationConfigPath: "",
+    questConfigPath: "",
+    currentQuestID: "",
+    itemTypeID: NOTHING,
+    animationConfig: [
+      {
+        frameDuration: .5,
+        animationType: IMMOBILE,
+        texturePaths: [
+          sprites/characters/Demon0.png,
+          sprites/characters/Demon1.png
+        ],
+        gridPoints: [
+          {
+            x: 0,
+            y: 0
+          },
+          {
+            x: 0,
+            y: 0
+          }
+        ]
+      }
+    ],
+    entityProperties: {
+      ENTITY_HEALTH_POINTS: 15,
+      ENTITY_ATTACK_POINTS: 40,
+      ENTITY_DEFENSE_POINTS: 5
+    }
+  },
+  {
+    entityID: MONSTER003,
+    state: IMMOBILE,
+    direction: DOWN,
+    conversationConfigPath: "",
+    questConfigPath: "",
+    currentQuestID: "",
+    itemTypeID: NOTHING,
+    animationConfig: [
+      {
+        frameDuration: .5,
+        animationType: IMMOBILE,
+        texturePaths: [
+          sprites/characters/Demon0.png,
+          sprites/characters/Demon1.png
+        ],
+        gridPoints: [
+          {
+            x: 0,
+            y: 1
+          },
+          {
+            x: 0,
+            y: 1
+          }
+        ]
+      }
+    ],
+    entityProperties: {
+      ENTITY_HEALTH_POINTS: 15,
+      ENTITY_ATTACK_POINTS: 40,
+      ENTITY_DEFENSE_POINTS: 5
+    }
+  },
+  {
+    entityID: MONSTER004,
+    state: IMMOBILE,
+    direction: DOWN,
+    conversationConfigPath: "",
+    questConfigPath: "",
+    currentQuestID: "",
+    itemTypeID: NOTHING,
+    animationConfig: [
+      {
+        frameDuration: .5,
+        animationType: IMMOBILE,
+        texturePaths: [
+          sprites/characters/Demon0.png,
+          sprites/characters/Demon1.png
+        ],
+        gridPoints: [
+          {
+            x: 0,
+            y: 2
+          },
+          {
+            x: 0,
+            y: 2
+          }
+        ]
+      }
+    ],
+    entityProperties: {
+      ENTITY_HEALTH_POINTS: 15,
+      ENTITY_ATTACK_POINTS: 40,
+      ENTITY_DEFENSE_POINTS: 5
+    }
+  },
+  {
+    entityID: MONSTER005,
+    state: IMMOBILE,
+    direction: DOWN,
+    conversationConfigPath: "",
+    questConfigPath: "",
+    currentQuestID: "",
+    itemTypeID: NOTHING,
+    animationConfig: [
+      {
+        frameDuration: .5,
+        animationType: IMMOBILE,
+        texturePaths: [
+          sprites/characters/Demon0.png,
+          sprites/characters/Demon1.png
+        ],
+        gridPoints: [
+          {
+            x: 0,
+            y: 3
+          },
+          {
+            x: 0,
+            y: 3
+          }
+        ]
+      }
+    ],
+    entityProperties: {
+      ENTITY_HEALTH_POINTS: 15,
+      ENTITY_ATTACK_POINTS: 40,
+      ENTITY_DEFENSE_POINTS: 5
+    }
   }
 ]

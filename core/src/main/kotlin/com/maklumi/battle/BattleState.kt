@@ -2,12 +2,12 @@ package com.maklumi.battle
 
 import com.badlogic.gdx.math.MathUtils
 import com.maklumi.Entity
-import com.maklumi.EntityProperties.*
+import com.maklumi.EntityProperties.ENTITY_DEFENSE_POINTS
+import com.maklumi.EntityProperties.ENTITY_HEALTH_POINTS
 import com.maklumi.battle.BattleObserver.BattleEvent.*
-import com.maklumi.battle.MonsterFactory.MonsterEntityType.MONSTER001
-import com.maklumi.battle.MonsterFactory.getMonster
 import com.maklumi.ui.InventoryObserver
-import com.maklumi.ui.InventoryObserver.InventoryEvent.*
+import com.maklumi.ui.InventoryObserver.InventoryEvent.UPDATED_AP
+import com.maklumi.ui.InventoryObserver.InventoryEvent.UPDATED_DP
 
 class BattleState : BattleSubject(), InventoryObserver {
     private var attackPoint = 0
@@ -42,10 +42,7 @@ class BattleState : BattleSubject(), InventoryObserver {
     }
 
     fun battleZoneEntered(battleZoneID: String) {
-        val entity = when (battleZoneID.toInt()) {
-            1 -> getMonster(MONSTER001)
-            else -> null
-        } ?: return
+        val entity = MonsterFactory.getRandomMonster(battleZoneID.toInt()) ?: return
         opponent = entity
         notify(entity, OPPONENT_ADDED)
     }
