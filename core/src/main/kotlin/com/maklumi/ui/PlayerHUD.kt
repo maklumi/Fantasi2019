@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Dialog
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.viewport.ScreenViewport
 import com.maklumi.*
+import com.maklumi.battle.BattleObserver
 import com.maklumi.dialog.ComponentObserver
 import com.maklumi.dialog.ConversationGraph
 import com.maklumi.dialog.ConversationGraphObserver
@@ -15,6 +16,8 @@ import com.maklumi.profile.ProfileEvent
 import com.maklumi.profile.ProfileManager
 import com.maklumi.profile.ProfileObserver
 import com.maklumi.quest.QuestGraph
+import com.maklumi.screens.MainGameScreen
+import com.maklumi.screens.MainGameScreen.Companion.gameState
 import com.maklumi.ui.StoreInventoryObserver.StoreInventoryEvent
 import ktx.actors.onClick
 import ktx.json.fromJson
@@ -24,6 +27,7 @@ class PlayerHUD(camera: Camera) : Screen,
         ConversationGraphObserver,
         ProfileObserver,
         StoreInventoryObserver,
+        BattleObserver,
         StatusObserver {
 
     private val viewport = ScreenViewport(camera)
@@ -90,6 +94,7 @@ class PlayerHUD(camera: Camera) : Screen,
         battleUI.isMovable = false
         //removes all listeners including ones that handle focus
         battleUI.clearListeners()
+        battleUI.battleState.battleObservers.add(this)
         inventoryUI.inventoryObservers.add(battleUI.battleState)
         stage.addActor(battleUI)
         statusUI.toFront()
@@ -154,6 +159,7 @@ class PlayerHUD(camera: Camera) : Screen,
                 battleUI.battleZoneTriggered(value)
                 battleUI.isVisible = true
                 battleUI.toBack()
+                gameState = MainGameScreen.GameState.PAUSED
             }
         }
     }
@@ -284,6 +290,21 @@ class PlayerHUD(camera: Camera) : Screen,
             StoreInventoryEvent.PLAYER_INVENTORY_UPDATED -> {
                 val items = json.fromJson<Array<InventoryItemLocation>>(value)
                 InventoryUI.populateInventory(inventoryUI.inventorySlotTable, items, inventoryUI.dragAndDrop, InventoryUI.PLAYER_INVENTORY, false)
+            }
+        }
+    }
+
+    override fun onNotify(entity: Entity, event: BattleObserver.BattleEvent) {
+        when (event) {
+            BattleObserver.BattleEvent.OPPONENT_ADDED -> {
+            }
+            BattleObserver.BattleEvent.OPPONENT_DEFEATED -> {
+                battleUI.isVisible = false
+                gameState = MainGameScreen.GameState.RUNNING
+            }
+            BattleObserver.BattleEvent.PLAYER_RUNNING -> {
+                battleUI.isVisible = false
+                gameState = MainGameScreen.GameState.RUNNING
             }
         }
     }

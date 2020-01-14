@@ -45,18 +45,36 @@ class MainGameScreen : Screen {
     private var debugHUD = false
 
     enum class GameState {
-        RUNNING, PAUSED;
+        SAVING, LOADING, RUNNING, PAUSED;
 
         fun toggle(): GameState {
             return when (this) {
                 RUNNING -> PAUSED
                 PAUSED -> RUNNING
+                else -> this
             }
         }
     }
 
     companion object {
         var gameState: GameState = GameState.RUNNING
+            set(value) {
+                when (field) {
+                    GameState.RUNNING -> field = value
+                    GameState.PAUSED -> {
+                        if (field == GameState.PAUSED) field = GameState.RUNNING
+                        else if (field == GameState.RUNNING) field = GameState.PAUSED
+                    }
+                    GameState.LOADING -> {
+                        field = GameState.RUNNING
+                        ProfileManager.loadProfile()
+                    }
+                    GameState.SAVING -> {
+                        field = GameState.PAUSED
+                        ProfileManager.saveProfile()
+                    }
+                }
+            }
     }
 
     @Override
@@ -87,6 +105,7 @@ class MainGameScreen : Screen {
     override fun render(delta: Float) {
         if (gameState == GameState.PAUSED) {
             player.updateInput(delta)
+            playerHUD.render(delta)
             return
         }
 
@@ -162,7 +181,7 @@ class MainGameScreen : Screen {
 
     @Override
     override fun resume() {
-        gameState = GameState.RUNNING
+        gameState = GameState.LOADING
     }
 
     @Override

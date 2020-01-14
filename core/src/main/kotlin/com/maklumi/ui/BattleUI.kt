@@ -44,8 +44,10 @@ class BattleUI : Window("BATTLE", Utility.STATUSUI_SKIN, "solidbackground"),
     override fun onNotify(entity: Entity, event: BattleEvent) {
         when (event) {
             OPPONENT_ADDED -> image.setAnim(entity.getAnimation(AnimationType.IMMOBILE))
-            OPPONENT_DEFEATED -> isVisible = false
-            PLAYER_RUNNING -> isVisible = false
+            OPPONENT_DEFEATED -> {
+            }
+            PLAYER_RUNNING -> {
+            }
         }
     }
 

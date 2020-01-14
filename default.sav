@@ -19,6 +19,13 @@ playerEquipInventory: [
 	}
 	{
 		class: com.maklumi.ui.InventoryItemLocation
+		locationIndex: 2
+		itemTypeAtLocation: WANDS02
+		numberItemsAtLocation: 1
+		itemNameProperty: Player_Inventory
+	}
+	{
+		class: com.maklumi.ui.InventoryItemLocation
 		locationIndex: 4
 		itemTypeAtLocation: SHIELD04
 		numberItemsAtLocation: 1
@@ -185,13 +192,6 @@ playerInventory: [
 		class: com.maklumi.ui.InventoryItemLocation
 		locationIndex: 10
 		itemTypeAtLocation: SHIELD02
-		numberItemsAtLocation: 1
-		itemNameProperty: Player_Inventory
-	}
-	{
-		class: com.maklumi.ui.InventoryItemLocation
-		locationIndex: 11
-		itemTypeAtLocation: WANDS02
 		numberItemsAtLocation: 1
 		itemNameProperty: Player_Inventory
 	}
