@@ -26,6 +26,11 @@
           }
         ]
       }
-    ]
+    ],
+    entityProperties: {
+      ENTITY_HEALTH_POINTS: 15,
+      ENTITY_ATTACK_POINTS: 40,
+      ENTITY_DEFENSE_POINTS: 5
+    }
   }
 ]

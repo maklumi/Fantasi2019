@@ -3,7 +3,6 @@ package com.maklumi.ui
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.Camera
 import com.badlogic.gdx.scenes.scene2d.Stage
-import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.viewport.ScreenViewport
@@ -89,7 +88,9 @@ class PlayerHUD(camera: Camera) : Screen,
         battleUI.setFillParent(true)
         battleUI.isVisible = false
         battleUI.isMovable = false
-        battleUI.touchable = Touchable.childrenOnly
+        //removes all listeners including ones that handle focus
+        battleUI.clearListeners()
+        inventoryUI.inventoryObservers.add(battleUI.battleState)
         stage.addActor(battleUI)
         statusUI.toFront()
     }

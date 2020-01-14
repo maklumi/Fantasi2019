@@ -20,7 +20,22 @@ class InventorySlotTooltip : Window("", STATUSUI_SKIN) {
     }
 
     fun updateDescription(slot: InventorySlot) {
-        description.setText(if (slot.hasItem()) slot.topItem.itemShortDescription else "")
+        val str = StringBuilder()
+        val item = slot.topItem
+        str.append(item.itemShortDescription)
+        if (item.isInventoryItemOffensive()) {
+            str.append(System.getProperty("line.separator"))
+            str.append(String.format("Attack Points: %s", item.itemUseTypeValue))
+        }
+        if (item.isInventoryItemDefensive()) {
+            str.append(System.getProperty("line.separator"))
+            str.append(String.format("Defence Points: %s", item.itemUseTypeValue))
+        }
+        str.append(System.getProperty("line.separator"))
+        str.append(String.format("Original Value: %s GP", item.itemValue))
+        str.append(System.getProperty("line.separator"))
+        str.append(String.format("Trade Value: %s GP", item.tradeInValue()))
+        description.setText(if (slot.hasItem()) str.toString() else "")
         pack()
     }
 }

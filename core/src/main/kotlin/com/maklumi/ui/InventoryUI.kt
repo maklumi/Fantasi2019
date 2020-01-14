@@ -11,12 +11,17 @@ import com.maklumi.InventoryItemFactory
 import com.maklumi.Utility.ITEMS_TEXTUREATLAS
 import com.maklumi.Utility.STATUSUI_SKIN
 import com.maklumi.Utility.STATUSUI_TEXTUREATLAS
+import com.maklumi.ui.InventoryObserver.InventoryEvent.UPDATED_AP
+import com.maklumi.ui.InventoryObserver.InventoryEvent.UPDATED_DP
 import com.maklumi.ui.InventorySlotObserver.SlotEvent.ADDED_ITEM
 import com.maklumi.ui.InventorySlotObserver.SlotEvent.REMOVED_ITEM
 import com.badlogic.gdx.utils.Array as gdxArray
 
 class InventoryUI : Window("Inventory Window", STATUSUI_SKIN, "solidbackground"),
-        InventorySlotObserver {
+        InventorySlotObserver,
+        InventorySubject {
+
+    override val inventoryObservers = gdxArray<InventoryObserver>()
 
     private val lengthSlotRow = 10
     val dragAndDrop = MyDragAndDrop()
@@ -148,13 +153,25 @@ class InventoryUI : Window("Inventory Window", STATUSUI_SKIN, "solidbackground")
         when (event) {
             ADDED_ITEM -> {
                 val item = slot.topItem
-                if (item.isInventoryItemOffensive()) atkVal += item.itemUseTypeValue
-                if (item.isInventoryItemDefensive()) defVal += item.itemUseTypeValue
+                if (item.isInventoryItemOffensive()) {
+                    atkVal += item.itemUseTypeValue
+                    notify(atkVal.toString(), UPDATED_AP)
+                }
+                if (item.isInventoryItemDefensive()) {
+                    defVal += item.itemUseTypeValue
+                    notify(defVal.toString(), UPDATED_DP)
+                }
             }
             REMOVED_ITEM -> {
                 val item = slot.topItem
-                if (item.isInventoryItemOffensive()) atkVal -= item.itemUseTypeValue
-                if (item.isInventoryItemDefensive()) defVal -= item.itemUseTypeValue
+                if (item.isInventoryItemOffensive()) {
+                    atkVal -= item.itemUseTypeValue
+                    notify(atkVal.toString(), UPDATED_AP)
+                }
+                if (item.isInventoryItemDefensive()) {
+                    defVal -= item.itemUseTypeValue
+                    notify(defVal.toString(), UPDATED_DP)
+                }
             }
         }
     }

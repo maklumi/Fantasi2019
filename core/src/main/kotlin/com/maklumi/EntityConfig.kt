@@ -2,6 +2,7 @@ package com.maklumi
 
 import com.badlogic.gdx.math.GridPoint2
 import com.badlogic.gdx.utils.Array
+import com.badlogic.gdx.utils.ObjectMap
 import com.maklumi.InventoryItem.ItemTypeID
 
 class EntityConfig {
@@ -14,6 +15,7 @@ class EntityConfig {
     var questConfigPath = ""
     var itemTypeID: ItemTypeID = ItemTypeID.NOTHING
     var currentQuestID = ""
+    var entityProperties = ObjectMap<String, String>()
 }
 
 data class AnimationConfig(
@@ -26,4 +28,12 @@ data class AnimationConfig(
 enum class AnimationType {
     WALK_DOWN, WALK_LEFT, WALK_RIGHT, WALK_UP,
     IDLE, IMMOBILE
+}
+
+enum class EntityProperties {
+    ENTITY_HEALTH_POINTS,
+    ENTITY_ATTACK_POINTS,
+    ENTITY_DEFENSE_POINTS;
+
+    operator fun invoke(): String = this.toString()
 }
