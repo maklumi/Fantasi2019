@@ -34,6 +34,8 @@ enum class EntityProperties {
     ENTITY_HEALTH_POINTS,
     ENTITY_ATTACK_POINTS,
     ENTITY_HIT_DAMAGE_TOTAL,
+    ENTITY_XP_REWARD,
+    ENTITY_GP_REWARD,
     ENTITY_DEFENSE_POINTS;
 
     operator fun invoke(): String = this.toString()

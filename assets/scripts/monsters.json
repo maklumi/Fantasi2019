@@ -30,7 +30,9 @@
     entityProperties: {
       ENTITY_HEALTH_POINTS: 15,
       ENTITY_ATTACK_POINTS: 40,
-      ENTITY_DEFENSE_POINTS: 5
+      ENTITY_DEFENSE_POINTS: 5,
+      ENTITY_XP_REWARD: 5,
+      ENTITY_GP_REWARD: 5
     }
   },
   {
@@ -64,7 +66,9 @@
     entityProperties: {
       ENTITY_HEALTH_POINTS: 15,
       ENTITY_ATTACK_POINTS: 40,
-      ENTITY_DEFENSE_POINTS: 5
+      ENTITY_DEFENSE_POINTS: 5,
+      ENTITY_XP_REWARD: 5,
+      ENTITY_GP_REWARD: 5
     }
   },
   {
@@ -98,7 +102,9 @@
     entityProperties: {
       ENTITY_HEALTH_POINTS: 15,
       ENTITY_ATTACK_POINTS: 40,
-      ENTITY_DEFENSE_POINTS: 5
+      ENTITY_DEFENSE_POINTS: 5,
+      ENTITY_XP_REWARD: 5,
+      ENTITY_GP_REWARD: 5
     }
   },
   {
@@ -132,7 +138,9 @@
     entityProperties: {
       ENTITY_HEALTH_POINTS: 15,
       ENTITY_ATTACK_POINTS: 40,
-      ENTITY_DEFENSE_POINTS: 5
+      ENTITY_DEFENSE_POINTS: 5,
+      ENTITY_XP_REWARD: 5,
+      ENTITY_GP_REWARD: 5
     }
   },
   {
@@ -166,7 +174,9 @@
     entityProperties: {
       ENTITY_HEALTH_POINTS: 15,
       ENTITY_ATTACK_POINTS: 40,
-      ENTITY_DEFENSE_POINTS: 5
+      ENTITY_DEFENSE_POINTS: 5,
+      ENTITY_XP_REWARD: 5,
+      ENTITY_GP_REWARD: 5
     }
   }
 ]

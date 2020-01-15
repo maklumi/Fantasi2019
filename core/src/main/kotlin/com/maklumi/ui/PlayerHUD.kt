@@ -310,6 +310,10 @@ class PlayerHUD(camera: Camera) : Screen,
             BattleObserver.BattleEvent.OPPONENT_ADDED -> {
             }
             BattleObserver.BattleEvent.OPPONENT_DEFEATED -> {
+                val goldReward = entity.entityConfig.entityProperties[EntityProperties.ENTITY_GP_REWARD()].toInt()
+                statusUI.gold += goldReward
+                val xpReward = entity.entityConfig.entityProperties[EntityProperties.ENTITY_XP_REWARD()].toInt()
+                statusUI.xp += xpReward
                 battleUI.isVisible = false
                 gameState = MainGameScreen.GameState.RUNNING
             }
