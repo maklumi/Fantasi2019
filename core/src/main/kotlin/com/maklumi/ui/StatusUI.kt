@@ -9,6 +9,8 @@ import com.badlogic.gdx.utils.Align.left
 import com.badlogic.gdx.utils.Array
 import com.maklumi.Utility.STATUSUI_SKIN
 import com.maklumi.Utility.STATUSUI_TEXTUREATLAS
+import com.maklumi.battle.LevelTable
+import com.maklumi.json
 
 class StatusUI : Window("Status", STATUSUI_SKIN), StatusSubject {
 
@@ -24,10 +26,12 @@ class StatusUI : Window("Status", STATUSUI_SKIN), StatusSubject {
     private val hpValueLabel = Label("", skin)
     private val xpValueLabel = Label("", skin)
     private val mpValueLabel = Label("", skin)
+    private var levelTables = LevelTable.getLevelTable("scripts/level_tables.json")
 
     var level = 1
         set(value) {
             field = value
+            setStatusForLevel(field)
             levelValLavel.setText("$value")
             notify(value, StatusObserver.StatusEvent.UPDATED_LEVEL)
         }
@@ -37,30 +41,33 @@ class StatusUI : Window("Status", STATUSUI_SKIN), StatusSubject {
             goldVal.setText("$value")
             notify(value, StatusObserver.StatusEvent.UPDATED_GP)
         }
-    var hp = 50000
+    var hp = 0
         set(value) {
             field = value
+            if (field > hpCurrentMax) updateToNewLevel()
             hpValueLabel.setText("$value")
             notify(value, StatusObserver.StatusEvent.UPDATED_HP)
             updateBar(hpBar, field, hpCurrentMax)
         }
-    var hpCurrentMax = 5000
+    var hpCurrentMax = 0
     var mp = 50
         set(value) {
             field = value
+            if (field > mpCurrentMax) updateToNewLevel()
             mpValueLabel.setText("$value")
             notify(value, StatusObserver.StatusEvent.UPDATED_MP)
             updateBar(mpBar, field, mpCurrentMax)
         }
-    var mpCurrentMax = 50
+    var mpCurrentMax = 0
     var xp = 0
         set(value) {
             field = value
+            if (field > xpCurrentMax) updateToNewLevel()
             xpValueLabel.setText("$value")
             notify(value, StatusObserver.StatusEvent.UPDATED_XP)
             updateBar(xpBar, field, xpCurrentMax)
         }
-    var xpCurrentMax = 100
+    var xpCurrentMax = 0
 
     init {
         add()
@@ -129,11 +136,28 @@ class StatusUI : Window("Status", STATUSUI_SKIN), StatusSubject {
         pack()
     }
 
+    private val originalBarLength = hpBar.width
+
     override val statusObservers = Array<StatusObserver>()
+
+    private fun setStatusForLevel(lvl: Int) {
+        levelTables.first { it.levelID.toInt() == lvl }.also { table ->
+            hpCurrentMax = table.hpMax
+            mpCurrentMax = table.mpMax
+            xpCurrentMax = table.xpMax
+        }
+    }
+
+    private fun updateToNewLevel() {
+        levelTables.first { it.xpMax > xp }.also { table ->
+            println("StatusUI151" + json.prettyPrint(table))
+            level = Integer.parseInt(table.levelID)
+        }
+    }
 
     private fun updateBar(bar: Image, current: Int, max: Int) {
         val value = MathUtils.clamp(current, 0, max)
         val percentage = MathUtils.clamp(value / max.toFloat(), 0f, 100f)
-        bar.setSize(hpBar.width * percentage, hpBar.height)
+        bar.setSize(originalBarLength * percentage, hpBar.height)
     }
 }

@@ -262,14 +262,14 @@ class PlayerHUD(camera: Camera) : Screen,
                 }
 
                 // check gold, if first time, give something
-//                val value = ProfileManager.getProperty("currentPlayerGP") ?: 200
-                statusUI.gold = 500
+                val gold = ProfileManager.getProperty("currentPlayerGP") ?: 200
+                statusUI.gold = gold
 
                 statusUI.xpCurrentMax = ProfileManager.getProperty("currentPlayerXPMax") ?: 200
                 statusUI.xp = ProfileManager.getProperty("currentPlayerXP") ?: 0
                 statusUI.hpCurrentMax = ProfileManager.getProperty("currentPlayerHPMax") ?: 50
-//                statusUI.hp = ProfileManager.getProperty("currentPlayerHP") ?: 50
-                statusUI.hp = 50
+                statusUI.hp = ProfileManager.getProperty("currentPlayerHP") ?: 50
+//                statusUI.hp = 50
                 statusUI.mpCurrentMax = ProfileManager.getProperty("currentPlayerMPMax") ?: 50
                 statusUI.mp = ProfileManager.getProperty("currentPlayerMP") ?: 50
                 statusUI.level = ProfileManager.getProperty("currentPlayerLevel") ?: 1
@@ -313,7 +313,7 @@ class PlayerHUD(camera: Camera) : Screen,
                 val goldReward = entity.entityConfig.entityProperties[EntityProperties.ENTITY_GP_REWARD()].toInt()
                 statusUI.gold += goldReward
                 val xpReward = entity.entityConfig.entityProperties[EntityProperties.ENTITY_XP_REWARD()].toInt()
-                statusUI.xp += xpReward
+                statusUI.xp += 200 //xpReward
                 battleUI.isVisible = false
                 gameState = MainGameScreen.GameState.RUNNING
             }

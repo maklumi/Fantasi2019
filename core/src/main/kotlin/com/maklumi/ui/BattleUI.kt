@@ -81,6 +81,7 @@ class BattleUI : Window("BATTLE", Utility.STATUSUI_SKIN, "solidbackground"),
             PLAYER_HIT_DAMAGE -> {
             }
             PLAYER_TURN_DONE -> {
+
                 battleState.opponentAttacks()
             }
         }
