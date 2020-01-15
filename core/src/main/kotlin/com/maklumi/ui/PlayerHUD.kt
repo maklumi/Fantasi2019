@@ -267,6 +267,11 @@ class PlayerHUD(camera: Camera) : Screen,
 
                 statusUI.xpCurrentMax = ProfileManager.getProperty("currentPlayerXPMax") ?: 200
                 statusUI.xp = ProfileManager.getProperty("currentPlayerXP") ?: 0
+                statusUI.hpCurrentMax = ProfileManager.getProperty("currentPlayerHPMax") ?: 50
+                statusUI.hp = ProfileManager.getProperty("currentPlayerHP") ?: 50
+                statusUI.mpCurrentMax = ProfileManager.getProperty("currentPlayerMPMax") ?: 50
+                statusUI.mp = ProfileManager.getProperty("currentPlayerMP") ?: 50
+                statusUI.level = ProfileManager.getProperty("currentPlayerLevel") ?: 1
 
                 val quests = ProfileManager.getProperty<Array<QuestGraph>>("playerQuests")
                 quests?.let { questUI.quests.addAll(quests) }
@@ -278,6 +283,11 @@ class PlayerHUD(camera: Camera) : Screen,
                 ProfileManager.setProperty("playerQuests", questUI.quests)
                 ProfileManager.setProperty("currentPlayerXP", statusUI.xp)
                 ProfileManager.setProperty("currentPlayerXPMax", statusUI.xpCurrentMax)
+                ProfileManager.setProperty("currentPlayerHP", statusUI.hp)
+                ProfileManager.setProperty("currentPlayerHPMax", statusUI.hpCurrentMax)
+                ProfileManager.setProperty("currentPlayerMP", statusUI.mp)
+                ProfileManager.setProperty("currentPlayerMPMax", statusUI.mpCurrentMax)
+                ProfileManager.setProperty("currentPlayerLevel", statusUI.level)
             }
         }
     }
@@ -306,6 +316,18 @@ class PlayerHUD(camera: Camera) : Screen,
                 battleUI.isVisible = false
                 gameState = MainGameScreen.GameState.RUNNING
             }
+            BattleObserver.BattleEvent.PLAYER_HIT_DAMAGE -> {
+                val hpVal = ProfileManager.getProperty("currentPlayerHP") ?: 0
+                statusUI.hp = hpVal
+            }
+            BattleObserver.BattleEvent.OPPONENT_HIT_DAMAGE -> {
+            }
+            BattleObserver.BattleEvent.OPPONENT_TURN_DONE -> {
+            }
+            BattleObserver.BattleEvent.PLAYER_TURN_START -> {
+            }
+            BattleObserver.BattleEvent.PLAYER_TURN_DONE -> {
+            }
         }
     }
 
@@ -313,8 +335,19 @@ class PlayerHUD(camera: Camera) : Screen,
         when (event) {
             StatusObserver.StatusEvent.UPDATED_GP -> {
                 storeInventoryUI.playerTotal = value
+                ProfileManager.setProperty("currentPlayerGP", statusUI.gold)
             }
-            else -> {
+            StatusObserver.StatusEvent.UPDATED_LEVEL -> {
+                ProfileManager.setProperty("currentPlayerLevel", statusUI.level)
+            }
+            StatusObserver.StatusEvent.UPDATED_HP -> {
+                ProfileManager.setProperty("currentPlayerHP", statusUI.hp)
+            }
+            StatusObserver.StatusEvent.UPDATED_MP -> {
+                ProfileManager.setProperty("currentPlayerMP", statusUI.mp)
+            }
+            StatusObserver.StatusEvent.UPDATED_XP -> {
+                ProfileManager.setProperty("currentPlayerXP", statusUI.xp)
             }
         }
     }

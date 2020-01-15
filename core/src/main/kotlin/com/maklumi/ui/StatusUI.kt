@@ -20,17 +20,39 @@ class StatusUI : Window("Status", STATUSUI_SKIN), StatusSubject {
     val inventoryButton = ImageButton(skin, "inventory-button")
     val questButton = ImageButton(skin, "quest-button")
     private val goldVal = Label("", skin)
+    private val levelValLavel = Label("", skin)
+    private val hpValueLabel = Label("", skin)
     private val xpValueLabel = Label("", skin)
+    private val mpValueLabel = Label("", skin)
 
-    private var level = 1
+    var level = 1
+        set(value) {
+            field = value
+            levelValLavel.setText("$value")
+            notify(value, StatusObserver.StatusEvent.UPDATED_LEVEL)
+        }
     var gold = 0
         set(value) {
             field = value
             goldVal.setText("$value")
             notify(value, StatusObserver.StatusEvent.UPDATED_GP)
         }
-    private var hp = 50000
-    private var mp = 50
+    var hp = 50000
+        set(value) {
+            field = value
+            hpValueLabel.setText("$value")
+            notify(value, StatusObserver.StatusEvent.UPDATED_HP)
+            updateBar(hpBar, field, hpCurrentMax)
+        }
+    var hpCurrentMax = 5000
+    var mp = 50
+        set(value) {
+            field = value
+            mpValueLabel.setText("$value")
+            notify(value, StatusObserver.StatusEvent.UPDATED_MP)
+            updateBar(mpBar, field, mpCurrentMax)
+        }
+    var mpCurrentMax = 50
     var xp = 0
         set(value) {
             field = value
@@ -59,8 +81,7 @@ class StatusUI : Window("Status", STATUSUI_SKIN), StatusSubject {
 
         val hpLabel = Label(" hp: ", skin)
         add(hpLabel)
-        val hp = Label("$hp", skin)
-        add(hp)
+        add(hpValueLabel).align(left)
         row()
 
         // magic row
@@ -73,8 +94,7 @@ class StatusUI : Window("Status", STATUSUI_SKIN), StatusSubject {
 
         val mpLabel = Label(" mp: ", skin)
         add(mpLabel)
-        val mp = Label("$mp", skin)
-        add(mp).align(left)
+        add(mpValueLabel).align(left)
         row()
 
         // experience row
@@ -93,8 +113,7 @@ class StatusUI : Window("Status", STATUSUI_SKIN), StatusSubject {
         // level row
         val levelLabel = Label("level ", skin)
         add(levelLabel).align(left)
-        val levelVal = Label("$level", skin)
-        add(levelVal).align(left)
+        add(levelValLavel).align(left)
         row()
 
         // gold row
