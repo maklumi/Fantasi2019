@@ -45,14 +45,19 @@ class BattleUI : Window("BATTLE", Utility.STATUSUI_SKIN, "solidbackground"),
     }
 
     private var damageLabelStartY = damageLabel.y + 300f
+    private var currentBattleZone = 0
 
     fun battleZoneTriggered(zoneID: String) {
+        currentBattleZone = zoneID.toInt()
         battleState.battleZoneEntered(zoneID)
     }
 
     override fun onNotify(entity: Entity, event: BattleEvent) {
         when (event) {
-            OPPONENT_ADDED -> image.setAnim(entity.getAnimation(AnimationType.IMMOBILE))
+            OPPONENT_ADDED -> {
+                image.setAnim(entity.getAnimation(AnimationType.IMMOBILE))
+                titleLabel.setText("Level $currentBattleZone. ${entity.entityConfig.entityID}")
+            }
             OPPONENT_DEFEATED -> {
                 damageLabel.isVisible = false
                 damageLabel.y = damageLabelStartY

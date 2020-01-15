@@ -159,7 +159,7 @@ class PlayerHUD(camera: Camera) : Screen,
                 battleUI.battleZoneTriggered(value)
                 battleUI.isVisible = true
                 battleUI.toBack()
-                gameState = MainGameScreen.GameState.PAUSED
+                gameState = MainGameScreen.GameState.SAVING
             }
         }
     }
@@ -268,7 +268,8 @@ class PlayerHUD(camera: Camera) : Screen,
                 statusUI.xpCurrentMax = ProfileManager.getProperty("currentPlayerXPMax") ?: 200
                 statusUI.xp = ProfileManager.getProperty("currentPlayerXP") ?: 0
                 statusUI.hpCurrentMax = ProfileManager.getProperty("currentPlayerHPMax") ?: 50
-                statusUI.hp = ProfileManager.getProperty("currentPlayerHP") ?: 50
+//                statusUI.hp = ProfileManager.getProperty("currentPlayerHP") ?: 50
+                statusUI.hp = 50
                 statusUI.mpCurrentMax = ProfileManager.getProperty("currentPlayerMPMax") ?: 50
                 statusUI.mp = ProfileManager.getProperty("currentPlayerMP") ?: 50
                 statusUI.level = ProfileManager.getProperty("currentPlayerLevel") ?: 1
@@ -317,8 +318,12 @@ class PlayerHUD(camera: Camera) : Screen,
                 gameState = MainGameScreen.GameState.RUNNING
             }
             BattleObserver.BattleEvent.PLAYER_HIT_DAMAGE -> {
-                val hpVal = ProfileManager.getProperty("currentPlayerHP") ?: 0
+                val hpVal = ProfileManager.getProperty("currentPlayerHP") ?: 100
                 statusUI.hp = hpVal
+                if (hpVal <= 0) {
+                    battleUI.isVisible = false
+                    gameState = MainGameScreen.GameState.GAME_OVER
+                }
             }
             BattleObserver.BattleEvent.OPPONENT_HIT_DAMAGE -> {
             }

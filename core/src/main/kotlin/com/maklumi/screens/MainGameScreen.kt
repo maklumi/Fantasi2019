@@ -12,6 +12,7 @@ import com.badlogic.gdx.maps.objects.RectangleMapObject
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
 import com.maklumi.Component.MESSAGE
 import com.maklumi.EntityFactory
+import com.maklumi.Fantasi
 import com.maklumi.MapManager
 import com.maklumi.MapManager.camera
 import com.maklumi.MapManager.collisionLayer
@@ -27,7 +28,7 @@ import com.maklumi.profile.ProfileManager
 import com.maklumi.ui.PlayerHUD
 
 
-class MainGameScreen : Screen {
+class MainGameScreen(private val fantasi: Fantasi) : Screen {
 
     private val shapeRenderer = ShapeRenderer()
 
@@ -45,7 +46,7 @@ class MainGameScreen : Screen {
     private var debugHUD = false
 
     enum class GameState {
-        SAVING, LOADING, RUNNING, PAUSED;
+        SAVING, LOADING, RUNNING, PAUSED, GAME_OVER;
 
         fun toggle(): GameState {
             return when (this) {
@@ -70,8 +71,11 @@ class MainGameScreen : Screen {
                         ProfileManager.loadProfile()
                     }
                     GameState.SAVING -> {
-                        field = GameState.PAUSED
+                        field = value
                         ProfileManager.saveProfile()
+                    }
+                    GameState.GAME_OVER -> {
+                        field = value
                     }
                 }
             }
@@ -103,6 +107,11 @@ class MainGameScreen : Screen {
 
     @Override
     override fun render(delta: Float) {
+        if (gameState == GameState.GAME_OVER) {
+            gameState = GameState.RUNNING
+            fantasi.screen = fantasi.getScreenType(Fantasi.ScreenType.GameOver)
+            return
+        }
         if (gameState == GameState.PAUSED) {
             player.updateInput(delta)
             playerHUD.render(delta)
