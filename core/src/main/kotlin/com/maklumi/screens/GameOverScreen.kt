@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.Align
 import com.maklumi.Fantasi
 import com.maklumi.Utility
@@ -36,12 +37,25 @@ class GameOverScreen(fantasi: Fantasi) : Screen {
         table.add(gameOverLabel)
         table.row()
         table.add(continueButton).pad(50f, 50f, 50f, 50f)
+        val mainMenuButton = TextButton("Main Menu", Utility.STATUSUI_SKIN)
+        table.add(mainMenuButton).pad(50f, 50f, 50f, 50f)
 
         stage.addActor(table)
 
         continueButton.addListener(object : InputListener() {
             override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
                 fantasi.screen = fantasi.getScreenType(Fantasi.ScreenType.LoadGame)
+                return true
+            }
+        }
+        )
+
+        mainMenuButton.addListener(object : ClickListener() {
+            override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
+                fantasi.screen = fantasi.getScreenType(Fantasi.ScreenType.MainMenu)
+            }
+
+            override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
                 return true
             }
         }
