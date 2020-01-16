@@ -146,11 +146,15 @@ class PlayerPhysicsComponent : PhysicsComponent() {
                     if (previousEnemySpawn.equals(enemySpawnID, true)) return true
                     previousEnemySpawn = enemySpawnID
                     notify(enemySpawnID, ComponentEvent.ENEMY_SPAWN_LOCATION_CHANGED)
-                    println("PPC153 Enemy Spawn Area Activated")
+//                    println("PPC153 Enemy Spawn Area Activated")
                     return true
                 } else {
                     //If no collision, reset the value
-                    previousEnemySpawn = ""
+                    if (previousEnemySpawn.isNotBlank()) {
+                        previousEnemySpawn = ""
+                        notify("", ComponentEvent.ENEMY_SPAWN_LOCATION_CHANGED)
+//                        println("PPC156 Enemy Spawn Area RESET")
+                    }
                 }
             }
         }

@@ -29,7 +29,7 @@ abstract class GraphicsComponent : Component, ComponentSubject() {
 
     private val shapeRenderer = ShapeRenderer()
 
-    fun update(entity: Entity, batch: Batch, delta: Float) {
+    open fun update(entity: Entity, batch: Batch, delta: Float) {
         frameTime = (frameTime + delta) % 10
 
         when (currentState) {

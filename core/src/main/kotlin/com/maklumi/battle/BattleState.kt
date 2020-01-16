@@ -13,6 +13,11 @@ class BattleState : BattleSubject(), InventoryObserver {
     private var attackPoint = 0
     private var defencePoint = 0
     private var opponent: Entity? = null
+    var currentZoneLevel = 1
+    private var chanceOfAttack = 25
+    private var chanceOfEscape = 40
+    private var criticalChance = 90
+    private var originalOpponentHP = 0
 
     override fun onNotify(value: String, event: InventoryObserver.InventoryEvent) {
         when (event) {
@@ -34,12 +39,13 @@ class BattleState : BattleSubject(), InventoryObserver {
         val enemyHP = opponent!!.entityConfig.entityProperties[ENTITY_HEALTH_POINTS()].toInt()
         val enemyDP = opponent!!.entityConfig.entityProperties[ENTITY_DEFENSE_POINTS()].toInt()
         val damage = MathUtils.clamp(attackPoint - enemyDP, 0, attackPoint)
-//        val damage = 2
         val currentHP = MathUtils.clamp(enemyHP - damage, 0, enemyHP)
         opponent!!.entityConfig.entityProperties.put(ENTITY_HEALTH_POINTS(), currentHP.toString())
-        println("Player attacks ${opponent!!.entityConfig.entityID}. $enemyHP HP - $damage = $currentHP HP")
+//        println("BattleState43: Player attacks ${opponent!!.entityConfig.entityID}. $enemyHP HP - $damage = $currentHP HP")
         if (currentHP == 0) {
             notify(opponent!!, OPPONENT_DEFEATED)
+            opponent!!.entityConfig.entityProperties.put(ENTITY_HEALTH_POINTS(), originalOpponentHP.toString())
+            opponent = null
         } else {
             opponent!!.entityConfig.entityProperties.put(ENTITY_HIT_DAMAGE_TOTAL(), damage.toString())
             notify(opponent!!, OPPONENT_HIT_DAMAGE)
@@ -48,7 +54,22 @@ class BattleState : BattleSubject(), InventoryObserver {
     }
 
     fun playerRuns() {
-        notify(opponent!!, PLAYER_RUNNING)
+        val threshold = MathUtils.random(1, 100)
+        when {
+            chanceOfEscape > threshold -> notify(opponent!!, PLAYER_RUNNING)
+            threshold > criticalChance -> opponentAttacks()
+        }
+    }
+
+    fun isOpponentReady(): Boolean {
+        val randomVal = MathUtils.random(1, 100)
+//        println("BattleState65: CHANCE OF ATTACK: $chanceOfAttack randomval: $randomVal")
+        return if (chanceOfAttack > randomVal) {
+            battleZoneEntered()
+            true
+        } else {
+            false
+        }
     }
 
     fun opponentAttacks() {
@@ -60,13 +81,14 @@ class BattleState : BattleSubject(), InventoryObserver {
         val hpVal = MathUtils.clamp(hp - damage, 0, hp)
         ProfileManager.setProperty("currentPlayerHP", hpVal)
         notify(opponent!!, PLAYER_HIT_DAMAGE)
-        println("${opponent!!.entityConfig.entityID} attacks. Player HP $hp - $damage = $hpVal HP")
+//        println("BattleState82: ${opponent!!.entityConfig.entityID} attacks. Player HP $hp - $damage = $hpVal HP")
         notify(opponent!!, OPPONENT_TURN_DONE)
     }
 
-    fun battleZoneEntered(battleZoneID: String) {
-        val entity = MonsterFactory.getRandomMonster(battleZoneID.toInt()) ?: return
+    fun battleZoneEntered() {
+        val entity = MonsterFactory.getRandomMonster(currentZoneLevel) ?: return
         opponent = entity
+        originalOpponentHP = opponent!!.entityConfig.entityProperties[ENTITY_HEALTH_POINTS()].toInt()
         notify(entity, OPPONENT_ADDED)
     }
 

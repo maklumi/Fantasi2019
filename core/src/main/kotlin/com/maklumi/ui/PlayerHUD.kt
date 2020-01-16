@@ -54,7 +54,7 @@ class PlayerHUD(camera: Camera) : Screen,
     private val battleUI = BattleUI()
 
     init {
-        statusUI.setPosition(0f, stage.height)
+        statusUI.setPosition(0f, 0f)
         stage.addActor(statusUI)
 
         val x = statusUI.width
@@ -156,10 +156,15 @@ class PlayerHUD(camera: Camera) : Screen,
                 updateEntityObservers()
             }
             ComponentObserver.ComponentEvent.ENEMY_SPAWN_LOCATION_CHANGED -> {
-                battleUI.battleZoneTriggered(value)
+                battleUI.battleZoneTriggered()
                 battleUI.isVisible = true
-                battleUI.toBack()
-                gameState = MainGameScreen.GameState.SAVING
+            }
+            ComponentObserver.ComponentEvent.PLAYER_HAS_MOVED -> {
+                if (battleUI.isBattleReady()) {
+                    gameState = MainGameScreen.GameState.SAVING
+                    battleUI.toBack()
+                    battleUI.isVisible = true
+                }
             }
         }
     }
@@ -313,7 +318,7 @@ class PlayerHUD(camera: Camera) : Screen,
                 val goldReward = entity.entityConfig.entityProperties[EntityProperties.ENTITY_GP_REWARD()].toInt()
                 statusUI.gold += goldReward
                 val xpReward = entity.entityConfig.entityProperties[EntityProperties.ENTITY_XP_REWARD()].toInt()
-                statusUI.xp += 200 //xpReward
+                statusUI.xp += xpReward
                 battleUI.isVisible = false
                 gameState = MainGameScreen.GameState.RUNNING
             }

@@ -45,24 +45,35 @@ class BattleUI : Window("BATTLE", Utility.STATUSUI_SKIN, "solidbackground"),
     }
 
     private var damageLabelStartY = damageLabel.y + 300f
-    private var currentBattleZone = 0
+    private var battleTimer = 0f
+    private val waitSecond = 2f
 
-    fun battleZoneTriggered(zoneID: String) {
-        currentBattleZone = zoneID.toInt()
-        battleState.battleZoneEntered(zoneID)
+    fun isBattleReady(): Boolean {
+        return if (battleTimer > waitSecond) {
+            battleTimer = 0f
+            return battleState.isOpponentReady()
+        } else {
+            false
+        }
+    }
+
+    fun battleZoneTriggered() {
+        battleState.battleZoneEntered()
     }
 
     override fun onNotify(entity: Entity, event: BattleEvent) {
         when (event) {
             OPPONENT_ADDED -> {
                 image.setAnim(entity.getAnimation(AnimationType.IMMOBILE))
-                titleLabel.setText("Level $currentBattleZone. ${entity.entityConfig.entityID}")
+                titleLabel.setText("Level ${battleState.currentZoneLevel}. ${entity.entityConfig.entityID}")
             }
             OPPONENT_DEFEATED -> {
+                battleTimer = 0f
                 damageLabel.isVisible = false
                 damageLabel.y = damageLabelStartY
             }
             PLAYER_RUNNING -> {
+                battleTimer = 0f
             }
             OPPONENT_HIT_DAMAGE -> {
                 val damage = entity.entityConfig.entityProperties[EntityProperties.ENTITY_HIT_DAMAGE_TOTAL()]
@@ -75,19 +86,19 @@ class BattleUI : Window("BATTLE", Utility.STATUSUI_SKIN, "solidbackground"),
                 attackButton.touchable = Touchable.enabled
             }
             PLAYER_TURN_START -> {
-                attackButton.isDisabled = true
-                attackButton.touchable = Touchable.disabled
+                attackButton.isDisabled = false
+                attackButton.touchable = Touchable.enabled
             }
             PLAYER_HIT_DAMAGE -> {
             }
             PLAYER_TURN_DONE -> {
-
                 battleState.opponentAttacks()
             }
         }
     }
 
     override fun act(delta: Float) {
+        battleTimer = (battleTimer + delta) % 60
         if (damageLabel.isVisible) {
             damageLabel.y = damageLabel.y + 3
             if (damageLabel.y > stage.height) damageLabel.isVisible = false

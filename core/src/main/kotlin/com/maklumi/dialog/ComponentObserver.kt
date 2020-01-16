@@ -9,6 +9,7 @@ interface ComponentObserver {
         SHOW_CONVERSATION,
         HIDE_CONVERSATION,
         QUEST_LOCATION_DISCOVERED,
-        ENEMY_SPAWN_LOCATION_CHANGED
+        ENEMY_SPAWN_LOCATION_CHANGED,
+        PLAYER_HAS_MOVED,
     }
 }
