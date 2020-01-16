@@ -159,9 +159,11 @@ class PlayerHUD(camera: Camera) : Screen,
                 updateEntityObservers()
             }
             ComponentObserver.ComponentEvent.ENEMY_SPAWN_LOCATION_CHANGED -> {
-                battleUI.battleState.currentZoneLevel = value.toInt()
-                battleUI.battleZoneTriggered()
-                battleUI.isVisible = true
+                if (battleUI.isBattleReady()) {
+                    battleUI.battleState.currentZoneLevel = value.toInt()
+                    battleUI.battleZoneTriggered()
+                    battleUI.isVisible = true
+                }
             }
             ComponentObserver.ComponentEvent.PLAYER_HAS_MOVED -> {
                 if (battleUI.isBattleReady()) {
@@ -333,6 +335,12 @@ class PlayerHUD(camera: Camera) : Screen,
             }
             UPDATED_DP -> {
             }
+            ADD_WAND_AP -> {
+                statusUI.mp -= value.toInt()
+            }
+            REMOVE_WAND_AP -> {
+                statusUI.mp += value.toInt()
+            }
         }
     }
 
@@ -368,6 +376,9 @@ class PlayerHUD(camera: Camera) : Screen,
             BattleObserver.BattleEvent.PLAYER_TURN_START -> {
             }
             BattleObserver.BattleEvent.PLAYER_TURN_DONE -> {
+            }
+            BattleObserver.BattleEvent.PLAYER_USED_MAGIC -> {
+                statusUI.mp = ProfileManager.getProperty("currentPlayerMP") ?: 0
             }
         }
     }

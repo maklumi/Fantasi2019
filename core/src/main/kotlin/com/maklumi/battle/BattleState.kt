@@ -18,6 +18,7 @@ class BattleState : BattleSubject(), InventoryObserver {
     private var chanceOfEscape = 40
     private var criticalChance = 90
     private var originalOpponentHP = 0
+    private var playerMagicWandAPPoints = 0
 
     override fun onNotify(value: String, event: InventoryObserver.InventoryEvent) {
         when (event) {
@@ -29,11 +30,30 @@ class BattleState : BattleSubject(), InventoryObserver {
                 defencePoint = value.toInt()
 //                println("DefencePoint: $defencePoint")
             }
+            InventoryObserver.InventoryEvent.ITEM_CONSUMED -> {
+            }
+            InventoryObserver.InventoryEvent.ADD_WAND_AP -> {
+                playerMagicWandAPPoints += value.toInt()
+            }
+            InventoryObserver.InventoryEvent.REMOVE_WAND_AP -> {
+                playerMagicWandAPPoints -= value.toInt()
+            }
         }
     }
 
     fun playerAttacks() {
         if (opponent == null) return
+
+        //Check for magic if used in attack; If we don't have enough MP, then return
+        var mpVal = ProfileManager.getProperty("currentPlayerMP") ?: 0
+        if (playerMagicWandAPPoints > mpVal) {
+            return
+        } else {
+            mpVal -= playerMagicWandAPPoints
+            ProfileManager.setProperty("currentPlayerMP", mpVal)
+            notify(opponent!!, PLAYER_USED_MAGIC)
+        }
+
         notify(opponent!!, PLAYER_TURN_START)
 
         val enemyHP = opponent!!.entityConfig.entityProperties[ENTITY_HEALTH_POINTS()].toInt()

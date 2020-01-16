@@ -46,7 +46,7 @@ class BattleUI : Window("BATTLE", Utility.STATUSUI_SKIN, "solidbackground"),
 
     private var damageLabelStartY = damageLabel.y + 300f
     private var battleTimer = 0f
-    private val waitSecond = 20f
+    private val waitSecond = 2f
 
     fun isBattleReady(): Boolean {
         return if (battleTimer > waitSecond) {
@@ -93,6 +93,8 @@ class BattleUI : Window("BATTLE", Utility.STATUSUI_SKIN, "solidbackground"),
             }
             PLAYER_TURN_DONE -> {
                 battleState.opponentAttacks()
+            }
+            PLAYER_USED_MAGIC -> {
             }
         }
     }

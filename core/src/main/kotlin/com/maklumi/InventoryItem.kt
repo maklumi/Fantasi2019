@@ -76,6 +76,11 @@ class InventoryItem(
         return itemAttributes.and(ItemAttribute.CONSUMABLE()) == ItemAttribute.CONSUMABLE()
     }
 
+    fun isInventoryItemOffensiveWand(): Boolean {
+        return (itemUseType.and(WAND_ONEHAND())) == WAND_ONEHAND() ||
+                (itemUseType.and(WAND_TWOHAND()) == WAND_TWOHAND())
+    }
+
     companion object {
 
         fun doesRestoreHP(itemUseType: Int): Boolean {

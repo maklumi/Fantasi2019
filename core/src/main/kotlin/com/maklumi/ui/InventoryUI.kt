@@ -14,9 +14,7 @@ import com.maklumi.MESSAGE_TOKEN
 import com.maklumi.Utility.ITEMS_TEXTUREATLAS
 import com.maklumi.Utility.STATUSUI_SKIN
 import com.maklumi.Utility.STATUSUI_TEXTUREATLAS
-import com.maklumi.ui.InventoryObserver.InventoryEvent
-import com.maklumi.ui.InventoryObserver.InventoryEvent.UPDATED_AP
-import com.maklumi.ui.InventoryObserver.InventoryEvent.UPDATED_DP
+import com.maklumi.ui.InventoryObserver.InventoryEvent.*
 import com.maklumi.ui.InventorySlotObserver.SlotEvent.ADDED_ITEM
 import com.maklumi.ui.InventorySlotObserver.SlotEvent.REMOVED_ITEM
 import com.badlogic.gdx.utils.Array as gdxArray
@@ -76,7 +74,7 @@ class InventoryUI : Window("Inventory Window", STATUSUI_SKIN, "solidbackground")
                             val item = slot.topItem
                             if (item.isConsumable()) {
                                 val itemInfo = item.itemUseType.toString() + MESSAGE_TOKEN + item.itemUseTypeValue
-                                this@InventoryUI.notify(itemInfo, InventoryEvent.ITEM_CONSUMED)
+                                this@InventoryUI.notify(itemInfo, ITEM_CONSUMED)
                                 slot.remove(item)
                             }
                         }
@@ -182,6 +180,10 @@ class InventoryUI : Window("Inventory Window", STATUSUI_SKIN, "solidbackground")
                     defVal += item.itemUseTypeValue
                     notify(defVal.toString(), UPDATED_DP)
                 }
+                if (item.isInventoryItemOffensiveWand()) {
+                    defVal += item.itemUseTypeValue
+                    notify(item.itemUseTypeValue.toString(), ADD_WAND_AP)
+                }
             }
             REMOVED_ITEM -> {
                 val item = slot.topItem
@@ -192,6 +194,10 @@ class InventoryUI : Window("Inventory Window", STATUSUI_SKIN, "solidbackground")
                 if (item.isInventoryItemDefensive()) {
                     defVal -= item.itemUseTypeValue
                     notify(defVal.toString(), UPDATED_DP)
+                }
+                if (item.isInventoryItemOffensiveWand()) {
+                    defVal -= item.itemUseTypeValue
+                    notify(item.itemUseTypeValue.toString(), REMOVE_WAND_AP)
                 }
             }
         }

@@ -55,6 +55,7 @@ class PlayerPhysicsComponent : PhysicsComponent() {
                 nextPosition.set(pos)
                 previousDiscovery = ""
                 previousEnemySpawn = "0"
+                notify(previousEnemySpawn, ComponentEvent.ENEMY_SPAWN_LOCATION_CHANGED)
             }
             MESSAGE.valueOf(string[0]) == MESSAGE.CURRENT_STATE -> {
                 currentState = json.fromJson(string[1])
