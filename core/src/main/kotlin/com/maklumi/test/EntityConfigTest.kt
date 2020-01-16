@@ -25,7 +25,7 @@ object EntityConfigTest {
             inventory = gdxArray()
             conversationConfigPath = ""
             questConfigPath = ""
-            itemTypeID = InventoryItem.ItemTypeID.NOTHING
+            itemTypeID = InventoryItem.ItemTypeID.NONE
             currentQuestID = ""
         }
 

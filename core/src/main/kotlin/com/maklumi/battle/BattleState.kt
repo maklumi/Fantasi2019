@@ -23,11 +23,11 @@ class BattleState : BattleSubject(), InventoryObserver {
         when (event) {
             UPDATED_AP -> {
                 attackPoint = value.toInt()
-                println("AttackPoint: $attackPoint")
+//                println("AttackPoint: $attackPoint")
             }
             UPDATED_DP -> {
                 defencePoint = value.toInt()
-                println("DefencePoint: $defencePoint")
+//                println("DefencePoint: $defencePoint")
             }
         }
     }
@@ -56,7 +56,7 @@ class BattleState : BattleSubject(), InventoryObserver {
     fun playerRuns() {
         val threshold = MathUtils.random(1, 100)
         when {
-            chanceOfEscape > threshold -> notify(opponent!!, PLAYER_RUNNING)
+            chanceOfEscape > threshold -> opponent?.let { notify(opponent!!, PLAYER_RUNNING) }
             threshold > criticalChance -> opponentAttacks()
         }
     }

@@ -13,7 +13,7 @@ class EntityConfig {
     var inventory = Array<ItemTypeID>()
     var conversationConfigPath: String = ""
     var questConfigPath = ""
-    var itemTypeID: ItemTypeID = ItemTypeID.NOTHING
+    var itemTypeID: ItemTypeID = ItemTypeID.NONE
     var currentQuestID = ""
     var entityProperties = ObjectMap<String, String>()
 }

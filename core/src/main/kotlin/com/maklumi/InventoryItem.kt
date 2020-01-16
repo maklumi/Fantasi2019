@@ -8,7 +8,7 @@ import com.maklumi.InventoryItem.ItemUseType.*
 class InventoryItem(
         textureRegion: TextureRegion? = null,
         var itemAttributes: Int = 0,
-        var itemTypeID: ItemTypeID = ItemTypeID.NOTHING,
+        var itemTypeID: ItemTypeID = ItemTypeID.NONE,
         var itemUseType: Int = 0,
         var itemUseTypeValue: Int = 0,
         var itemShortDescription: String = "",
@@ -40,7 +40,7 @@ class InventoryItem(
         WANDS01, WANDS02, WANDS03, WANDS04, WANDS05,
         WEAPON01, WEAPON02, WEAPON03, WEAPON04, WEAPON05,
         POTIONS01, POTIONS02, POTIONS03,
-        SCROLL01, SCROLL02, SCROLL03, NOTHING, HERB001,
+        SCROLL01, SCROLL02, SCROLL03, NONE, HERB001,
         BABY001, HORNS001, FUR001,
     }
 

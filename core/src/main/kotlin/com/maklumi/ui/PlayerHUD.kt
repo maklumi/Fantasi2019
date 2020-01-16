@@ -54,7 +54,7 @@ class PlayerHUD(camera: Camera) : Screen,
     private val battleUI = BattleUI()
 
     init {
-        statusUI.setPosition(0f, 0f)
+        statusUI.setPosition(stage.width / 3, stage.height)
         stage.addActor(statusUI)
 
         val x = statusUI.width
@@ -156,6 +156,7 @@ class PlayerHUD(camera: Camera) : Screen,
                 updateEntityObservers()
             }
             ComponentObserver.ComponentEvent.ENEMY_SPAWN_LOCATION_CHANGED -> {
+                battleUI.battleState.currentZoneLevel = value.toInt()
                 battleUI.battleZoneTriggered()
                 battleUI.isVisible = true
             }

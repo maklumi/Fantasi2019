@@ -150,7 +150,7 @@ class StatusUI : Window("Status", STATUSUI_SKIN), StatusSubject {
 
     private fun updateToNewLevel() {
         levelTables.first { it.xpMax > xp }.also { table ->
-            println("StatusUI151" + json.prettyPrint(table))
+//            println("StatusUI151" + json.prettyPrint(table))
             level = Integer.parseInt(table.levelID)
         }
     }

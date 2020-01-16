@@ -16,7 +16,7 @@ class PlayerPhysicsComponent : PhysicsComponent() {
     private var mouseSelectCoordinates = Vector3()
     private var isMouseSelectEnabled = false
     private var previousDiscovery = ""
-    private var previousEnemySpawn = ""
+    private var previousEnemySpawn = "0"
 
     override fun update(entity: Entity, deltaTime: Float) {
         if (isCollisionWithMapLayer(entity, nextBound) == null
@@ -54,7 +54,7 @@ class PlayerPhysicsComponent : PhysicsComponent() {
                 currentPosition.set(pos)
                 nextPosition.set(pos)
                 previousDiscovery = ""
-                previousEnemySpawn = ""
+                previousEnemySpawn = "0"
             }
             MESSAGE.valueOf(string[0]) == MESSAGE.CURRENT_STATE -> {
                 currentState = json.fromJson(string[1])
@@ -148,15 +148,14 @@ class PlayerPhysicsComponent : PhysicsComponent() {
                     notify(enemySpawnID, ComponentEvent.ENEMY_SPAWN_LOCATION_CHANGED)
 //                    println("PPC153 Enemy Spawn Area Activated")
                     return true
-                } else {
-                    //If no collision, reset the value
-                    if (previousEnemySpawn.isNotBlank()) {
-                        previousEnemySpawn = ""
-                        notify("", ComponentEvent.ENEMY_SPAWN_LOCATION_CHANGED)
-//                        println("PPC156 Enemy Spawn Area RESET")
-                    }
                 }
             }
+        }
+        //If no collision, reset the value
+        if (previousEnemySpawn != "0") {
+            println("PPC156 Enemy Spawn Area RESET, previous area $previousEnemySpawn")
+            previousEnemySpawn = "0"
+            notify(previousEnemySpawn, ComponentEvent.ENEMY_SPAWN_LOCATION_CHANGED)
         }
         return false
     }

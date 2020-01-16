@@ -1,13 +1,21 @@
 {
+currentPlayerGP: {
+	class: java.lang.Integer
+	value: 7270
+}
+currentPlayerHP: {
+	class: java.lang.Integer
+	value: 500
+}
 castleOfDoomMapStartPosition: {
 	class: com.badlogic.gdx.math.Vector2
-	x: 150
-	y: 10
+	x: 248
+	y: 24
 }
 topWorldMapStartPosition: {
 	class: com.badlogic.gdx.math.Vector2
-	x: 256
-	y: 336
+	x: 832
+	y: 1040
 }
 playerEquipInventory: [
 	{
@@ -20,14 +28,28 @@ playerEquipInventory: [
 	{
 		class: com.maklumi.ui.InventoryItemLocation
 		locationIndex: 2
-		itemTypeAtLocation: WANDS02
+		itemTypeAtLocation: WEAPON04
+		numberItemsAtLocation: 1
+		itemNameProperty: Player_Inventory
+	}
+	{
+		class: com.maklumi.ui.InventoryItemLocation
+		locationIndex: 3
+		itemTypeAtLocation: ARMOR04
 		numberItemsAtLocation: 1
 		itemNameProperty: Player_Inventory
 	}
 	{
 		class: com.maklumi.ui.InventoryItemLocation
 		locationIndex: 4
-		itemTypeAtLocation: SHIELD04
+		itemTypeAtLocation: SHIELD05
+		numberItemsAtLocation: 1
+		itemNameProperty: Player_Inventory
+	}
+	{
+		class: com.maklumi.ui.InventoryItemLocation
+		locationIndex: 6
+		itemTypeAtLocation: BOOTS03
 		numberItemsAtLocation: 1
 		itemNameProperty: Player_Inventory
 	}
@@ -115,34 +137,39 @@ playerQuests: [
 		xpReward: 100
 	}
 ]
+currentPlayerMP: {
+	class: java.lang.Integer
+	value: 50
+}
 townMapStartPosition: {
 	class: com.badlogic.gdx.math.Vector2
 	x: 208
 	y: 16
 }
-currentPlayerGP: {
+currentPlayerHPMax: {
 	class: java.lang.Integer
-	value: 500
+	value: 130
+}
+currentPlayerMPMax: {
+	class: java.lang.Integer
+	value: 130
+}
+currentPlayerLevel: {
+	class: java.lang.Integer
+	value: 5
 }
 currentPlayerXP: {
 	class: java.lang.Integer
-	value: 120
+	value: 2055
 }
 currentPlayerXPMax: {
 	class: java.lang.Integer
-	value: 200
+	value: 3200
 }
 playerInventory: [
 	{
 		class: com.maklumi.ui.InventoryItemLocation
-		itemTypeAtLocation: ARMOR04
-		numberItemsAtLocation: 1
-		itemNameProperty: Player_Inventory
-	}
-	{
-		class: com.maklumi.ui.InventoryItemLocation
-		locationIndex: 1
-		itemTypeAtLocation: BOOTS03
+		itemTypeAtLocation: WEAPON05
 		numberItemsAtLocation: 1
 		itemNameProperty: Player_Inventory
 	}
@@ -199,6 +226,27 @@ playerInventory: [
 		class: com.maklumi.ui.InventoryItemLocation
 		locationIndex: 12
 		itemTypeAtLocation: WEAPON01
+		numberItemsAtLocation: 1
+		itemNameProperty: Player_Inventory
+	}
+	{
+		class: com.maklumi.ui.InventoryItemLocation
+		locationIndex: 13
+		itemTypeAtLocation: WANDS02
+		numberItemsAtLocation: 1
+		itemNameProperty: Player_Inventory
+	}
+	{
+		class: com.maklumi.ui.InventoryItemLocation
+		locationIndex: 14
+		itemTypeAtLocation: SHIELD04
+		numberItemsAtLocation: 1
+		itemNameProperty: Player_Inventory
+	}
+	{
+		class: com.maklumi.ui.InventoryItemLocation
+		locationIndex: 15
+		itemTypeAtLocation: BOOTS05
 		numberItemsAtLocation: 1
 		itemNameProperty: Player_Inventory
 	}
