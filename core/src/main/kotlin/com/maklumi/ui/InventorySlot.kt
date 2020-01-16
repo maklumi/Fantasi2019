@@ -112,6 +112,13 @@ class InventorySlot(
         numItemsLabel.isVisible = itemCount > 1
     }
 
+    fun remove(actor: Actor) {
+        super.removeActor(actor)
+        if (actor != imageBackground && actor != numItemsLabel) {
+            reduceItemCount(true)
+        }
+    }
+
     companion object {
         fun swapSlots(source: InventorySlot, target: InventorySlot, dragActor: InventoryItem) {
             //check if items can accept each other, otherwise, no swap

@@ -18,6 +18,7 @@ import com.maklumi.profile.ProfileObserver
 import com.maklumi.quest.QuestGraph
 import com.maklumi.screens.MainGameScreen
 import com.maklumi.screens.MainGameScreen.Companion.gameState
+import com.maklumi.ui.InventoryObserver.InventoryEvent.*
 import com.maklumi.ui.StoreInventoryObserver.StoreInventoryEvent
 import ktx.actors.onClick
 import ktx.json.fromJson
@@ -27,6 +28,7 @@ class PlayerHUD(camera: Camera) : Screen,
         ConversationGraphObserver,
         ProfileObserver,
         StoreInventoryObserver,
+        InventoryObserver,
         BattleObserver,
         StatusObserver {
 
@@ -54,7 +56,7 @@ class PlayerHUD(camera: Camera) : Screen,
     private val battleUI = BattleUI()
 
     init {
-        statusUI.setPosition(stage.width / 3, stage.height)
+        statusUI.setPosition(0f, stage.height - statusUI.height - 40f)
         stage.addActor(statusUI)
 
         val x = statusUI.width
@@ -96,6 +98,7 @@ class PlayerHUD(camera: Camera) : Screen,
         battleUI.clearListeners()
         battleUI.battleState.battleObservers.add(this)
         inventoryUI.inventoryObservers.add(battleUI.battleState)
+        inventoryUI.inventoryObservers.add(this)
         stage.addActor(battleUI)
         statusUI.toFront()
     }
@@ -310,6 +313,29 @@ class PlayerHUD(camera: Camera) : Screen,
             }
         }
     }
+
+    override fun onNotify(value: String, event: InventoryObserver.InventoryEvent) {
+        when (event) {
+            ITEM_CONSUMED -> {
+                val strings = value.split(MESSAGE_TOKEN)
+                if (strings.size != 2) return
+
+                val type = strings[0].toInt()
+                val typeValue = strings[1].toInt()
+
+                if (InventoryItem.doesRestoreHP(type)) {
+                    statusUI.hp += typeValue
+                } else if (InventoryItem.doesRestoreMP(type)) {
+                    statusUI.mp += typeValue
+                }
+            }
+            UPDATED_AP -> {
+            }
+            UPDATED_DP -> {
+            }
+        }
+    }
+
 
     override fun onNotify(entity: Entity, event: BattleObserver.BattleEvent) {
         when (event) {

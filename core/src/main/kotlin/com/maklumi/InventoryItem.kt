@@ -24,7 +24,7 @@ class InventoryItem(
     }
 
     enum class ItemUseType(private val value: Int) {
-        RESTORE_HEALTH(1), RESTORE_MP(2), DAMAGE(4),
+        ITEM_RESTORE_HEALTH(1), ITEM_RESTORE_MP(2), ITEM_DAMAGE(4),
         WEAPON_ONEHAND(8), WEAPON_TWOHAND(16), WAND_ONEHAND(32),
         WAND_TWOHAND(64), ARMOR_SHIELD(128), ARMOR_HELMET(256),
         ARMOR_CHEST(512), ARMOR_FEET(1024), QUEST_ITEM(2048);
@@ -70,6 +70,22 @@ class InventoryItem(
                 itemUseType and ARMOR_HELMET() == ARMOR_HELMET() ||
                 itemUseType and ARMOR_FEET() == ARMOR_FEET() ||
                 itemUseType and ARMOR_SHIELD() == ARMOR_SHIELD()
+    }
+
+    fun isConsumable(): Boolean {
+        return itemAttributes.and(ItemAttribute.CONSUMABLE()) == ItemAttribute.CONSUMABLE()
+    }
+
+    companion object {
+
+        fun doesRestoreHP(itemUseType: Int): Boolean {
+            return itemUseType.and(ITEM_RESTORE_HEALTH()) == ITEM_RESTORE_HEALTH()
+        }
+
+        fun doesRestoreMP(itemUseType: Int): Boolean {
+            return itemUseType.and(ITEM_RESTORE_MP()) == ITEM_RESTORE_MP()
+        }
+
     }
 
 }

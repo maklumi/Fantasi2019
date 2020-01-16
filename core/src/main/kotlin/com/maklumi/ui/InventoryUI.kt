@@ -2,15 +2,19 @@ package com.maklumi.ui
 
 import com.badlogic.gdx.graphics.g2d.NinePatch
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.Align
 import com.maklumi.Entity
 import com.maklumi.InventoryItem.ItemTypeID
 import com.maklumi.InventoryItem.ItemUseType
 import com.maklumi.InventoryItemFactory
+import com.maklumi.MESSAGE_TOKEN
 import com.maklumi.Utility.ITEMS_TEXTUREATLAS
 import com.maklumi.Utility.STATUSUI_SKIN
 import com.maklumi.Utility.STATUSUI_TEXTUREATLAS
+import com.maklumi.ui.InventoryObserver.InventoryEvent
 import com.maklumi.ui.InventoryObserver.InventoryEvent.UPDATED_AP
 import com.maklumi.ui.InventoryObserver.InventoryEvent.UPDATED_DP
 import com.maklumi.ui.InventorySlotObserver.SlotEvent.ADDED_ITEM
@@ -63,6 +67,23 @@ class InventoryUI : Window("Inventory Window", STATUSUI_SKIN, "solidbackground")
             inventorySlot.addListener(InventorySlotTooltipListener(tooltip))
             dragAndDrop.addTarget(InventorySlotTarget(inventorySlot))
             inventorySlotTable.add(inventorySlot).size(slotWidth, slotHeight)
+            inventorySlot.addListener(object : ClickListener() {
+                override fun touchUp(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int) {
+                    super.touchUp(event, x, y, pointer, button)
+                    if (tapCount == 2) {
+                        val slot = event.listenerActor as InventorySlot? ?: return
+                        if (slot.hasItem()) {
+                            val item = slot.topItem
+                            if (item.isConsumable()) {
+                                val itemInfo = item.itemUseType.toString() + MESSAGE_TOKEN + item.itemUseTypeValue
+                                this@InventoryUI.notify(itemInfo, InventoryEvent.ITEM_CONSUMED)
+                                slot.remove(item)
+                            }
+                        }
+                    }
+                }
+            }
+            )
             if (i % lengthSlotRow == 0) inventorySlotTable.row()
         }
 
