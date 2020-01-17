@@ -9,7 +9,7 @@ object EntityFactory {
         PLAYER, DEMO_PLAYER, NPC
     }
 
-    private const val PLAYER_CONFIG = "scripts/player.json"
+    const val PLAYER_CONFIG = "scripts/player.json"
 
     fun getEntity(entityType: EntityType): Entity {
         return when (entityType) {

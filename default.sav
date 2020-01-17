@@ -1,8 +1,4 @@
 {
-currentPlayerGP: {
-	class: java.lang.Integer
-	value: 7270
-}
 currentPlayerHP: {
 	class: java.lang.Integer
 	value: 500
@@ -14,8 +10,8 @@ castleOfDoomMapStartPosition: {
 }
 topWorldMapStartPosition: {
 	class: com.badlogic.gdx.math.Vector2
-	x: 832
-	y: 1040
+	x: 256
+	y: 336
 }
 playerEquipInventory: [
 	{
@@ -28,7 +24,7 @@ playerEquipInventory: [
 	{
 		class: com.maklumi.ui.InventoryItemLocation
 		locationIndex: 2
-		itemTypeAtLocation: WEAPON04
+		itemTypeAtLocation: WANDS02
 		numberItemsAtLocation: 1
 		itemNameProperty: Player_Inventory
 	}
@@ -137,18 +133,22 @@ playerQuests: [
 		xpReward: 100
 	}
 ]
+currentPlayerHPMax: {
+	class: java.lang.Integer
+	value: 130
+}
 currentPlayerMP: {
 	class: java.lang.Integer
-	value: 50
+	value: 40
 }
 townMapStartPosition: {
 	class: com.badlogic.gdx.math.Vector2
 	x: 208
 	y: 16
 }
-currentPlayerHPMax: {
+currentPlayerGP: {
 	class: java.lang.Integer
-	value: 130
+	value: 7285
 }
 currentPlayerMPMax: {
 	class: java.lang.Integer
@@ -160,7 +160,7 @@ currentPlayerLevel: {
 }
 currentPlayerXP: {
 	class: java.lang.Integer
-	value: 2055
+	value: 2070
 }
 currentPlayerXPMax: {
 	class: java.lang.Integer
@@ -224,15 +224,15 @@ playerInventory: [
 	}
 	{
 		class: com.maklumi.ui.InventoryItemLocation
-		locationIndex: 12
-		itemTypeAtLocation: WEAPON01
+		locationIndex: 11
+		itemTypeAtLocation: WEAPON04
 		numberItemsAtLocation: 1
 		itemNameProperty: Player_Inventory
 	}
 	{
 		class: com.maklumi.ui.InventoryItemLocation
-		locationIndex: 13
-		itemTypeAtLocation: WANDS02
+		locationIndex: 12
+		itemTypeAtLocation: WEAPON01
 		numberItemsAtLocation: 1
 		itemNameProperty: Player_Inventory
 	}
@@ -274,7 +274,7 @@ playerInventory: [
 ]
 currentMapType: {
 	class: com.maklumi.MapFactory$MapType
-	value: TOP_WORLD
+	value: TOWN
 }
 TOWN_FOLK4: {
 	class: com.maklumi.EntityConfig

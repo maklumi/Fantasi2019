@@ -8,13 +8,16 @@ import com.maklumi.screens.*
 
 class Fantasi : Game() {
 
-    enum class ScreenType { MainMenu, MainGame, LoadGame, NewGame, GameOver }
+    enum class ScreenType {
+        MainMenu, MainGame, LoadGame, NewGame, GameOver, WatchIntro
+    }
 
     private lateinit var mainMenuScreen: MainMenuScreen
     private lateinit var loadGameScreen: LoadGameScreen
     private lateinit var mainGameScreen: MainGameScreen
     private lateinit var newGameScreen: NewGameScreen
     private lateinit var gameOverScreen: GameOverScreen
+    private lateinit var cutSceneScreen: CutSceneScreen
 
     @Override
     override fun create() {
@@ -24,7 +27,8 @@ class Fantasi : Game() {
         mainGameScreen = MainGameScreen(this)
         newGameScreen = NewGameScreen(this)
         gameOverScreen = GameOverScreen(this)
-        setScreen(mainGameScreen)
+        cutSceneScreen = CutSceneScreen()
+        setScreen(cutSceneScreen)
     }
 
     override fun dispose() {
@@ -40,6 +44,7 @@ class Fantasi : Game() {
             ScreenType.LoadGame -> loadGameScreen
             ScreenType.NewGame -> newGameScreen
             ScreenType.GameOver -> gameOverScreen
+            ScreenType.WatchIntro -> cutSceneScreen
         }
     }
 

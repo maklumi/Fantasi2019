@@ -26,11 +26,13 @@ class MainMenuScreen(fantasi: Fantasi) : Screen {
         val title = Image(STATUSUI_TEXTUREATLAS.findRegion("bludbourne_title"))
         val newGameButton = TextButton("New Game", STATUSUI_SKIN)
         val loadGameButton = TextButton("Load Game", STATUSUI_SKIN)
+        val watchIntroButton = TextButton("Watch Intro", STATUSUI_SKIN)
         val exitButton = TextButton("Exit", STATUSUI_SKIN)
 
         layout.add(title).spaceBottom(75f).row()
         layout.add(newGameButton).spaceBottom(10f).row()
         layout.add(loadGameButton).spaceBottom(10f).row()
+        layout.add(watchIntroButton).spaceBottom(10f).row()
         layout.add(exitButton).spaceBottom(10f).row()
 
         stage.addActor(layout)
@@ -38,6 +40,7 @@ class MainMenuScreen(fantasi: Fantasi) : Screen {
         //Listeners
         newGameButton.onTouchDown { fantasi.screen = fantasi.getScreenType(ScreenType.NewGame) }
         loadGameButton.onTouchDown { fantasi.screen = fantasi.getScreenType(ScreenType.LoadGame) }
+        watchIntroButton.onTouchDown { fantasi.screen = fantasi.getScreenType(ScreenType.WatchIntro) }
         exitButton.onTouchDown { Gdx.app.exit() }
 
     }
