@@ -6,6 +6,7 @@ import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.utils.Json
@@ -31,12 +32,9 @@ class CutSceneScreen : Screen {
     private val animImage = AnimatedImage()
     private val j = Json()
     private val wh = 16f * b
+    private var mainChar = Actor()
 
-    init {
-        setup()
-    }
-
-    private fun setup() {
+    override fun show() {
         entity.entityConfig = Entity.loadEntityConfigBy(EntityFactory.PLAYER_CONFIG)
         entity.sendMessage(Component.MESSAGE.INIT_STATE, j.toJson(Entity.State.WALKING))
         entity.sendMessage(Component.MESSAGE.LOAD_ANIMATIONS, j.toJson(entity.entityConfig))
@@ -47,22 +45,21 @@ class CutSceneScreen : Screen {
 
         animImage.addAction(
                 Actions.sequence(
+                        Actions.run { mainChar = animImage },
                         Actions.run { animImage.setAnim(WALK_RIGHT) },
                         Actions.moveTo(16f * 40, 16f, 5f),
                         Actions.run { animImage.setAnim(WALK_UP) },
                         Actions.moveTo(16f * 40, 16f * 52, 5f),
+                        Actions.run { MapManager.loadMap(MapFactory.MapType.CASTLE_OF_DOOM) },
                         Actions.run { animImage.setAnim(WALK_DOWN) }
                 )
         )
         stage.addActor(animImage)
+        Gdx.input.inputProcessor = stage
     }
 
     private fun AnimatedImage.setAnim(animationType: AnimationType) {
         this.setAnim(entity.getAnimation(animationType))
-    }
-
-    override fun show() {
-        Gdx.input.inputProcessor = stage
     }
 
     override fun render(delta: Float) {
@@ -70,7 +67,7 @@ class CutSceneScreen : Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         if (Gdx.input.isKeyPressed(Input.Keys.Q)) Gdx.app.exit()
 
-        camera.position.set(animImage.x, animImage.y, 0f)
+        camera.position.set(mainChar.x, mainChar.y, 0f)
         camera.update()
         tiledMapRenderer.setView(camera)
 
