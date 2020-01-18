@@ -21,7 +21,7 @@ object MonsterFactory {
     private val entities: Hashtable<String, Entity> = Entity.initEntities(configs)
     private val monsterZones = MonsterZone.getMonsterZones("scripts/monster_zones.json")
 
-    private fun getMonster(type: MonsterEntityType): Entity? {
+    fun getMonster(type: MonsterEntityType): Entity? {
         val entity = entities[type.toString()] ?: return null
         return Entity(entity)
     }

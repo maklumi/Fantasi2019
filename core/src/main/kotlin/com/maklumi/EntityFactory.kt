@@ -19,7 +19,8 @@ object EntityFactory {
         TOWN_INNKEEPER,
         TOWN_FOLK1, TOWN_FOLK2, TOWN_FOLK3, TOWN_FOLK4, TOWN_FOLK5,
         TOWN_FOLK6, TOWN_FOLK7, TOWN_FOLK8, TOWN_FOLK9, TOWN_FOLK10,
-        TOWN_FOLK11, TOWN_FOLK12, TOWN_FOLK13, TOWN_FOLK14, TOWN_FOLK15;
+        TOWN_FOLK11, TOWN_FOLK12, TOWN_FOLK13, TOWN_FOLK14, TOWN_FOLK15,
+        FIRE;
 
         operator fun invoke(): String = this.toString()
     }
@@ -30,12 +31,19 @@ object EntityFactory {
     private const val TOWN_MAGE_CONFIG = "scripts/town_mage.json"
     private const val TOWN_INNKEEPER_CONFIG = "scripts/town_innkeeper.json"
     private const val TOWN_FOLK_CONFIGS = "scripts/town_folk.json"
+    private const val ENVIRONMENTAL_ENTITY_CONFIGS = "scripts/environmental_entities.json"
+
 
     private val configTable = Hashtable<String, EntityConfig>()
 
     init {
         val townFolkConfigs: gdxArray<EntityConfig> = Entity.getEntityConfigs(TOWN_FOLK_CONFIGS)
         townFolkConfigs.forEach { config ->
+            configTable[config.entityID] = config
+        }
+
+        val environmentalEntityConfigs = Entity.getEntityConfigs(ENVIRONMENTAL_ENTITY_CONFIGS)
+        environmentalEntityConfigs.forEach { config ->
             configTable[config.entityID] = config
         }
 
