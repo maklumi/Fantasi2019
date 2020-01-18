@@ -2,40 +2,26 @@ package com.maklumi
 
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
-import com.maklumi.Entity.Companion.initEntityNPC
+import com.maklumi.Component.MESSAGE.INIT_START_POSITION
+import com.maklumi.EntityFactory.EntityName.TOWN_GUARD_WALKING
 
 class TownMap : Map(MapFactory.MapType.TOWN, "maps/town.tmx") {
-
-    private val townGuardWalking = "scripts/town_guard_walking.json"
-    private val townBlacksmith = "scripts/town_blacksmith.json"
-    private val townInnKeeper = "scripts/town_innkeeper.json"
-    private val townMage = "scripts/town_mage.json"
-    private val townFolk = "scripts/town_folk.json"
 
     init {
         // init NPC
         npcStartPositions.forEach { position ->
-            val guard = initEntityNPC(position, Entity.loadEntityConfigBy(townGuardWalking))
+            val guard = EntityFactory.getEntityByName(TOWN_GUARD_WALKING)
+            guard.sendMessage(INIT_START_POSITION, json.toJson(position))
             mapEntities.add(guard)
         }
         // init other special NPC
-        val smith = initEntitySpecial(Entity.loadEntityConfigBy(townBlacksmith))
-        val mage = initEntitySpecial(Entity.loadEntityConfigBy(townMage))
-        val keeper = initEntitySpecial(Entity.loadEntityConfigBy(townInnKeeper))
-        mapEntities.add(smith, mage, keeper)
-        // town folks have their configs in one file
-        Entity.getEntityConfigs(townFolk)
-                .forEach { mapEntities.add(initEntitySpecial(Entity.loadEntityConfig(it))) }
-    }
-
-    private fun initEntitySpecial(entityConfig: EntityConfig): Entity {
-        val position =
-                if (specialNPCStartPositions.containsKey(entityConfig.entityID))
-                    specialNPCStartPositions[entityConfig.entityID]!!
-                else
-                    Vector2()
-
-        return initEntityNPC(position, entityConfig)
+        // except player puppet and town guard
+        val others = EntityFactory.EntityName.values().drop(2)
+        others.forEach { name ->
+            val folk = EntityFactory.getEntityByName(name)
+            initSpecialEntityPosition(folk)
+            mapEntities.add(folk)
+        }
     }
 
     override fun updateMapEntities(batch: Batch, delta: Float) {
@@ -46,5 +32,14 @@ class TownMap : Map(MapFactory.MapType.TOWN, "maps/town.tmx") {
         mapQuestEntities.forEach {
             it.update(batch, delta)
         }
+    }
+
+    private fun initSpecialEntityPosition(entity: Entity) {
+        val position =
+                if (specialNPCStartPositions.containsKey(entity.entityConfig.entityID))
+                    specialNPCStartPositions[entity.entityConfig.entityID]!!
+                else
+                    Vector2()
+        entity.sendMessage(INIT_START_POSITION, json.toJson(position))
     }
 }

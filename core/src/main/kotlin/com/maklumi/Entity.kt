@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
 import com.maklumi.Component.MESSAGE.*
 import com.maklumi.dialog.ComponentObserver
@@ -22,6 +23,10 @@ class Entity(val inputComponent: InputComponent,
 
     constructor(entity: Entity) : this(entity.inputComponent, entity.physicsComponent, entity.graphicsComponent) {
         entityConfig = entity.entityConfig
+        components.clear()
+        components.add(inputComponent)
+        components.add(physicsComponent)
+        components.add(graphicsComponent)
     }
 
     var entityConfig = EntityConfig()
@@ -112,10 +117,10 @@ class Entity(val inputComponent: InputComponent,
             return serializedConfig ?: entityConfig
         }
 
-        fun loadEntityConfig(entityConfig: EntityConfig): EntityConfig {
-            val serializedConfig = ProfileManager.getProperty<EntityConfig>(entityConfig.entityID)
-            return serializedConfig ?: entityConfig
-        }
+//        fun loadEntityConfig(entityConfig: EntityConfig): EntityConfig {
+//            val serializedConfig = ProfileManager.getProperty<EntityConfig>(entityConfig.entityID)
+//            return serializedConfig ?: entityConfig
+//        }
 
         fun initEntityNPC(position: Vector2, config: EntityConfig): Entity {
             val entity = EntityFactory.getEntity(EntityFactory.EntityType.NPC)
@@ -131,7 +136,7 @@ class Entity(val inputComponent: InputComponent,
 
         fun initEntities(configs: gdxArray<EntityConfig>): Hashtable<String, Entity> {
             val entities = Hashtable<String, Entity>()
-            for (config in configs) {
+            configs.forEach { config ->
                 val entity = EntityFactory.getEntity(EntityFactory.EntityType.NPC)
                 entity.entityConfig = config
                 entity.sendMessage(LOAD_ANIMATIONS, json.toJson(entity.entityConfig))
@@ -144,5 +149,17 @@ class Entity(val inputComponent: InputComponent,
             return entities
         }
 
+        fun initEntity(entityConfig: EntityConfig): Entity {
+            val json = Json()
+            val entity = EntityFactory.getEntity(EntityFactory.EntityType.NPC)
+            entity.entityConfig = entityConfig
+
+            entity.sendMessage(LOAD_ANIMATIONS, json.toJson(entity.entityConfig))
+            entity.sendMessage(INIT_START_POSITION, json.toJson(Vector2.Zero))
+            entity.sendMessage(INIT_STATE, json.toJson(entity.entityConfig.state))
+            entity.sendMessage(INIT_DIRECTION, json.toJson(entity.entityConfig.direction))
+
+            return entity
+        }
     }
 }

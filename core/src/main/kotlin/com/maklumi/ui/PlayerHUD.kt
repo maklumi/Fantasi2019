@@ -166,11 +166,12 @@ class PlayerHUD(camera: Camera) : Screen,
                 }
             }
             ComponentObserver.ComponentEvent.PLAYER_HAS_MOVED -> {
-                if (battleUI.isBattleReady()) {
-                    gameState = MainGameScreen.GameState.SAVING
-                    battleUI.toBack()
-                    battleUI.isVisible = true
-                }
+                // enable when testing battle
+//                if (battleUI.isBattleReady()) {
+//                    gameState = MainGameScreen.GameState.SAVING
+//                    battleUI.toBack()
+//                    battleUI.isVisible = true
+//                }
             }
         }
     }

@@ -5,7 +5,7 @@ import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.ObjectMap
 import com.maklumi.InventoryItem.ItemTypeID
 
-class EntityConfig {
+class EntityConfig() {
     var entityID: String = "no name"
     var state = Entity.State.IDLE
     var direction = Entity.Direction.DOWN
@@ -16,6 +16,22 @@ class EntityConfig {
     var itemTypeID: ItemTypeID = ItemTypeID.NONE
     var currentQuestID = ""
     var entityProperties = ObjectMap<String, String>()
+
+    constructor(config: EntityConfig) : this() {
+        entityID = config.entityID
+        state = config.state
+        direction = config.direction
+        animationConfig.clear()
+        animationConfig.addAll(config.animationConfig)
+        inventory.clear()
+        inventory.addAll(config.inventory)
+        conversationConfigPath = config.conversationConfigPath
+        questConfigPath = config.questConfigPath
+        itemTypeID = config.itemTypeID
+        currentQuestID = config.currentQuestID
+        entityProperties.clear()
+        entityProperties.putAll(config.entityProperties)
+    }
 }
 
 data class AnimationConfig(

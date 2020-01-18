@@ -28,7 +28,7 @@ class CutSceneScreen : Screen {
     private val camera = OrthographicCamera()
     private val viewport = ScreenViewport(camera)
     private val stage = Stage(viewport)
-    private val entity = EntityFactory.getEntity(EntityFactory.EntityType.NPC)
+    private val entity = EntityFactory.getEntity(EntityFactory.EntityType.PLAYER_PUPPET)
     private val animImage = AnimatedImage()
     private val j = Json()
     private val wh = 16f * b
@@ -39,6 +39,7 @@ class CutSceneScreen : Screen {
         entity.sendMessage(Component.MESSAGE.INIT_STATE, j.toJson(Entity.State.WALKING))
         entity.sendMessage(Component.MESSAGE.LOAD_ANIMATIONS, j.toJson(entity.entityConfig))
 
+        animImage.entity = entity
         animImage.setAnim(WALK_RIGHT)
         animImage.setPosition(16f, 16f)
         animImage.setSize(wh, wh)
@@ -56,10 +57,6 @@ class CutSceneScreen : Screen {
         )
         stage.addActor(animImage)
         Gdx.input.inputProcessor = stage
-    }
-
-    private fun AnimatedImage.setAnim(animationType: AnimationType) {
-        this.setAnim(entity.getAnimation(animationType))
     }
 
     override fun render(delta: Float) {

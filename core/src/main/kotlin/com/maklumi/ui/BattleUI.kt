@@ -64,7 +64,7 @@ class BattleUI : Window("BATTLE", Utility.STATUSUI_SKIN, "solidbackground"),
     override fun onNotify(entity: Entity, event: BattleEvent) {
         when (event) {
             OPPONENT_ADDED -> {
-                image.setAnim(entity.getAnimation(AnimationType.IMMOBILE))
+                image.setAnim(AnimationType.IMMOBILE)
                 titleLabel.setText("Level ${battleState.currentZoneLevel}. ${entity.entityConfig.entityID}")
             }
             OPPONENT_DEFEATED -> {
