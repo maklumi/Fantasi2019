@@ -9,6 +9,7 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.viewport.ScreenViewport
 import com.maklumi.*
@@ -33,6 +34,11 @@ class CutSceneScreen : Screen {
     private val j = Json()
     private val wh = 16f * b
     private var mainChar = Actor()
+    private val dialog: Dialog = object : Dialog("", Utility.STATUSUI_SKIN, "solidbackground") {
+        override fun result(obj: Any?) {
+            cancel()
+        }
+    }
 
     override fun show() {
         entity.entityConfig = Entity.loadEntityConfigBy(EntityFactory.PLAYER_CONFIG)
@@ -48,6 +54,11 @@ class CutSceneScreen : Screen {
                 Actions.sequence(
                         Actions.run { mainChar = animImage },
                         Actions.run { animImage.setAnim(WALK_RIGHT) },
+                        Actions.run { showDialog("We begin our adventure") },
+                        Actions.delay(3f),
+                        Actions.run { showDialog("in the land far off ...") },
+                        Actions.delay(3f),
+                        Actions.run { hideDialog() },
                         Actions.moveTo(16f * 40, 16f, 5f),
                         Actions.run { animImage.setAnim(WALK_UP) },
                         Actions.moveTo(16f * 40, 16f * 52, 5f),
@@ -56,7 +67,21 @@ class CutSceneScreen : Screen {
                 )
         )
         stage.addActor(animImage)
+        stage.addActor(dialog)
+        dialog.setPosition(stage.width / 2 - dialog.width / 2, stage.height / 2 - dialog.height / 2)
+
         Gdx.input.inputProcessor = stage
+    }
+
+    private fun showDialog(message: String) {
+        dialog.contentTable.clearChildren()
+        dialog.text(message)
+        dialog.pack()
+        dialog.isVisible = true
+    }
+
+    private fun hideDialog() {
+        dialog.isVisible = false
     }
 
     override fun render(delta: Float) {
