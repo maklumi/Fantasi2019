@@ -10,13 +10,20 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.utils.Array
 import com.maklumi.Fantasi
 import com.maklumi.Fantasi.ScreenType
 import com.maklumi.Utility.STATUSUI_SKIN
 import com.maklumi.Utility.STATUSUI_TEXTUREATLAS
+import com.maklumi.audio.AudioManager
+import com.maklumi.audio.AudioObserver
+import com.maklumi.audio.AudioObserver.AudioCommand.*
+import com.maklumi.audio.AudioObserver.AudioTypeEvent.MUSIC_TITLE
+import com.maklumi.audio.AudioSubject
 
-class MainMenuScreen(fantasi: Fantasi) : Screen {
+class MainMenuScreen(fantasi: Fantasi) : Screen, AudioSubject {
 
+    override val audioObservers = Array<AudioObserver>()
     private val stage = Stage()
 
     init {
@@ -42,6 +49,9 @@ class MainMenuScreen(fantasi: Fantasi) : Screen {
         loadGameButton.onTouchDown { fantasi.screen = fantasi.getScreenType(ScreenType.LoadGame) }
         watchIntroButton.onTouchDown { fantasi.screen = fantasi.getScreenType(ScreenType.WatchIntro) }
         exitButton.onTouchDown { Gdx.app.exit() }
+        
+        audioObservers.add(AudioManager)
+        notify(MUSIC_LOAD, MUSIC_TITLE)
 
     }
 
@@ -58,6 +68,7 @@ class MainMenuScreen(fantasi: Fantasi) : Screen {
 
     override fun show() {
         Gdx.input.inputProcessor = stage
+        notify(MUSIC_PLAY_LOOP, MUSIC_TITLE)
     }
 
     override fun render(delta: Float) {
@@ -74,6 +85,7 @@ class MainMenuScreen(fantasi: Fantasi) : Screen {
 
     override fun hide() {
         Gdx.input.inputProcessor = null
+        notify(MUSIC_STOP, MUSIC_TITLE)
     }
 
     override fun pause() {

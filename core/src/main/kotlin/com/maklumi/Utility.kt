@@ -2,8 +2,12 @@ package com.maklumi
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.assets.AssetManager
+import com.badlogic.gdx.assets.loaders.MusicLoader
+import com.badlogic.gdx.assets.loaders.SoundLoader
 import com.badlogic.gdx.assets.loaders.TextureLoader
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver
+import com.badlogic.gdx.audio.Music
+import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.maps.tiled.TiledMap
@@ -47,5 +51,56 @@ object Utility {
     }
 
     fun getTextureAsset(path: String): Texture? = assetManager.get(path, Texture::class.java)
+
+    fun loadSoundAsset(path: String) {
+        if (path.isEmpty()) return
+        if (assetManager.isLoaded(path)) return
+
+        if (filePathResolver.resolve(path).exists()) {
+            assetManager.setLoader(Sound::class.java, SoundLoader(filePathResolver))
+            assetManager.load(path, Sound::class.java)
+            //Until we add loading screen, just block until we load the map
+            assetManager.finishLoadingAsset<Sound>(path)
+            Gdx.app.debug(TAG, "Sound loaded!: $path")
+        } else {
+            Gdx.app.debug(TAG, "Sound doesn't exist!: $path")
+        }
+    }
+
+    fun getSoundAsset(soundFilenamePath: String): Sound? {
+        return if (assetManager.isLoaded(soundFilenamePath)) {
+            assetManager.get(soundFilenamePath, Sound::class.java)
+        } else {
+            Gdx.app.debug(TAG, "Sound is not loaded: $soundFilenamePath")
+            null
+        }
+    }
+
+    fun loadMusicAsset(path: String) {
+        if (path.isEmpty()) return
+        if (assetManager.isLoaded(path)) return
+
+        //load asset
+        if (filePathResolver.resolve(path).exists()) {
+            assetManager.setLoader(Music::class.java, MusicLoader(filePathResolver))
+            assetManager.load(path, Music::class.java)
+            //Until we add loading screen, just block until we load the map
+            assetManager.finishLoadingAsset<Music>(path)
+            println("Utility89: Music loaded: $path")
+        } else {
+            println("Utility91: Music doesn't exist!: $path")
+        }
+    }
+
+    fun getMusicAsset(musicFilenamePath: String): Music? {
+        return if (assetManager.isLoaded(musicFilenamePath)) {
+            assetManager.get(musicFilenamePath, Music::class.java)
+        } else {
+            println("Utility99: Music is not loaded: $musicFilenamePath")
+            null
+        }
+    }
+
+    fun isAssetLoaded(fileName: String): Boolean = assetManager.isLoaded(fileName)
 
 }
