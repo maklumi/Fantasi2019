@@ -2,7 +2,6 @@ package com.maklumi.screens
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
-import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
@@ -26,10 +25,10 @@ import com.maklumi.Utility
 import com.maklumi.battle.MonsterFactory
 import com.maklumi.ui.AnimatedImage
 
-class CutSceneScreen : Screen {
+class CutSceneScreen : GameScreen() {
 
     init {
-        MapManager.loadMap(MapFactory.MapType.TOWN)
+        MapManager.loadMap(MapFactory.MapType.TOWN, false)
     }
 
     private val screenRatio = Gdx.graphics.width / Gdx.graphics.height * 1f
@@ -99,7 +98,7 @@ class CutSceneScreen : Screen {
                         Actions.delay(3f),
                         Actions.run {
                             hideDialog()
-                            MapManager.loadMap(MapFactory.MapType.TOP_WORLD)
+                            MapManager.loadMap(MapFactory.MapType.TOP_WORLD, false)
                             setCameraPosition(50f, 30f)
                             animBlackSmith.setPosition(50f, 30f)
                             animInnKeeper.setPosition(52f, 30f)
@@ -161,7 +160,7 @@ class CutSceneScreen : Screen {
                             animMage.isVisible = false
                             animFire.isVisible = false
 
-                            MapManager.loadMap(MapFactory.MapType.TOP_WORLD)
+                            MapManager.loadMap(MapFactory.MapType.TOP_WORLD, false)
 
                             animDemon.isVisible = true
                             animDemon.setScale(1f, 1f)
@@ -183,7 +182,7 @@ class CutSceneScreen : Screen {
                             animMage.isVisible = false
                             animFire.isVisible = false
 
-                            MapManager.loadMap(MapFactory.MapType.CASTLE_OF_DOOM)
+                            MapManager.loadMap(MapFactory.MapType.CASTLE_OF_DOOM, false)
                             animDemon.isVisible = true
                             animDemon.setPosition(15f, 1f)
                             cameraFollow(animDemon)

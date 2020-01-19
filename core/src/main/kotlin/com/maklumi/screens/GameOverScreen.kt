@@ -1,7 +1,6 @@
 package com.maklumi.screens
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
@@ -13,8 +12,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.Align
 import com.maklumi.Fantasi
 import com.maklumi.Utility
+import com.maklumi.audio.AudioObserver.AudioCommand.MUSIC_LOAD
+import com.maklumi.audio.AudioObserver.AudioCommand.MUSIC_PLAY_LOOP
+import com.maklumi.audio.AudioObserver.AudioTypeEvent.MUSIC_TITLE
 
-class GameOverScreen(fantasi: Fantasi) : Screen {
+class GameOverScreen(fantasi: Fantasi) : GameScreen() {
 
     private val stage = Stage()
     private val deathMessage = "You have fought bravely, but alas, " +
@@ -61,10 +63,12 @@ class GameOverScreen(fantasi: Fantasi) : Screen {
         }
         )
 
+        notify(MUSIC_LOAD, MUSIC_TITLE)
     }
 
     override fun show() {
         Gdx.input.inputProcessor = stage
+        notify(MUSIC_PLAY_LOOP, MUSIC_TITLE)
     }
 
     override fun render(delta: Float) {

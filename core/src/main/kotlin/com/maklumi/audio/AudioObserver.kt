@@ -4,7 +4,7 @@ interface AudioObserver {
 
     enum class AudioTypeEvent(val path: String) {
         MUSIC_TITLE("audio/10112013.wav"),
-        MUSIC_TOWN(""),
+        MUSIC_TOWN("audio/Magic Town_0.mp3"),
         MUSIC_TOPWORLD(""),
         MUSIC_CASTLEDOOM(""),
         MUSIC_BATTLE("audio/Random Battle.mp3")

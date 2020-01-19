@@ -9,4 +9,9 @@ class CastleDoomMap : Map(MapFactory.MapType.CASTLE_OF_DOOM, "maps/castle_of_doo
         mapQuestEntities.forEach { it.update(batch, delta) }
     }
 
+    override fun playMusic() {
+    }
+
+    override fun stopMusic() {
+    }
 }

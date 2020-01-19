@@ -2,7 +2,6 @@ package com.maklumi.screens
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
-import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
@@ -28,7 +27,7 @@ import com.maklumi.profile.ProfileManager
 import com.maklumi.ui.PlayerHUD
 
 
-class MainGameScreen(private val fantasi: Fantasi) : Screen {
+class MainGameScreen(private val fantasi: Fantasi) : GameScreen() {
 
     private val shapeRenderer = ShapeRenderer()
 

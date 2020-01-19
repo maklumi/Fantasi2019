@@ -5,9 +5,17 @@ import com.badlogic.gdx.maps.MapLayer
 import com.badlogic.gdx.maps.objects.RectangleMapObject
 import com.badlogic.gdx.maps.tiled.TiledMap
 import com.badlogic.gdx.math.Vector2
+import com.maklumi.audio.AudioManager
+import com.maklumi.audio.AudioObserver
+import com.maklumi.audio.AudioSubject
 import com.badlogic.gdx.utils.Array as gdxArray
 
-abstract class Map(var mapType: MapFactory.MapType, path: String) {
+abstract class Map(var mapType: MapFactory.MapType, path: String) :
+        AudioSubject {
+
+    final override val audioObservers = gdxArray<AudioObserver>().also {
+        it.add(AudioManager)
+    }
 
     companion object {
         const val unitScale = 1f / 16f
@@ -44,6 +52,10 @@ abstract class Map(var mapType: MapFactory.MapType, path: String) {
         specialNPCStartPositions = getOtherNPCStartPositions()
 //        print("Map-init: $specialNPCStartPositions")
     }
+
+    abstract fun playMusic()
+
+    abstract fun stopMusic()
 
     private fun loadMap(path: String) {
         Utility.loadMapAsset(path)

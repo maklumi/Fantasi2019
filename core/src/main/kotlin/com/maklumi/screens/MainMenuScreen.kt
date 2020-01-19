@@ -1,7 +1,6 @@
 package com.maklumi.screens
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.InputEvent
@@ -10,20 +9,17 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.badlogic.gdx.utils.Array
 import com.maklumi.Fantasi
 import com.maklumi.Fantasi.ScreenType
 import com.maklumi.Utility.STATUSUI_SKIN
 import com.maklumi.Utility.STATUSUI_TEXTUREATLAS
 import com.maklumi.audio.AudioManager
-import com.maklumi.audio.AudioObserver
 import com.maklumi.audio.AudioObserver.AudioCommand.*
 import com.maklumi.audio.AudioObserver.AudioTypeEvent.MUSIC_TITLE
 import com.maklumi.audio.AudioSubject
 
-class MainMenuScreen(fantasi: Fantasi) : Screen, AudioSubject {
+class MainMenuScreen(fantasi: Fantasi) : GameScreen(), AudioSubject {
 
-    override val audioObservers = Array<AudioObserver>()
     private val stage = Stage()
 
     init {

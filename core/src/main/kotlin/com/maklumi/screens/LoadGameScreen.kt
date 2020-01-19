@@ -1,7 +1,6 @@
 package com.maklumi.screens
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
@@ -12,10 +11,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.maklumi.Fantasi
 import com.maklumi.Fantasi.ScreenType
 import com.maklumi.Utility.STATUSUI_SKIN
+import com.maklumi.audio.AudioObserver.AudioCommand.MUSIC_STOP
+import com.maklumi.audio.AudioObserver.AudioTypeEvent.MUSIC_TITLE
 import com.maklumi.profile.ProfileManager
 import com.badlogic.gdx.scenes.scene2d.ui.List as ListBox
 
-class LoadGameScreen(fantasi: Fantasi) : Screen {
+class LoadGameScreen(fantasi: Fantasi) : GameScreen() {
 
     private val stage: Stage = Stage()
 
@@ -90,6 +91,7 @@ class LoadGameScreen(fantasi: Fantasi) : Screen {
 
     override fun hide() {
         Gdx.input.inputProcessor = null
+        notify(MUSIC_STOP, MUSIC_TITLE)
     }
 
     override fun pause() {

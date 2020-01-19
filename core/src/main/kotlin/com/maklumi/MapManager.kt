@@ -51,8 +51,11 @@ object MapManager : ProfileObserver {
     lateinit var player: Entity
     var currentSelectedEntity: Entity? = null
 
-    fun loadMap(mapType: MapType) {
+    fun loadMap(mapType: MapType, shouldPlay: Boolean = true) {
+        if (this::gameMap.isInitialized) gameMap.stopMusic()
         gameMap = MapFactory.getMap(mapType)
+        if (shouldPlay) gameMap.playMusic()
+
         isNewMapLoaded = true
         // unregister observers
         getCurrentMapEntities().forEach(Entity::unregisterObservers)

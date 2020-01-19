@@ -4,6 +4,8 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
 import com.maklumi.Component.MESSAGE.INIT_START_POSITION
 import com.maklumi.EntityFactory.EntityName.TOWN_GUARD_WALKING
+import com.maklumi.audio.AudioObserver.AudioCommand.*
+import com.maklumi.audio.AudioObserver.AudioTypeEvent.MUSIC_TOWN
 
 class TownMap : Map(MapFactory.MapType.TOWN, "maps/town.tmx") {
 
@@ -42,4 +44,14 @@ class TownMap : Map(MapFactory.MapType.TOWN, "maps/town.tmx") {
                     Vector2()
         entity.sendMessage(INIT_START_POSITION, json.toJson(position))
     }
+
+    override fun playMusic() {
+        notify(MUSIC_LOAD, MUSIC_TOWN)
+        notify(MUSIC_PLAY_LOOP, MUSIC_TOWN)
+    }
+
+    override fun stopMusic() {
+        notify(MUSIC_STOP, MUSIC_TOWN)
+    }
+
 }

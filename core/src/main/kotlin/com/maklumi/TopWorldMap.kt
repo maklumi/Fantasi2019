@@ -9,4 +9,9 @@ class TopWorldMap : Map(MapFactory.MapType.TOP_WORLD, "maps/topworld.tmx") {
         mapQuestEntities.forEach { it.update(batch, delta) }
     }
 
+    override fun playMusic() {
+    }
+
+    override fun stopMusic() {
+    }
 }
