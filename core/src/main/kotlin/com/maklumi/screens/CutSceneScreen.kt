@@ -2,8 +2,8 @@ package com.maklumi.screens
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
-import com.badlogic.gdx.graphics.GL20
-import com.badlogic.gdx.graphics.OrthographicCamera
+import com.badlogic.gdx.graphics.*
+import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.scenes.scene2d.Action
@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.viewport.ScreenViewport
 import com.maklumi.EntityFactory
 import com.maklumi.EntityFactory.EntityName.*
@@ -22,6 +23,8 @@ import com.maklumi.MapManager
 import com.maklumi.MapManager.currentMap
 import com.maklumi.MapManager.isNewMapLoaded
 import com.maklumi.Utility
+import com.maklumi.audio.AudioObserver.AudioCommand
+import com.maklumi.audio.AudioObserver.AudioTypeEvent
 import com.maklumi.battle.MonsterFactory
 import com.maklumi.ui.AnimatedImage
 
@@ -48,14 +51,18 @@ class CutSceneScreen : GameScreen() {
     private val fadeIn = Fade(1f)
 
     inner class Fade(val float: Float) : Action() {
+        val pixmap = Pixmap(1, 1, Pixmap.Format.RGBA8888)
+
         override fun act(delta: Float): Boolean {
             if (float > 0.5f)
                 transition.addAction(Actions.sequence(Actions.alpha(1f), Actions.fadeOut(3f)))
             else
                 transition.addAction(Actions.sequence(Actions.alpha(0f), Actions.fadeIn(3f)))
             transition.setFillParent(true)
-            val bg = Image(Utility.STATUSUI_TEXTUREATLAS.findRegion("generic_background"))
-            transition.drawable = bg.drawable
+            pixmap.setColor(Color.ORANGE)
+            pixmap.fill()
+            val pDrawable = TextureRegionDrawable(TextureRegion(Texture(pixmap)))
+            transition.drawable = pDrawable
             return true
         }
     }
@@ -63,6 +70,9 @@ class CutSceneScreen : GameScreen() {
     private var shouldFollow = false
 
     override fun show() {
+        notify(AudioCommand.MUSIC_LOAD, AudioTypeEvent.MUSIC_INTRO_CUTSCENE)
+        notify(AudioCommand.MUSIC_PLAY_LOOP, AudioTypeEvent.MUSIC_INTRO_CUTSCENE)
+
         val animBlackSmith = getAnimatedImageFor(TOWN_BLACKSMITH)
         animBlackSmith.setPosition(10f, 16f)
 
@@ -199,8 +209,11 @@ class CutSceneScreen : GameScreen() {
                         Actions.delay(5f),
                         Actions.addAction(fadeOut),
                         Actions.delay(10f),
-                        Actions.run { hideDialog() }
-                )
+                        Actions.run {
+                            hideDialog()
+                            fadeIn.pixmap.setColor(Color.RED)
+                        },
+                        Actions.addAction(fadeIn))
         )
 
         stage.addActor(animBlackSmith)
@@ -278,6 +291,7 @@ class CutSceneScreen : GameScreen() {
     }
 
     override fun hide() {
+        notify(AudioCommand.MUSIC_STOP, AudioTypeEvent.MUSIC_INTRO_CUTSCENE)
         Gdx.input.inputProcessor = null
     }
 
