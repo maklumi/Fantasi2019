@@ -23,6 +23,7 @@ import com.maklumi.MapManager.portalLayer
 import com.maklumi.MapManager.spawnsLayer
 import com.maklumi.MapManager.unitScale
 import com.maklumi.MapManager.updateMapEntities
+import com.maklumi.audio.AudioManager
 import com.maklumi.json
 import com.maklumi.profile.ProfileManager
 import com.maklumi.ui.PlayerHUD
@@ -205,6 +206,7 @@ class MainGameScreen(private val fantasi: Fantasi) : GameScreen() {
     @Override
     override fun dispose() {
         Gdx.input.inputProcessor = null
+        AudioManager.dispose()
     }
 
     private fun setupViewport() {

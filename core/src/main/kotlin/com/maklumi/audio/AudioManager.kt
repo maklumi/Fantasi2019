@@ -56,4 +56,9 @@ object AudioManager : AudioObserver {
         val soundId = sound!!.play(0.02f)
         sound.setLooping(soundId, isLooping)
     }
+
+    fun dispose() {
+        queuedMusic.values.forEach { it.dispose() }
+        queuedSounds.values.forEach { it.dispose() }
+    }
 }

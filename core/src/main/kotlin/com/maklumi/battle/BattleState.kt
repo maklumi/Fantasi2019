@@ -1,6 +1,7 @@
 package com.maklumi.battle
 
 import com.badlogic.gdx.math.MathUtils
+import com.badlogic.gdx.utils.Timer
 import com.maklumi.Entity
 import com.maklumi.EntityProperties.*
 import com.maklumi.battle.BattleObserver.BattleEvent.*
@@ -56,21 +57,7 @@ class BattleState : BattleSubject(), InventoryObserver {
 
         notify(opponent!!, PLAYER_TURN_START)
 
-        val enemyHP = opponent!!.entityConfig.entityProperties[ENTITY_HEALTH_POINTS()].toInt()
-        val enemyDP = opponent!!.entityConfig.entityProperties[ENTITY_DEFENSE_POINTS()].toInt()
-        val damage = MathUtils.clamp(attackPoint - enemyDP, 0, attackPoint)
-        val currentHP = MathUtils.clamp(enemyHP - damage, 0, enemyHP)
-        opponent!!.entityConfig.entityProperties.put(ENTITY_HEALTH_POINTS(), currentHP.toString())
-//        println("BattleState43: Player attacks ${opponent!!.entityConfig.entityID}. $enemyHP HP - $damage = $currentHP HP")
-        if (currentHP == 0) {
-            notify(opponent!!, OPPONENT_DEFEATED)
-            opponent!!.entityConfig.entityProperties.put(ENTITY_HEALTH_POINTS(), originalOpponentHP.toString())
-            opponent = null
-        } else {
-            opponent!!.entityConfig.entityProperties.put(ENTITY_HIT_DAMAGE_TOTAL(), damage.toString())
-            notify(opponent!!, OPPONENT_HIT_DAMAGE)
-            notify(opponent!!, PLAYER_TURN_DONE)
-        }
+        Timer.schedule(playerAttackCalculations(), 1f)
     }
 
     fun playerRuns() {
@@ -95,14 +82,13 @@ class BattleState : BattleSubject(), InventoryObserver {
     fun opponentAttacks() {
         if (opponent == null) return
 
-        val ap = opponent!!.entityConfig.entityProperties.get(ENTITY_ATTACK_POINTS.toString()).toInt()
-        val damage = MathUtils.clamp(ap - defencePoint, 0, ap)
-        val hp = ProfileManager.getProperty("currentPlayerHP") ?: 0
-        val hpVal = MathUtils.clamp(hp - damage, 0, hp)
-        ProfileManager.setProperty("currentPlayerHP", hpVal)
-        notify(opponent!!, PLAYER_HIT_DAMAGE)
-//        println("BattleState82: ${opponent!!.entityConfig.entityID} attacks. Player HP $hp - $damage = $hpVal HP")
-        notify(opponent!!, OPPONENT_TURN_DONE)
+        val opponentHP = opponent!!.entityConfig.entityProperties[ENTITY_HEALTH_POINTS()].toInt()
+        if (opponentHP <= 0) {
+            notify(opponent!!, OPPONENT_TURN_DONE)
+            return
+        }
+
+        Timer.schedule(opponentAttackCalculations(), 1f)
     }
 
     fun battleZoneEntered() {
@@ -112,4 +98,41 @@ class BattleState : BattleSubject(), InventoryObserver {
         notify(entity, OPPONENT_ADDED)
     }
 
+    private fun playerAttackCalculations(): Timer.Task {
+        return object : Timer.Task() {
+            override fun run() {
+                val enemyHP = opponent!!.entityConfig.entityProperties[ENTITY_HEALTH_POINTS()].toInt()
+                val enemyDP = opponent!!.entityConfig.entityProperties[ENTITY_DEFENSE_POINTS()].toInt()
+                val damage = MathUtils.clamp(attackPoint - enemyDP, 0, attackPoint)
+                val currentHP = MathUtils.clamp(enemyHP - damage, 0, enemyHP)
+                opponent!!.entityConfig.entityProperties.put(ENTITY_HEALTH_POINTS(), currentHP.toString())
+//        println("BattleState43: Player attacks ${opponent!!.entityConfig.entityID}. $enemyHP HP - $damage = $currentHP HP")
+                if (currentHP == 0) {
+                    notify(opponent!!, OPPONENT_HIT_DAMAGE)
+                    notify(opponent!!, OPPONENT_DEFEATED)
+                    opponent!!.entityConfig.entityProperties.put(ENTITY_HEALTH_POINTS(), originalOpponentHP.toString())
+                    opponent = null
+                } else {
+                    opponent!!.entityConfig.entityProperties.put(ENTITY_HIT_DAMAGE_TOTAL(), damage.toString())
+                    notify(opponent!!, OPPONENT_HIT_DAMAGE)
+                    notify(opponent!!, PLAYER_TURN_DONE)
+                }
+            }
+        }
+    }
+
+    private fun opponentAttackCalculations(): Timer.Task {
+        return object : Timer.Task() {
+            override fun run() {
+                val ap = opponent!!.entityConfig.entityProperties.get(ENTITY_ATTACK_POINTS.toString()).toInt()
+                val damage = MathUtils.clamp(ap - defencePoint, 0, ap)
+                val hp = ProfileManager.getProperty("currentPlayerHP") ?: 0
+                val hpVal = MathUtils.clamp(hp - damage, 0, hp)
+                ProfileManager.setProperty("currentPlayerHP", hpVal)
+                notify(opponent!!, PLAYER_HIT_DAMAGE)
+//        println("BattleState82: ${opponent!!.entityConfig.entityID} attacks. Player HP $hp - $damage = $hpVal HP")
+                notify(opponent!!, OPPONENT_TURN_DONE)
+            }
+        }
+    }
 }

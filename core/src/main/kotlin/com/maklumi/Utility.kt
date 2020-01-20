@@ -86,7 +86,7 @@ object Utility {
             assetManager.load(path, Music::class.java)
             //Until we add loading screen, just block until we load the map
             assetManager.finishLoadingAsset<Music>(path)
-            println("Utility89: Music loaded: $path")
+//            println("Utility89: Music loaded: $path")
         } else {
             println("Utility91: Music doesn't exist!: $path")
         }

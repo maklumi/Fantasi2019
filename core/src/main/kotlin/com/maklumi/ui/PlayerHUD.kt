@@ -116,6 +116,7 @@ class PlayerHUD(camera: Camera) : Screen,
         notify(MUSIC_LOAD, MUSIC_BATTLE)
         notify(SOUND_LOAD, SOUND_COIN_RUSTLE)
         notify(SOUND_LOAD, SOUND_CREATURE_PAIN)
+        notify(SOUND_LOAD, SOUND_PLAYER_PAIN)
 
     }
 
@@ -382,6 +383,7 @@ class PlayerHUD(camera: Camera) : Screen,
                 MapManager.enableCurrentmapMusic()
             }
             PLAYER_HIT_DAMAGE -> {
+                notify(SOUND_PLAY_ONCE, SOUND_PLAYER_PAIN)
                 val hpVal = ProfileManager.getProperty("currentPlayerHP") ?: 100
                 statusUI.hp = hpVal
                 if (hpVal <= 0) {
