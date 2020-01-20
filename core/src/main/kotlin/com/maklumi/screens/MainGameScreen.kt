@@ -196,6 +196,10 @@ class MainGameScreen(private val fantasi: Fantasi) : GameScreen() {
 
     @Override
     override fun hide() {
+        if (gameState != GameState.GAME_OVER) {
+            gameState = GameState.SAVING
+        }
+        Gdx.input.inputProcessor = null
     }
 
     @Override

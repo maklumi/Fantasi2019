@@ -10,7 +10,7 @@ import com.maklumi.*
 import com.maklumi.audio.AudioManager
 import com.maklumi.audio.AudioObserver
 import com.maklumi.audio.AudioObserver.AudioCommand.*
-import com.maklumi.audio.AudioObserver.AudioTypeEvent.MUSIC_BATTLE
+import com.maklumi.audio.AudioObserver.AudioTypeEvent.*
 import com.maklumi.audio.AudioSubject
 import com.maklumi.battle.BattleObserver
 import com.maklumi.battle.BattleObserver.BattleEvent.*
@@ -111,6 +111,12 @@ class PlayerHUD(camera: Camera) : Screen,
         inventoryUI.inventoryObservers.add(this)
         stage.addActor(battleUI)
         statusUI.toFront()
+
+        //Music/Sound loading
+        notify(MUSIC_LOAD, MUSIC_BATTLE)
+        notify(SOUND_LOAD, SOUND_COIN_RUSTLE)
+        notify(SOUND_LOAD, SOUND_CREATURE_PAIN)
+
     }
 
     override fun show() {}
@@ -178,7 +184,6 @@ class PlayerHUD(camera: Camera) : Screen,
                     battleUI.toBack()
                     battleUI.isVisible = true
                     MapManager.disableCurrentmapMusic()
-                    notify(MUSIC_LOAD, MUSIC_BATTLE)
                     notify(MUSIC_PLAY_LOOP, MUSIC_BATTLE)
                 }
             }
@@ -318,6 +323,7 @@ class PlayerHUD(camera: Camera) : Screen,
         when (event) {
             StoreInventoryEvent.PLAYER_GP_TOTAL_UPDATED -> {
                 statusUI.gold = value.toInt()
+                notify(SOUND_PLAY_ONCE, SOUND_COIN_RUSTLE)
             }
             StoreInventoryEvent.PLAYER_INVENTORY_UPDATED -> {
                 val items = json.fromJson<Array<InventoryItemLocation>>(value)
@@ -385,6 +391,7 @@ class PlayerHUD(camera: Camera) : Screen,
                 }
             }
             OPPONENT_HIT_DAMAGE -> {
+                notify(SOUND_PLAY_ONCE, SOUND_CREATURE_PAIN)
             }
             OPPONENT_TURN_DONE -> {
             }
