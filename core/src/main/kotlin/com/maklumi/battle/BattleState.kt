@@ -46,18 +46,33 @@ class BattleState : BattleSubject(), InventoryObserver {
         if (opponent == null) return
 
         //Check for magic if used in attack; If we don't have enough MP, then return
-        var mpVal = ProfileManager.getProperty("currentPlayerMP") ?: 0
-        if (playerMagicWandAPPoints > mpVal) {
-            return
-        } else {
-            mpVal -= playerMagicWandAPPoints
-            ProfileManager.setProperty("currentPlayerMP", mpVal)
-            notify(opponent!!, PLAYER_USED_MAGIC)
-        }
-
+        val mpVal = ProfileManager.getProperty("currentPlayerMP") ?: 0
         notify(opponent!!, PLAYER_TURN_START)
 
-        Timer.schedule(playerAttackCalculations(), 1f)
+        when {
+            playerMagicWandAPPoints == 0 -> {
+                Timer.schedule(playerAttackCalculations(), 1f)
+            }
+            playerMagicWandAPPoints > mpVal -> {
+                notify(opponent!!, PLAYER_TURN_DONE)
+                return
+            }
+            else -> {
+                Timer.schedule(playerMagicUseCheckTimer(), 0.5f)
+                Timer.schedule(playerAttackCalculations(), 1f)
+            }
+        }
+    }
+
+    private fun playerMagicUseCheckTimer(): Timer.Task {
+        return object : Timer.Task() {
+            override fun run() {
+                var mpVal = ProfileManager.getProperty("currentPlayerMP") ?: 0
+                mpVal -= playerMagicWandAPPoints
+                ProfileManager.setProperty("currentPlayerMP", mpVal)
+                notify(opponent!!, PLAYER_USED_MAGIC)
+            }
+        }
     }
 
     fun playerRuns() {
@@ -108,13 +123,13 @@ class BattleState : BattleSubject(), InventoryObserver {
                 opponent!!.entityConfig.entityProperties.put(ENTITY_HEALTH_POINTS(), currentHP.toString())
 //        println("BattleState43: Player attacks ${opponent!!.entityConfig.entityID}. $enemyHP HP - $damage = $currentHP HP")
                 if (currentHP == 0) {
-                    notify(opponent!!, OPPONENT_HIT_DAMAGE)
+                    if (damage > 0) notify(opponent!!, OPPONENT_HIT_DAMAGE)
                     notify(opponent!!, OPPONENT_DEFEATED)
                     opponent!!.entityConfig.entityProperties.put(ENTITY_HEALTH_POINTS(), originalOpponentHP.toString())
                     opponent = null
                 } else {
                     opponent!!.entityConfig.entityProperties.put(ENTITY_HIT_DAMAGE_TOTAL(), damage.toString())
-                    notify(opponent!!, OPPONENT_HIT_DAMAGE)
+                    if (damage > 0) notify(opponent!!, OPPONENT_HIT_DAMAGE)
                     notify(opponent!!, PLAYER_TURN_DONE)
                 }
             }
@@ -129,7 +144,7 @@ class BattleState : BattleSubject(), InventoryObserver {
                 val hp = ProfileManager.getProperty("currentPlayerHP") ?: 0
                 val hpVal = MathUtils.clamp(hp - damage, 0, hp)
                 ProfileManager.setProperty("currentPlayerHP", hpVal)
-                notify(opponent!!, PLAYER_HIT_DAMAGE)
+                if (damage > 0) notify(opponent!!, PLAYER_HIT_DAMAGE)
 //        println("BattleState82: ${opponent!!.entityConfig.entityID} attacks. Player HP $hp - $damage = $hpVal HP")
                 notify(opponent!!, OPPONENT_TURN_DONE)
             }

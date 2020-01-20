@@ -117,7 +117,7 @@ class PlayerHUD(camera: Camera) : Screen,
         notify(SOUND_LOAD, SOUND_COIN_RUSTLE)
         notify(SOUND_LOAD, SOUND_CREATURE_PAIN)
         notify(SOUND_LOAD, SOUND_PLAYER_PAIN)
-
+        notify(SOUND_LOAD, SOUND_PLAYER_WAND_ATTACK)
     }
 
     override fun show() {}
@@ -402,6 +402,7 @@ class PlayerHUD(camera: Camera) : Screen,
             PLAYER_TURN_DONE -> {
             }
             PLAYER_USED_MAGIC -> {
+                notify(SOUND_PLAY_ONCE, SOUND_PLAYER_WAND_ATTACK)
                 statusUI.mp = ProfileManager.getProperty("currentPlayerMP") ?: 0
             }
         }
