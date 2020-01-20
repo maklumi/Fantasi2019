@@ -16,6 +16,7 @@ import com.maklumi.MapManager
 import com.maklumi.MapManager.camera
 import com.maklumi.MapManager.collisionLayer
 import com.maklumi.MapManager.currentMap
+import com.maklumi.MapManager.enemySpawnLayer
 import com.maklumi.MapManager.isNewMapLoaded
 import com.maklumi.MapManager.playerStartUnitScaled
 import com.maklumi.MapManager.portalLayer
@@ -171,6 +172,7 @@ class MainGameScreen(private val fantasi: Fantasi) : GameScreen() {
             if (collisionLayer != null) debugLayer(collisionLayer!!, Color.WHITE)
             if (portalLayer != null) debugLayer(portalLayer!!, Color.YELLOW)
             if (spawnsLayer != null) debugLayer(spawnsLayer!!, Color.GOLD)
+            if (enemySpawnLayer != null) debugLayer(enemySpawnLayer!!, Color.ORANGE)
             end()
         }
 

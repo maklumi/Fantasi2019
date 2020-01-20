@@ -7,8 +7,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.Dialog
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.viewport.ScreenViewport
 import com.maklumi.*
+import com.maklumi.audio.AudioManager
+import com.maklumi.audio.AudioObserver
+import com.maklumi.audio.AudioObserver.AudioCommand.*
+import com.maklumi.audio.AudioObserver.AudioTypeEvent.MUSIC_BATTLE
+import com.maklumi.audio.AudioSubject
 import com.maklumi.battle.BattleObserver
+import com.maklumi.battle.BattleObserver.BattleEvent.*
 import com.maklumi.dialog.ComponentObserver
+import com.maklumi.dialog.ComponentObserver.ComponentEvent.*
 import com.maklumi.dialog.ConversationGraph
 import com.maklumi.dialog.ConversationGraphObserver
 import com.maklumi.dialog.ConversationGraphObserver.ConversationCommandEvent
@@ -30,6 +37,7 @@ class PlayerHUD(camera: Camera) : Screen,
         StoreInventoryObserver,
         InventoryObserver,
         BattleObserver,
+        AudioSubject,
         StatusObserver {
 
     private val viewport = ScreenViewport(camera)
@@ -54,8 +62,10 @@ class PlayerHUD(camera: Camera) : Screen,
 
     }
     private val battleUI = BattleUI()
+    override val audioObservers = Array<AudioObserver>()
 
     init {
+        audioObservers.add(AudioManager)
         statusUI.setPosition(0f, stage.height - statusUI.height - 40f)
         stage.addActor(statusUI)
 
@@ -132,25 +142,25 @@ class PlayerHUD(camera: Camera) : Screen,
 
     override fun onNotify(value: String, event: ComponentObserver.ComponentEvent) {
         when (event) {
-            ComponentObserver.ComponentEvent.LOAD_CONVERSATION -> {
+            LOAD_CONVERSATION -> {
                 val config = json.fromJson<EntityConfig>(value)
                 conversationUI.loadConversation(config)
                 conversationUI.graph.conversationGraphObservers.add(this)
             }
-            ComponentObserver.ComponentEvent.SHOW_CONVERSATION -> {
+            SHOW_CONVERSATION -> {
                 val config = json.fromJson<EntityConfig>(value)
                 if (config.entityID == conversationUI.currentEntityID) {
                     conversationUI.isVisible = true
                 }
             }
-            ComponentObserver.ComponentEvent.HIDE_CONVERSATION -> {
+            HIDE_CONVERSATION -> {
                 val config = json.fromJson<EntityConfig>(value)
                 if (config.entityID == conversationUI.currentEntityID) {
                     conversationUI.isVisible = false
                     conversationUI.listBox.clearItems() // make sure keyboard focus also lost
                 }
             }
-            ComponentObserver.ComponentEvent.QUEST_LOCATION_DISCOVERED -> {
+            QUEST_LOCATION_DISCOVERED -> {
                 val string = value.split(MESSAGE_TOKEN)
                 val questID = string[0]
                 val questTaskID = string[1]
@@ -158,20 +168,19 @@ class PlayerHUD(camera: Camera) : Screen,
                 questUI.questTaskComplete(questID, questTaskID)
                 updateEntityObservers()
             }
-            ComponentObserver.ComponentEvent.ENEMY_SPAWN_LOCATION_CHANGED -> {
-                if (battleUI.isBattleReady()) {
-                    battleUI.battleState.currentZoneLevel = value.toInt()
-                    battleUI.battleZoneTriggered()
-                    battleUI.isVisible = true
-                }
+            ENEMY_SPAWN_LOCATION_CHANGED -> {
+                battleUI.battleState.currentZoneLevel = value.toInt()
+                battleUI.battleZoneTriggered()
             }
-            ComponentObserver.ComponentEvent.PLAYER_HAS_MOVED -> {
-                // enable when testing battle
-//                if (battleUI.isBattleReady()) {
-//                    gameState = MainGameScreen.GameState.SAVING
-//                    battleUI.toBack()
-//                    battleUI.isVisible = true
-//                }
+            PLAYER_HAS_MOVED -> {
+                if (battleUI.isBattleReady()) {
+                    gameState = MainGameScreen.GameState.SAVING
+                    battleUI.toBack()
+                    battleUI.isVisible = true
+                    MapManager.disableCurrentmapMusic()
+                    notify(MUSIC_LOAD, MUSIC_BATTLE)
+                    notify(MUSIC_PLAY_LOOP, MUSIC_BATTLE)
+                }
             }
         }
     }
@@ -348,37 +357,42 @@ class PlayerHUD(camera: Camera) : Screen,
 
     override fun onNotify(entity: Entity, event: BattleObserver.BattleEvent) {
         when (event) {
-            BattleObserver.BattleEvent.OPPONENT_ADDED -> {
+            OPPONENT_ADDED -> {
             }
-            BattleObserver.BattleEvent.OPPONENT_DEFEATED -> {
+            OPPONENT_DEFEATED -> {
                 val goldReward = entity.entityConfig.entityProperties[EntityProperties.ENTITY_GP_REWARD()].toInt()
                 statusUI.gold += goldReward
                 val xpReward = entity.entityConfig.entityProperties[EntityProperties.ENTITY_XP_REWARD()].toInt()
                 statusUI.xp += xpReward
                 battleUI.isVisible = false
                 gameState = MainGameScreen.GameState.RUNNING
+                notify(MUSIC_STOP, MUSIC_BATTLE)
+                MapManager.enableCurrentmapMusic()
             }
-            BattleObserver.BattleEvent.PLAYER_RUNNING -> {
+            PLAYER_RUNNING -> {
                 battleUI.isVisible = false
                 gameState = MainGameScreen.GameState.RUNNING
+                notify(MUSIC_STOP, MUSIC_BATTLE)
+                MapManager.enableCurrentmapMusic()
             }
-            BattleObserver.BattleEvent.PLAYER_HIT_DAMAGE -> {
+            PLAYER_HIT_DAMAGE -> {
                 val hpVal = ProfileManager.getProperty("currentPlayerHP") ?: 100
                 statusUI.hp = hpVal
                 if (hpVal <= 0) {
+                    notify(MUSIC_STOP, MUSIC_BATTLE)
                     battleUI.isVisible = false
                     gameState = MainGameScreen.GameState.GAME_OVER
                 }
             }
-            BattleObserver.BattleEvent.OPPONENT_HIT_DAMAGE -> {
+            OPPONENT_HIT_DAMAGE -> {
             }
-            BattleObserver.BattleEvent.OPPONENT_TURN_DONE -> {
+            OPPONENT_TURN_DONE -> {
             }
-            BattleObserver.BattleEvent.PLAYER_TURN_START -> {
+            PLAYER_TURN_START -> {
             }
-            BattleObserver.BattleEvent.PLAYER_TURN_DONE -> {
+            PLAYER_TURN_DONE -> {
             }
-            BattleObserver.BattleEvent.PLAYER_USED_MAGIC -> {
+            PLAYER_USED_MAGIC -> {
                 statusUI.mp = ProfileManager.getProperty("currentPlayerMP") ?: 0
             }
         }

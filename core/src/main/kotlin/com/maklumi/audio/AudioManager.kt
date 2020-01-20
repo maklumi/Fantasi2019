@@ -1,6 +1,5 @@
 package com.maklumi.audio
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.audio.Music
 import com.badlogic.gdx.audio.Sound
 import com.maklumi.Utility
@@ -28,27 +27,33 @@ object AudioManager : AudioObserver {
     }
 
     private fun playMusic(isLooping: Boolean, fullFilePath: String) {
-        if (Utility.isAssetLoaded(fullFilePath)) {
-            val music = Utility.getMusicAsset(fullFilePath)
-            music?.isLooping = isLooping
-            music?.volume = 0.025f
-            music?.play()
-            queuedMusic[fullFilePath] = music
-        } else {
-            Gdx.app.debug("AudioManager", "Music not loaded")
-            return
+        var music = queuedMusic[fullFilePath]
+        if (music == null) {
+            if (Utility.isAssetLoaded(fullFilePath)) {
+                music = Utility.getMusicAsset(fullFilePath)
+                queuedMusic[fullFilePath] = music
+            } else {
+                println("AudioManager37: Music not loaded")
+                return
+            }
         }
+        music!!.isLooping = isLooping
+        music.volume = 0.02f
+        music.play()
     }
 
     private fun playSound(isLooping: Boolean, fullFilePath: String) {
-        if (Utility.isAssetLoaded(fullFilePath)) {
-            val sound = Utility.getSoundAsset(fullFilePath)
-            val soundId = sound?.play() ?: 1L
-            sound?.setLooping(soundId, isLooping)
-            queuedSounds[fullFilePath] = sound
-        } else {
-            Gdx.app.debug("AudioManager", "Sound not loaded")
-            return
+        var sound = queuedSounds[fullFilePath]
+        if (sound == null) {
+            if (Utility.isAssetLoaded(fullFilePath)) {
+                sound = Utility.getSoundAsset(fullFilePath)
+                queuedSounds[fullFilePath] = sound
+            } else {
+                println("AudioManager53: Sound not loaded")
+                return
+            }
         }
+        val soundId = sound!!.play(0.02f)
+        sound.setLooping(soundId, isLooping)
     }
 }

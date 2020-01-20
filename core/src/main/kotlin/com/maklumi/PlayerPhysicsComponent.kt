@@ -109,13 +109,13 @@ class PlayerPhysicsComponent : PhysicsComponent() {
 
     private fun updateDiscoverLayerActivation(rect: Rectangle): Boolean {
         val mapDiscoverLayer = MapManager.questDiscoverLayer ?: return false
+        rect.convertRectWorldToPixel()
 
         var rectangle: Rectangle?
 
         for (mapObject in mapDiscoverLayer.objects) {
             if (mapObject is RectangleMapObject) {
                 rectangle = mapObject.rectangle
-                rect.convertRectWorldToPixel()
                 if (rect.overlaps(rectangle)) {
                     val questID = mapObject.getName() ?: return false
                     val questTaskID = mapObject.getProperties().get("taskID") as String?
@@ -124,7 +124,7 @@ class PlayerPhysicsComponent : PhysicsComponent() {
                     if (previousDiscovery.equals(msg, true)) return true
                     notify(json.toJson(msg), ComponentEvent.QUEST_LOCATION_DISCOVERED)
                     previousDiscovery = msg
-                    println("PPC126 Discover Area Activated")
+//                    println("PPC126 Discover Area Activated")
                     return true
                 }
             }
@@ -134,18 +134,18 @@ class PlayerPhysicsComponent : PhysicsComponent() {
 
     private fun updateEnemySpawnLayerActivation(rect: Rectangle): Boolean {
         val mapDiscoverLayer = MapManager.enemySpawnLayer ?: return false
+        rect.convertRectWorldToPixel() // convert once here.
 
         var rectangle: Rectangle?
 
         for (mapObject in mapDiscoverLayer.objects) {
             if (mapObject is RectangleMapObject) {
                 rectangle = mapObject.rectangle
-                rect.convertRectWorldToPixel()
                 if (rect.overlaps(rectangle)) {
                     val enemySpawnID = mapObject.getName() ?: return false
                     // make sure only notify once
                     if (previousEnemySpawn.equals(enemySpawnID, true)) return true
-                    previousEnemySpawn = enemySpawnID
+                    else previousEnemySpawn = enemySpawnID
                     notify(enemySpawnID, ComponentEvent.ENEMY_SPAWN_LOCATION_CHANGED)
 //                    println("PPC153 Enemy Spawn Area Activated")
                     return true
@@ -154,7 +154,7 @@ class PlayerPhysicsComponent : PhysicsComponent() {
         }
         //If no collision, reset the value
         if (previousEnemySpawn != "0") {
-            println("PPC156 Enemy Spawn Area RESET, previous area $previousEnemySpawn")
+//            println("PPC156 Enemy Spawn Area RESET, previous area $previousEnemySpawn")
             previousEnemySpawn = "0"
             notify(previousEnemySpawn, ComponentEvent.ENEMY_SPAWN_LOCATION_CHANGED)
         }

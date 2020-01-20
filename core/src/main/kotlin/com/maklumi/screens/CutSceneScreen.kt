@@ -28,7 +28,8 @@ import com.maklumi.ui.AnimatedImage
 class CutSceneScreen : GameScreen() {
 
     init {
-        MapManager.loadMap(MapFactory.MapType.TOWN, false)
+        MapManager.loadMap(MapFactory.MapType.TOWN)
+        MapManager.disableCurrentmapMusic()
     }
 
     private val screenRatio = Gdx.graphics.width / Gdx.graphics.height * 1f
@@ -98,7 +99,8 @@ class CutSceneScreen : GameScreen() {
                         Actions.delay(3f),
                         Actions.run {
                             hideDialog()
-                            MapManager.loadMap(MapFactory.MapType.TOP_WORLD, false)
+                            MapManager.loadMap(MapFactory.MapType.TOP_WORLD)
+                            MapManager.disableCurrentmapMusic()
                             setCameraPosition(50f, 30f)
                             animBlackSmith.setPosition(50f, 30f)
                             animInnKeeper.setPosition(52f, 30f)
@@ -160,7 +162,8 @@ class CutSceneScreen : GameScreen() {
                             animMage.isVisible = false
                             animFire.isVisible = false
 
-                            MapManager.loadMap(MapFactory.MapType.TOP_WORLD, false)
+                            MapManager.loadMap(MapFactory.MapType.TOP_WORLD)
+                            MapManager.disableCurrentmapMusic()
 
                             animDemon.isVisible = true
                             animDemon.setScale(1f, 1f)
@@ -182,7 +185,8 @@ class CutSceneScreen : GameScreen() {
                             animMage.isVisible = false
                             animFire.isVisible = false
 
-                            MapManager.loadMap(MapFactory.MapType.CASTLE_OF_DOOM, false)
+                            MapManager.loadMap(MapFactory.MapType.CASTLE_OF_DOOM)
+                            MapManager.disableCurrentmapMusic()
                             animDemon.isVisible = true
                             animDemon.setPosition(15f, 1f)
                             cameraFollow(animDemon)

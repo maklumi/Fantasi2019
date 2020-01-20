@@ -51,10 +51,10 @@ object MapManager : ProfileObserver {
     lateinit var player: Entity
     var currentSelectedEntity: Entity? = null
 
-    fun loadMap(mapType: MapType, shouldPlay: Boolean = true) {
-        if (this::gameMap.isInitialized) gameMap.stopMusic()
+    fun loadMap(mapType: MapType) {
+        if (this::gameMap.isInitialized) disableCurrentmapMusic()
         gameMap = MapFactory.getMap(mapType)
-        if (shouldPlay) gameMap.playMusic()
+        enableCurrentmapMusic()
 
         isNewMapLoaded = true
         // unregister observers
@@ -140,4 +140,7 @@ object MapManager : ProfileObserver {
 
     fun getCurrentMapQuestEntities(): gdxArray<Entity> = gameMap.mapQuestEntities
 
+    fun disableCurrentmapMusic() = gameMap.stopMusic()
+
+    fun enableCurrentmapMusic() = gameMap.playMusic()
 }
