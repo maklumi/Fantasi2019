@@ -30,12 +30,14 @@ class MainMenuScreen(fantasi: Fantasi) : GameScreen(), AudioSubject {
         val newGameButton = TextButton("New Game", STATUSUI_SKIN)
         val loadGameButton = TextButton("Load Game", STATUSUI_SKIN)
         val watchIntroButton = TextButton("Watch Intro", STATUSUI_SKIN)
+        val creditsButton = TextButton("Credits", STATUSUI_SKIN)
         val exitButton = TextButton("Exit", STATUSUI_SKIN)
 
         layout.add(title).spaceBottom(75f).row()
         layout.add(newGameButton).spaceBottom(10f).row()
         layout.add(loadGameButton).spaceBottom(10f).row()
         layout.add(watchIntroButton).spaceBottom(10f).row()
+        layout.add(creditsButton).spaceBottom(10f).row()
         layout.add(exitButton).spaceBottom(10f).row()
 
         stage.addActor(layout)
@@ -44,6 +46,7 @@ class MainMenuScreen(fantasi: Fantasi) : GameScreen(), AudioSubject {
         newGameButton.onTouchDown { fantasi.screen = fantasi.getScreenType(ScreenType.NewGame) }
         loadGameButton.onTouchDown { fantasi.screen = fantasi.getScreenType(ScreenType.LoadGame) }
         watchIntroButton.onTouchDown { fantasi.screen = fantasi.getScreenType(ScreenType.WatchIntro) }
+        creditsButton.onTouchDown { fantasi.screen = fantasi.getScreenType(ScreenType.Credits) }
         exitButton.onTouchDown { Gdx.app.exit() }
         
         audioObservers.add(AudioManager)
