@@ -118,6 +118,8 @@ class PlayerHUD(camera: Camera) : Screen,
         notify(SOUND_LOAD, SOUND_CREATURE_PAIN)
         notify(SOUND_LOAD, SOUND_PLAYER_PAIN)
         notify(SOUND_LOAD, SOUND_PLAYER_WAND_ATTACK)
+        notify(SOUND_LOAD, SOUND_EATING)
+        notify(SOUND_LOAD, SOUND_DRINKING)
     }
 
     override fun show() {}
@@ -343,8 +345,10 @@ class PlayerHUD(camera: Camera) : Screen,
                 val typeValue = strings[1].toInt()
 
                 if (InventoryItem.doesRestoreHP(type)) {
+                    notify(SOUND_PLAY_ONCE, SOUND_EATING)
                     statusUI.hp += typeValue
                 } else if (InventoryItem.doesRestoreMP(type)) {
+                    notify(SOUND_PLAY_ONCE, SOUND_DRINKING)
                     statusUI.mp += typeValue
                 }
             }
