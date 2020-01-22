@@ -22,7 +22,7 @@ class BattleUI : Window("BATTLE", Utility.STATUSUI_SKIN, "solidbackground"),
     private val image = AnimatedImage()
     val battleState = BattleState()
     private val attackButton = TextButton("Attack", skin, "inventory")
-    private val runButton = TextButton("Run", skin)
+    private val runButton = TextButton("Run", skin, "inventory")
     private val damageLabel = Label("", skin)
 
     init {
@@ -83,10 +83,14 @@ class BattleUI : Window("BATTLE", Utility.STATUSUI_SKIN, "solidbackground"),
                 damageLabel.isVisible = true
             }
             OPPONENT_TURN_DONE -> {
+                runButton.isDisabled = false
+                runButton.touchable = Touchable.enabled
                 attackButton.isDisabled = false
                 attackButton.touchable = Touchable.enabled
             }
             PLAYER_TURN_START -> {
+                runButton.isDisabled = true
+                runButton.touchable = Touchable.disabled
                 attackButton.isDisabled = false
                 attackButton.touchable = Touchable.enabled
             }

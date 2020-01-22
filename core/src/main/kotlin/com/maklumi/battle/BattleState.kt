@@ -20,6 +20,9 @@ class BattleState : BattleSubject(), InventoryObserver {
     private var criticalChance = 90
     private var originalOpponentHP = 0
     private var playerMagicWandAPPoints = 0
+    private val playerAttackTask = playerAttackCalculations()
+    private val playerMagicTask = playerMagicUseCheckTimer()
+    private val opponentAttackTask = opponentAttackCalculations()
 
     override fun onNotify(value: String, event: InventoryObserver.InventoryEvent) {
         when (event) {
@@ -51,15 +54,18 @@ class BattleState : BattleSubject(), InventoryObserver {
 
         when {
             playerMagicWandAPPoints == 0 -> {
-                Timer.schedule(playerAttackCalculations(), 1f)
+                if (!playerAttackTask.isScheduled)
+                    Timer.schedule(playerAttackTask, 1f)
             }
             playerMagicWandAPPoints > mpVal -> {
                 notify(opponent!!, PLAYER_TURN_DONE)
                 return
             }
             else -> {
-                Timer.schedule(playerMagicUseCheckTimer(), 0.5f)
-                Timer.schedule(playerAttackCalculations(), 1f)
+                if (!playerMagicTask.isScheduled)
+                    Timer.schedule(playerMagicTask, 0.5f)
+                if (!playerAttackTask.isScheduled)
+                    Timer.schedule(playerAttackTask, 1f)
             }
         }
     }
@@ -102,8 +108,8 @@ class BattleState : BattleSubject(), InventoryObserver {
             notify(opponent!!, OPPONENT_TURN_DONE)
             return
         }
-
-        Timer.schedule(opponentAttackCalculations(), 1f)
+        if (!opponentAttackTask.isScheduled)
+            Timer.schedule(opponentAttackTask, 1f)
     }
 
     fun battleZoneEntered() {
