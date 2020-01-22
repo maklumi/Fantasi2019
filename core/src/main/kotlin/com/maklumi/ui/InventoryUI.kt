@@ -203,6 +203,12 @@ class InventoryUI : Window("Inventory Window", STATUSUI_SKIN, "solidbackground")
         }
     }
 
+    fun resetEquipSlots() {
+        defVal = 0
+        atkVal = 0
+        notify(defVal.toString(), UPDATED_DP)
+        notify(atkVal.toString(), UPDATED_AP)
+    }
 
     companion object {
 
@@ -246,28 +252,33 @@ class InventoryUI : Window("Inventory Window", STATUSUI_SKIN, "solidbackground")
             return items
         }
 
-        private fun clearInventoryItemsAt(table: Table) {
+        fun clearInventoryItemsAt(table: Table) {
             table.cells.forEach {
                 (it.actor as InventorySlot?)?.clearAllInventoryItems(false)
             }
         }
 
-//        fun getInventoryAt(targetTable: Table, name: String): gdxArray<InventoryItemLocation> {
-//            val array = gdxArray<InventoryItemLocation>()
-//            for ((index, cell) in targetTable.cells.withIndex()) {
-//                val slot = cell.actor as InventorySlot? ?: continue
-//                val count = slot.getNumItems(name)
-//                if (count > 0) array.add(InventoryItemLocation(index, slot.topItem.itemTypeID.toString(), count,
-//                        slot.name))
-//            }
-//            return array
-//        }
+        fun getInventoryAt(targetTable: Table): gdxArray<InventoryItemLocation> {
+            val array = gdxArray<InventoryItemLocation>()
+            for ((index, cell) in targetTable.cells.withIndex()) {
+                val slot = cell.actor as InventorySlot? ?: continue
+                val count = slot.numItems
+                if (count > 0) array.add(
+                        InventoryItemLocation(
+                                index,
+                                slot.topItem.itemTypeID.toString(),
+                                count,
+                                slot.name ?: ""))
+            }
+            return array
+        }
 
         fun getInventoryFiltered(playerTable: Table, storeTable: Table, filterOutName: String): gdxArray<InventoryItemLocation> {
             val targetArray = getInventoryFiltered(storeTable, filterOutName)
             val sourceCells = playerTable.cells
             var counter = 0
-            for (item in targetArray) {
+            val targetArray2 = gdxArray.ArrayIterable<InventoryItemLocation>(targetArray)
+            for (item in targetArray2) {
                 for ((i, cell) in sourceCells.withIndex()) {
                     counter = i
                     val slot = cell.actor as InventorySlot? ?: continue

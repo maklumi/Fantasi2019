@@ -9,8 +9,7 @@ import com.maklumi.MapFactory.MapType
 import com.maklumi.MapFactory.MapType.*
 import com.maklumi.dialog.ComponentObserver
 import com.maklumi.profile.ProfileEvent
-import com.maklumi.profile.ProfileEvent.PROFILE_LOADED
-import com.maklumi.profile.ProfileEvent.SAVING_PROFILE
+import com.maklumi.profile.ProfileEvent.*
 import com.maklumi.profile.ProfileManager
 import com.maklumi.profile.ProfileObserver
 import com.badlogic.gdx.utils.Array as gdxArray
@@ -97,6 +96,13 @@ object MapManager : ProfileObserver {
             }
             SAVING_PROFILE -> {
                 ProfileManager.setProperty("currentMapType", gameMap.mapType)
+                ProfileManager.setProperty("topWorldMapStartPosition", MapFactory.getMap(TOP_WORLD).start)
+                ProfileManager.setProperty("castleOfDoomMapStartPosition", MapFactory.getMap(CASTLE_OF_DOOM).start)
+                ProfileManager.setProperty("townMapStartPosition", MapFactory.getMap(TOWN).start)
+            }
+            CLEAR_CURRENT_PROFILE -> {
+                MapFactory.mapTable.clear()
+                ProfileManager.setProperty("currentMapType", TOWN.toString())
                 ProfileManager.setProperty("topWorldMapStartPosition", MapFactory.getMap(TOP_WORLD).start)
                 ProfileManager.setProperty("castleOfDoomMapStartPosition", MapFactory.getMap(CASTLE_OF_DOOM).start)
                 ProfileManager.setProperty("townMapStartPosition", MapFactory.getMap(TOWN).start)

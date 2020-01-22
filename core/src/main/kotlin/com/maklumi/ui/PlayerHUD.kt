@@ -114,6 +114,7 @@ class PlayerHUD(camera: Camera) : Screen,
 
         //Music/Sound loading
         notify(MUSIC_LOAD, MUSIC_BATTLE)
+        notify(MUSIC_LOAD, MUSIC_LEVEL_UP_FANFARE)
         notify(SOUND_LOAD, SOUND_COIN_RUSTLE)
         notify(SOUND_LOAD, SOUND_CREATURE_PAIN)
         notify(SOUND_LOAD, SOUND_PLAYER_PAIN)
@@ -254,9 +255,13 @@ class PlayerHUD(camera: Camera) : Screen,
                 val configReturnProperty = ProfileManager.getProperty<EntityConfig>(config.entityID) ?: return
                 val questID = configReturnProperty.currentQuestID
                 if (questUI.isQuestReadyForReturn(questID)) {
+                    notify(MUSIC_PLAY_ONCE, MUSIC_LEVEL_UP_FANFARE)
+
                     val quest = questUI.getQuestByID(questID)
                     statusUI.xp += quest!!.xpReward
                     statusUI.gold += quest.goldReward
+                    notify(SOUND_PLAY_ONCE, SOUND_COIN_RUSTLE)
+
                     inventoryUI.removeQuestItemFromInventory(questID)
                     configReturnProperty.conversationConfigPath = QuestUI.FINISHED_QUEST
                     ProfileManager.properties.put(configReturnProperty.entityID, configReturnProperty)
@@ -270,41 +275,55 @@ class PlayerHUD(camera: Camera) : Screen,
     override fun onNotify(event: ProfileEvent) {
         when (event) {
             ProfileEvent.PROFILE_LOADED -> {
-                // inventory slot
-                val inventory = ProfileManager.getProperty<Array<InventoryItemLocation>>("playerInventory")
-                if (inventory != null && inventory.size > 0) {
-                    InventoryUI.populateInventory(inventoryUI.inventorySlotTable, inventory, inventoryUI.dragAndDrop, InventoryUI.PLAYER_INVENTORY, false)
-                } else {
-                    //add default items if nothing is found
+                if (ProfileManager.isNewProfile) {
+                    InventoryUI.clearInventoryItemsAt(inventoryUI.inventorySlotTable)
+                    InventoryUI.clearInventoryItemsAt(inventoryUI.equipSlots)
+                    inventoryUI.resetEquipSlots()
+
+                    //add default items if first time
                     val items: Array<InventoryItem.ItemTypeID> = MapManager.player.entityConfig.inventory
                     val itemLocations = Array<InventoryItemLocation>()
                     for (i in 0 until items.size) {
                         itemLocations.add(InventoryItemLocation(i, items.get(i).toString(), 1, InventoryUI.PLAYER_INVENTORY))
                     }
                     InventoryUI.populateInventory(inventoryUI.inventorySlotTable, itemLocations, inventoryUI.dragAndDrop, InventoryUI.PLAYER_INVENTORY, false)
+                    ProfileManager.properties.put("playerInventory", InventoryUI.getInventoryAt(inventoryUI.inventorySlotTable))
+
+                    questUI.quests.clear()
+                    statusUI.hp = 140
+                    statusUI.mp = 150
+                    statusUI.xp = 160
+                    statusUI.level = 1
+                    statusUI.gold = 1250
+                } else {
+                    // inventory slot
+                    val inventory = ProfileManager.getProperty<Array<InventoryItemLocation>>("playerInventory")
+                    if (inventory != null && inventory.size > 0) {
+                        InventoryUI.populateInventory(inventoryUI.inventorySlotTable, inventory, inventoryUI.dragAndDrop, InventoryUI.PLAYER_INVENTORY, false)
+                    }
+                    // equip slot
+                    val equipInventory = ProfileManager.getProperty<Array<InventoryItemLocation>>("playerEquipInventory")
+                    if (equipInventory != null && equipInventory.size > 0) {
+                        inventoryUI.resetEquipSlots()
+                        InventoryUI.populateInventory(inventoryUI.equipSlots, equipInventory, inventoryUI.dragAndDrop, InventoryUI.PLAYER_INVENTORY, false)
+                    }
+
+                    // check gold, if first time, give something
+                    val gold = ProfileManager.getProperty("currentPlayerGP") ?: 200
+                    statusUI.gold = gold
+
+                    statusUI.xpCurrentMax = ProfileManager.getProperty("currentPlayerXPMax") ?: 200
+                    statusUI.xp = ProfileManager.getProperty("currentPlayerXP") ?: 0
+                    statusUI.hpCurrentMax = ProfileManager.getProperty("currentPlayerHPMax") ?: 50
+                    statusUI.hp = ProfileManager.getProperty("currentPlayerHP") ?: 50
+//                    statusUI.hp = 50
+                    statusUI.mpCurrentMax = ProfileManager.getProperty("currentPlayerMPMax") ?: 50
+                    statusUI.mp = ProfileManager.getProperty("currentPlayerMP") ?: 50
+                    statusUI.level = ProfileManager.getProperty("currentPlayerLevel") ?: 1
+
+                    val quests = ProfileManager.getProperty<Array<QuestGraph>>("playerQuests")
+                    quests?.let { questUI.quests.addAll(quests) }
                 }
-
-                // equip slot
-                val equipInventory = ProfileManager.getProperty<Array<InventoryItemLocation>>("playerEquipInventory")
-                if (equipInventory != null && equipInventory.size > 0) {
-                    InventoryUI.populateInventory(inventoryUI.equipSlots, equipInventory, inventoryUI.dragAndDrop, InventoryUI.PLAYER_INVENTORY, false)
-                }
-
-                // check gold, if first time, give something
-                val gold = ProfileManager.getProperty("currentPlayerGP") ?: 200
-                statusUI.gold = gold
-
-                statusUI.xpCurrentMax = ProfileManager.getProperty("currentPlayerXPMax") ?: 200
-                statusUI.xp = ProfileManager.getProperty("currentPlayerXP") ?: 0
-                statusUI.hpCurrentMax = ProfileManager.getProperty("currentPlayerHPMax") ?: 50
-                statusUI.hp = ProfileManager.getProperty("currentPlayerHP") ?: 50
-//                statusUI.hp = 50
-                statusUI.mpCurrentMax = ProfileManager.getProperty("currentPlayerMPMax") ?: 50
-                statusUI.mp = ProfileManager.getProperty("currentPlayerMP") ?: 50
-                statusUI.level = ProfileManager.getProperty("currentPlayerLevel") ?: 1
-
-                val quests = ProfileManager.getProperty<Array<QuestGraph>>("playerQuests")
-                quests?.let { questUI.quests.addAll(quests) }
             }
             ProfileEvent.SAVING_PROFILE -> {
                 ProfileManager.setProperty("playerInventory", InventoryUI.getInventoryFiltered(inventoryUI.inventorySlotTable))
@@ -318,6 +337,19 @@ class PlayerHUD(camera: Camera) : Screen,
                 ProfileManager.setProperty("currentPlayerMP", statusUI.mp)
                 ProfileManager.setProperty("currentPlayerMPMax", statusUI.mpCurrentMax)
                 ProfileManager.setProperty("currentPlayerLevel", statusUI.level)
+            }
+            ProfileEvent.CLEAR_CURRENT_PROFILE -> {
+                ProfileManager.setProperty("playerQuests", Array<QuestGraph>())
+                ProfileManager.setProperty("playerInventory", Array<InventoryItemLocation>())
+                ProfileManager.setProperty("playerEquipInventory", Array<InventoryItemLocation>())
+                ProfileManager.setProperty("currentPlayerGP", 0)
+                ProfileManager.setProperty("currentPlayerLevel", 0)
+                ProfileManager.setProperty("currentPlayerXP", 0)
+                ProfileManager.setProperty("currentPlayerXPMax", 0)
+                ProfileManager.setProperty("currentPlayerHP", 0)
+                ProfileManager.setProperty("currentPlayerHPMax", 0)
+                ProfileManager.setProperty("currentPlayerMP", 0)
+                ProfileManager.setProperty("currentPlayerMPMax", 0)
             }
         }
     }
@@ -429,6 +461,9 @@ class PlayerHUD(camera: Camera) : Screen,
             }
             StatusObserver.StatusEvent.UPDATED_XP -> {
                 ProfileManager.setProperty("currentPlayerXP", statusUI.xp)
+            }
+            StatusObserver.StatusEvent.LEVELED_UP -> {
+                notify(MUSIC_PLAY_ONCE, MUSIC_LEVEL_UP_FANFARE)
             }
         }
     }

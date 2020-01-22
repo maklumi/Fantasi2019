@@ -152,6 +152,7 @@ class StatusUI : Window("Status", STATUSUI_SKIN), StatusSubject {
         levelTables.first { it.xpMax > xp }.also { table ->
 //            println("StatusUI151" + json.prettyPrint(table))
             level = Integer.parseInt(table.levelID)
+            notify(level, StatusObserver.StatusEvent.LEVELED_UP)
         }
     }
 

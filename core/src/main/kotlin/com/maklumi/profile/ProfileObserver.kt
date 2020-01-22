@@ -5,6 +5,7 @@ interface ProfileObserver {
 }
 
 enum class ProfileEvent {
+    CLEAR_CURRENT_PROFILE,
     PROFILE_LOADED,
     SAVING_PROFILE
 }

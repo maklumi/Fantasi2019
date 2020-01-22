@@ -4,7 +4,7 @@ import com.maklumi.Map as GameMap
 
 object MapFactory {
 
-    private val mapTable = hashMapOf<MapType, GameMap>()
+    val mapTable = hashMapOf<MapType, GameMap>()
 
     enum class MapType { TOWN, TOP_WORLD, CASTLE_OF_DOOM }
 

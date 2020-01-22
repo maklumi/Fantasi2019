@@ -15,6 +15,7 @@ object ProfileManager : ProfileSubject() {
     var profileName: String = DEFAULT_PROFILE
     private var profiles = mutableMapOf<String, FileHandle>()
     var properties = ObjectMap<String, Any>()
+    var isNewProfile = false
 
     init {
         initProfiles()
@@ -29,7 +30,7 @@ object ProfileManager : ProfileSubject() {
 
     fun writeProfileToStorage(profileName: String, fileData: String, overwrite: Boolean) {
         val fullFilename = profileName + SAVEGAME_SUFFIX
-        val localFileExists = Gdx.files.internal(fullFilename).exists()
+        val localFileExists = Gdx.files.local(fullFilename).exists()
 
         //If we cannot overwrite and the file exists, exit
         if (localFileExists && !overwrite) return
@@ -55,19 +56,25 @@ object ProfileManager : ProfileSubject() {
     }
 
     fun loadProfile() {
-        var fullProfileFileName = profileName + SAVEGAME_SUFFIX
-        val doesProfileFileExist = Gdx.files.internal(fullProfileFileName).exists()
+        if (isNewProfile){
+            notifyProfileObservers(ProfileEvent.CLEAR_CURRENT_PROFILE)
+            saveProfile()
+        }
+        val fullProfileFileName = profileName + SAVEGAME_SUFFIX
+        val doesProfileFileExist = Gdx.files.local(fullProfileFileName).exists()
 
         if (!doesProfileFileExist) {
             println("File doesn't exist! Default created.")
-            profileName = DEFAULT_PROFILE
-            writeProfileToStorage(profileName, "{}", true)
-            fullProfileFileName = DEFAULT_PROFILE + SAVEGAME_SUFFIX
+            return
+//            profileName = DEFAULT_PROFILE
+//            writeProfileToStorage(profileName, "{}", true)
+//            fullProfileFileName = DEFAULT_PROFILE + SAVEGAME_SUFFIX
         }
 
         profiles[profileName] = Gdx.files.internal(fullProfileFileName)
         properties = json.fromJson(profiles[profileName]!!)
         notifyProfileObservers(ProfileEvent.PROFILE_LOADED)
+        isNewProfile = false
     }
 
     fun storeAllProfiles() {

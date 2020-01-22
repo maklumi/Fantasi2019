@@ -92,6 +92,7 @@ class QuestUI : Window("Quest Log", Utility.STATUSUI_SKIN, "solidbackground") {
     }
 
     private fun updateQuestsItemList() {
+        listTasks.clearItems()
         listQuests.clearItems()
         listQuests.setItems(quests)
         listQuests.selectedIndex = -1
@@ -107,6 +108,7 @@ class QuestUI : Window("Quest Log", Utility.STATUSUI_SKIN, "solidbackground") {
     fun initQuests() {
         MapManager.clearAllMapQuestEntities()
         //populate items if quests have them
+        val quests = Array.ArrayIterable(this.quests)
         for (quest in quests) {
             if (!quest.isQuestComplete.toBoolean()) {
                 quest.init()
@@ -116,6 +118,7 @@ class QuestUI : Window("Quest Log", Utility.STATUSUI_SKIN, "solidbackground") {
     }
 
     fun updateQuests() {
+        val quests = Array.ArrayIterable(this.quests)
         for (quest in quests) {
             if (!quest.isQuestComplete.toBoolean()) {
                 quest.update()
@@ -125,6 +128,7 @@ class QuestUI : Window("Quest Log", Utility.STATUSUI_SKIN, "solidbackground") {
     }
 
     fun questTaskComplete(questID: String, questTaskID: String) {
+        val quests = Array.ArrayIterable(this.quests)
         for (questGraph in quests) {
             if (questGraph.questID.equals(questID, ignoreCase = true)) {
                 if (questGraph.isQuestTaskAvailable(questTaskID)) {

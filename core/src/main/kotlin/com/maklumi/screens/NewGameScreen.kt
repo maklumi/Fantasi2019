@@ -63,6 +63,7 @@ class NewGameScreen(fantasi: Fantasi) : GameScreen() {
         }
 
         overwriteButton.onTouchDown {
+            ProfileManager.isNewProfile = true
             val messageText = textField.text
             ProfileManager.writeProfileToStorage(messageText, "", true)
             ProfileManager.profileName = messageText
