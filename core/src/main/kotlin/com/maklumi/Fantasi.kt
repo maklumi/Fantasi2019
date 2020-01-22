@@ -28,7 +28,7 @@ class Fantasi : Game() {
         mainGameScreen = MainGameScreen(this)
         newGameScreen = NewGameScreen(this)
         gameOverScreen = GameOverScreen(this)
-        cutSceneScreen = CutSceneScreen()
+        cutSceneScreen = CutSceneScreen(this)
         creditScreen = CreditScreen(this)
 
         setScreen(mainMenuScreen)

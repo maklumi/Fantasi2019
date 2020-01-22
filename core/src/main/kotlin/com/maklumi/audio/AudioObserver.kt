@@ -3,6 +3,7 @@ package com.maklumi.audio
 interface AudioObserver {
 
     enum class AudioTypeEvent(val path: String) {
+        NONE(""),
         MUSIC_TITLE("audio/10112013.wav"),
         MUSIC_TOWN("audio/Magic Town_0.mp3"),
         MUSIC_TOPWORLD("audio/n3535n5n335n35nj.ogg"),
@@ -19,6 +20,7 @@ interface AudioObserver {
     }
 
     enum class AudioCommand {
+        MUSIC_STOP_ALL,
         MUSIC_LOAD, MUSIC_PLAY_ONCE, MUSIC_PLAY_LOOP, MUSIC_STOP,
         SOUND_LOAD, SOUND_PLAY_ONCE, SOUND_PLAY_LOOP, SOUND_STOP
     }

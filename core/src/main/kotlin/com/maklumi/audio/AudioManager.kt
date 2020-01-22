@@ -23,6 +23,7 @@ object AudioManager : AudioObserver {
             SOUND_PLAY_LOOP -> playSound(true, filePath)
             SOUND_PLAY_ONCE -> playSound(false, filePath)
             SOUND_STOP -> queuedSounds[filePath]?.stop()
+            MUSIC_STOP_ALL -> queuedMusic.values.forEach(Music::stop)
         }
     }
 

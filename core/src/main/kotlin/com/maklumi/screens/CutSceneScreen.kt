@@ -10,25 +10,23 @@ import com.badlogic.gdx.scenes.scene2d.Action
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.badlogic.gdx.scenes.scene2d.actions.RunnableAction
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.viewport.ScreenViewport
-import com.maklumi.EntityFactory
+import com.maklumi.*
 import com.maklumi.EntityFactory.EntityName.*
 import com.maklumi.EntityFactory.getEntityByName
-import com.maklumi.MapFactory
-import com.maklumi.MapManager
 import com.maklumi.MapManager.currentMap
 import com.maklumi.MapManager.isNewMapLoaded
-import com.maklumi.Utility
 import com.maklumi.audio.AudioObserver.AudioCommand
 import com.maklumi.audio.AudioObserver.AudioTypeEvent
 import com.maklumi.battle.MonsterFactory
 import com.maklumi.ui.AnimatedImage
 
-class CutSceneScreen : GameScreen() {
+class CutSceneScreen(fantasi: Fantasi) : GameScreen() {
 
     init {
         MapManager.loadMap(MapFactory.MapType.TOWN)
@@ -69,152 +67,191 @@ class CutSceneScreen : GameScreen() {
 
     private var shouldFollow = false
 
+    private val animBlackSmith = getAnimatedImageFor(TOWN_BLACKSMITH)
+    private val animInnKeeper = getAnimatedImageFor(TOWN_INNKEEPER)
+    private val animMage = getAnimatedImageFor(TOWN_MAGE)
+    private val animFire = getAnimatedImageFor(FIRE)
+    private val demon = MonsterFactory.getMonster(MonsterFactory.MonsterEntityType.MONSTER042)
+    private val animDemon = AnimatedImage()
+
+    private fun customAction(fn: () -> Unit): RunnableAction {
+        return object : RunnableAction() {
+            override fun run() {
+                fn.invoke()
+            }
+        }
+    }
+
+    private val scene01: Action = customAction {
+        hideDialog()
+        MapManager.loadMap(MapFactory.MapType.TOWN)
+        MapManager.disableCurrentmapMusic()
+        animBlackSmith.isVisible = true
+        animInnKeeper.isVisible = true
+        animMage.isVisible = true
+
+        setCameraPosition(10f, 16f)
+        showMessage("BLACKSMITH: \nWe have planned this long enough. The time is now! I have had enough talk...")
+    }
+
+    private val scene02: Action = customAction {
+        hideDialog()
+        MapManager.loadMap(MapFactory.MapType.TOP_WORLD)
+        MapManager.disableCurrentmapMusic()
+        setCameraPosition(50f, 30f)
+        animBlackSmith.setPosition(50f, 30f)
+        animInnKeeper.setPosition(52f, 30f)
+        animMage.setPosition(50f, 28f)
+        animFire.setPosition(52f, 28f)
+    }
+
+    private val scene03 = customAction {
+        hideDialog()
+        animDemon.setPosition(52f, 28f)
+        animDemon.isVisible = true
+    }
+
+    private val scene04 = customAction {
+        hideDialog()
+        animBlackSmith.isVisible = false
+        animInnKeeper.isVisible = false
+        animMage.isVisible = false
+        animFire.isVisible = false
+
+        MapManager.loadMap(MapFactory.MapType.TOP_WORLD)
+        MapManager.disableCurrentmapMusic()
+
+        animDemon.isVisible = true
+        animDemon.setScale(1f, 1f)
+        animDemon.setPosition(50f, 40f)
+
+        cameraFollow(animDemon)
+    }
+
+    private val scene05 = customAction {
+        hideDialog()
+        animBlackSmith.isVisible = false
+        animInnKeeper.isVisible = false
+        animMage.isVisible = false
+        animFire.isVisible = false
+
+        MapManager.loadMap(MapFactory.MapType.CASTLE_OF_DOOM)
+        MapManager.disableCurrentmapMusic()
+        animDemon.isVisible = true
+        animDemon.setPosition(15f, 1f)
+        cameraFollow(animDemon)
+    }
+
+    private val switchScreen = customAction {
+        fantasi.screen = fantasi.getScreenType(Fantasi.ScreenType.MainMenu)
+    }
+
+    private fun getCutsceneAction(): Action {
+        scene01.reset()
+        scene02.reset()
+        scene03.reset()
+        scene04.reset()
+        scene05.reset()
+        switchScreen.reset()
+        fadeIn.reset()
+        fadeOut.reset()
+
+        return Actions.sequence(
+                Actions.addAction(scene01),
+                Actions.delay(3.5f),
+                Actions.run {
+                    showMessage("MAGE: \nThis is dark magic you fool. We must proceed with caution, or this could end badly for all of us")
+                },
+                Actions.delay(3.5f),
+                Actions.run {
+                    showMessage("INNKEEPER: Both of you need to keep it down. If we get caught using black magic, we will all be hanged!")
+                },
+                Actions.delay(2.5f),
+                Actions.addAction(fadeOut),
+                Actions.delay(3f),
+                Actions.addAction(scene02),
+                Actions.addAction(fadeIn),
+                Actions.delay(3f),
+                Actions.run {
+                    showMessage("BLACKSMITH: Now, let's get on with this. I don't like the cemeteries very much...")
+                },
+                Actions.delay(3.5f),
+                Actions.run {
+                    showMessage("MAGE: I told you, we can't rush the spell. Bringing someone back to life isn't simple!")
+                },
+                Actions.delay(3.5f),
+                Actions.run {
+                    showMessage("INNKEEPER: I know you loved your daughter, but this just isn't right...")
+                },
+                Actions.delay(3.5f),
+                Actions.run {
+                    showMessage("BLACKSMITH: You have never had a child of your own. You just don't understand!")
+                },
+                Actions.delay(3.5f),
+                Actions.run {
+                    showMessage("MAGE: You both need to concentrate, wait...Oh no, something is wrong!!")
+                },
+                Actions.delay(3.5f),
+                Actions.addAction(scene03),
+                Actions.addAction(Actions.fadeOut(2f), animDemon),
+                Actions.delay(2f),
+                Actions.addAction(Actions.fadeIn(2f), animDemon),
+                Actions.delay(2f),
+                Actions.addAction(Actions.fadeOut(2f), animDemon),
+                Actions.delay(2f),
+                Actions.addAction(Actions.fadeIn(2f), animDemon),
+                Actions.delay(2f),
+                Actions.addAction(Actions.fadeOut(2f), animDemon),
+                Actions.delay(2f),
+                Actions.addAction(Actions.fadeIn(2f), animDemon),
+                Actions.delay(2f),
+                Actions.addAction(Actions.scaleBy(20f, 20f, 5f, Interpolation.bounce), animDemon),
+                Actions.delay(5f),
+                Actions.addAction(Actions.moveBy(20f, 0f), animDemon),
+                Actions.delay(2f),
+                Actions.run {
+                    showMessage("BLACKSMITH: What...What have we done...")
+                },
+                Actions.delay(3f),
+                Actions.addAction(fadeOut),
+                Actions.addAction(scene04),
+                Actions.addAction(fadeIn),
+                Actions.addAction(Actions.moveTo(54f, 65f, 13f, Interpolation.linear), animDemon),
+                Actions.delay(10f),
+                Actions.addAction(fadeOut),
+                Actions.delay(3f),
+                Actions.addAction(fadeIn),
+                Actions.delay(3f),
+                Actions.addAction(scene05),
+                Actions.addAction(Actions.moveTo(15f, 76f, 7.5f, Interpolation.linear), animDemon),
+                Actions.delay(7.5f),
+                Actions.run {
+                    showMessage("DEMON: I will now send my legions of demons to destroy these sacks of meat!")
+                },
+                Actions.delay(5f),
+                Actions.addAction(fadeOut),
+                Actions.delay(10f),
+                Actions.run {
+                    hideDialog()
+                    fadeIn.pixmap.setColor(Color.RED)
+                },
+                Actions.after(switchScreen))
+    }
+
     override fun show() {
+        notify(AudioCommand.MUSIC_STOP_ALL, AudioTypeEvent.NONE)
         notify(AudioCommand.MUSIC_LOAD, AudioTypeEvent.MUSIC_INTRO_CUTSCENE)
         notify(AudioCommand.MUSIC_PLAY_LOOP, AudioTypeEvent.MUSIC_INTRO_CUTSCENE)
 
-        val animBlackSmith = getAnimatedImageFor(TOWN_BLACKSMITH)
         animBlackSmith.setPosition(10f, 16f)
-
-        val animInnKeeper = getAnimatedImageFor(TOWN_INNKEEPER)
         animInnKeeper.setPosition(12f, 15f)
-
-        val animMage = getAnimatedImageFor(TOWN_MAGE)
         animMage.setPosition(11f, 17f)
 
-        val animFire = getAnimatedImageFor(FIRE)
-
-        val demon = MonsterFactory.getMonster(MonsterFactory.MonsterEntityType.MONSTER042)
-        val animDemon = AnimatedImage()
         animDemon.entity = demon
         animDemon.setSize(1f, 1f)
         animDemon.isVisible = false
 
-        stage.addAction(
-                Actions.sequence(
-                        Actions.run {
-                            setCameraPosition(10f, 16f)
-                            showMessage("BLACKSMITH: \nWe have planned this long enough. The time is now! I have had enough talk...")
-                        },
-                        Actions.delay(3.5f),
-                        Actions.run {
-                            showMessage("MAGE: \nThis is dark magic you fool. We must proceed with caution, or this could end badly for all of us")
-                        },
-                        Actions.delay(3.5f),
-                        Actions.run {
-                            showMessage("INNKEEPER: Both of you need to keep it down. If we get caught using black magic, we will all be hanged!")
-                        },
-                        Actions.delay(2.5f),
-                        Actions.addAction(fadeOut),
-                        Actions.delay(3f),
-                        Actions.run {
-                            hideDialog()
-                            MapManager.loadMap(MapFactory.MapType.TOP_WORLD)
-                            MapManager.disableCurrentmapMusic()
-                            setCameraPosition(50f, 30f)
-                            animBlackSmith.setPosition(50f, 30f)
-                            animInnKeeper.setPosition(52f, 30f)
-                            animMage.setPosition(50f, 28f)
-                            animFire.setPosition(52f, 28f)
-                        },
-                        Actions.addAction(fadeIn),
-                        Actions.delay(3f),
-                        Actions.run {
-                            showMessage("BLACKSMITH: Now, let's get on with this. I don't like the cemeteries very much...")
-                        },
-                        Actions.delay(3.5f),
-                        Actions.run {
-                            showMessage("MAGE: I told you, we can't rush the spell. Bringing someone back to life isn't simple!")
-                        },
-                        Actions.delay(3.5f),
-                        Actions.run {
-                            showMessage("INNKEEPER: I know you loved your daughter, but this just isn't right...")
-                        },
-                        Actions.delay(3.5f),
-                        Actions.run {
-                            showMessage("BLACKSMITH: You have never had a child of your own. You just don't understand!")
-                        },
-                        Actions.delay(3.5f),
-                        Actions.run {
-                            showMessage("MAGE: You both need to concentrate, wait...Oh no, something is wrong!!")
-                        },
-                        Actions.delay(3.5f),
-                        Actions.run {
-                            hideDialog()
-                            animDemon.setPosition(52f, 28f)
-                            animDemon.isVisible = true
-                        },
-                        Actions.addAction(Actions.fadeOut(2f), animDemon),
-                        Actions.delay(2f),
-                        Actions.addAction(Actions.fadeIn(2f), animDemon),
-                        Actions.delay(2f),
-                        Actions.addAction(Actions.fadeOut(2f), animDemon),
-                        Actions.delay(2f),
-                        Actions.addAction(Actions.fadeIn(2f), animDemon),
-                        Actions.delay(2f),
-                        Actions.addAction(Actions.fadeOut(2f), animDemon),
-                        Actions.delay(2f),
-                        Actions.addAction(Actions.fadeIn(2f), animDemon),
-                        Actions.delay(2f),
-                        Actions.addAction(Actions.scaleBy(20f, 20f, 5f, Interpolation.bounce), animDemon),
-                        Actions.delay(5f),
-                        Actions.addAction(Actions.moveBy(20f, 0f), animDemon),
-                        Actions.delay(2f),
-                        Actions.run {
-                            showMessage("BLACKSMITH: What...What have we done...")
-                        },
-                        Actions.delay(3f),
-                        Actions.addAction(fadeOut),
-                        Actions.run {
-                            hideDialog()
-                            animBlackSmith.isVisible = false
-                            animInnKeeper.isVisible = false
-                            animMage.isVisible = false
-                            animFire.isVisible = false
-
-                            MapManager.loadMap(MapFactory.MapType.TOP_WORLD)
-                            MapManager.disableCurrentmapMusic()
-
-                            animDemon.isVisible = true
-                            animDemon.setScale(1f, 1f)
-                            animDemon.setPosition(50f, 40f)
-
-                            cameraFollow(animDemon)
-                        },
-                        Actions.addAction(fadeIn),
-                        Actions.addAction(Actions.moveTo(54f, 65f, 13f, Interpolation.linear), animDemon),
-                        Actions.delay(10f),
-                        Actions.addAction(fadeOut),
-                        Actions.delay(3f),
-                        Actions.addAction(fadeIn),
-                        Actions.delay(3f),
-                        Actions.run {
-                            hideDialog()
-                            animBlackSmith.isVisible = false
-                            animInnKeeper.isVisible = false
-                            animMage.isVisible = false
-                            animFire.isVisible = false
-
-                            MapManager.loadMap(MapFactory.MapType.CASTLE_OF_DOOM)
-                            MapManager.disableCurrentmapMusic()
-                            animDemon.isVisible = true
-                            animDemon.setPosition(15f, 1f)
-                            cameraFollow(animDemon)
-                        },
-                        Actions.addAction(Actions.moveTo(15f, 76f, 7.5f, Interpolation.linear), animDemon),
-                        Actions.delay(7.5f),
-                        Actions.run {
-                            showMessage("DEMON: I will now send my legions of demons to destroy these sacks of meat!")
-                        },
-                        Actions.delay(5f),
-                        Actions.addAction(fadeOut),
-                        Actions.delay(10f),
-                        Actions.run {
-                            hideDialog()
-                            fadeIn.pixmap.setColor(Color.RED)
-                        },
-                        Actions.addAction(fadeIn))
-        )
+        stage.addAction(getCutsceneAction())
 
         stage.addActor(animBlackSmith)
         stage.addActor(animInnKeeper)

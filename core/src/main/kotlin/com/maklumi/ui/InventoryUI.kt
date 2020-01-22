@@ -76,6 +76,7 @@ class InventoryUI : Window("Inventory Window", STATUSUI_SKIN, "solidbackground")
                                 val itemInfo = item.itemUseType.toString() + MESSAGE_TOKEN + item.itemUseTypeValue
                                 this@InventoryUI.notify(itemInfo, ITEM_CONSUMED)
                                 slot.remove(item)
+                                slot.removeActor(item)
                             }
                         }
                     }
