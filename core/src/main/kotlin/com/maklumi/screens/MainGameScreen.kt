@@ -138,6 +138,7 @@ class MainGameScreen(private val fantasi: Fantasi) : GameScreen() {
                 it.registerObserver(playerHUD)
             }
             playerHUD.updateEntityObservers()
+            playerHUD.addTransitionToStage()
         }
         tiledMapRenderer.render()
 

@@ -2,7 +2,9 @@ package com.maklumi.ui
 
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.Camera
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.viewport.ScreenViewport
@@ -25,6 +27,8 @@ import com.maklumi.profile.ProfileObserver
 import com.maklumi.quest.QuestGraph
 import com.maklumi.screens.MainGameScreen
 import com.maklumi.screens.MainGameScreen.Companion.gameState
+import com.maklumi.sfx.ScreenTransitionAction
+import com.maklumi.sfx.ScreenTransitionActor
 import com.maklumi.ui.InventoryObserver.InventoryEvent.*
 import com.maklumi.ui.StoreInventoryObserver.StoreInventoryEvent
 import ktx.actors.onClick
@@ -63,6 +67,7 @@ class PlayerHUD(camera: Camera) : Screen,
     }
     private val battleUI = BattleUI()
     override val audioObservers = Array<AudioObserver>()
+    private val transitionActor = ScreenTransitionActor(Color.BLACK)
 
     init {
         audioObservers.add(AudioManager)
@@ -111,7 +116,8 @@ class PlayerHUD(camera: Camera) : Screen,
         inventoryUI.inventoryObservers.add(this)
         stage.addActor(battleUI)
         statusUI.toFront()
-
+        transitionActor.isVisible = false
+        stage.addActor(transitionActor)
         //Music/Sound loading
         notify(MUSIC_LOAD, MUSIC_BATTLE)
         notify(MUSIC_LOAD, MUSIC_LEVEL_UP_FANFARE)
@@ -121,6 +127,11 @@ class PlayerHUD(camera: Camera) : Screen,
         notify(SOUND_LOAD, SOUND_PLAYER_WAND_ATTACK)
         notify(SOUND_LOAD, SOUND_EATING)
         notify(SOUND_LOAD, SOUND_DRINKING)
+    }
+
+    fun addTransitionToStage() {
+        transitionActor.isVisible = true
+        stage.addAction(Actions.addAction(ScreenTransitionAction(ScreenTransitionAction.ScreenTransitionType.FADE_IN, 1f), transitionActor))
     }
 
     override fun show() {}
@@ -184,6 +195,7 @@ class PlayerHUD(camera: Camera) : Screen,
             }
             PLAYER_HAS_MOVED -> {
                 if (battleUI.isBattleReady()) {
+                    addTransitionToStage()
                     gameState = MainGameScreen.GameState.SAVING
                     battleUI.toBack()
                     battleUI.isVisible = true
@@ -411,18 +423,21 @@ class PlayerHUD(camera: Camera) : Screen,
                 gameState = MainGameScreen.GameState.RUNNING
                 notify(MUSIC_STOP, MUSIC_BATTLE)
                 MapManager.enableCurrentmapMusic()
+                addTransitionToStage()
             }
             PLAYER_RUNNING -> {
                 battleUI.isVisible = false
                 gameState = MainGameScreen.GameState.RUNNING
                 notify(MUSIC_STOP, MUSIC_BATTLE)
                 MapManager.enableCurrentmapMusic()
+                addTransitionToStage()
             }
             PLAYER_HIT_DAMAGE -> {
                 notify(SOUND_PLAY_ONCE, SOUND_PLAYER_PAIN)
                 val hpVal = ProfileManager.getProperty("currentPlayerHP") ?: 100
                 statusUI.hp = hpVal
                 if (hpVal <= 0) {
+                    addTransitionToStage()
                     notify(MUSIC_STOP, MUSIC_BATTLE)
                     battleUI.isVisible = false
                     gameState = MainGameScreen.GameState.GAME_OVER
