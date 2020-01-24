@@ -6,6 +6,9 @@ import com.maklumi.Component.MESSAGE.INIT_START_POSITION
 import com.maklumi.EntityFactory.EntityName.TOWN_GUARD_WALKING
 import com.maklumi.audio.AudioObserver.AudioCommand.*
 import com.maklumi.audio.AudioObserver.AudioTypeEvent.MUSIC_TOWN
+import com.maklumi.sfx.ParticleEffectFactory
+import com.maklumi.sfx.ParticleEffectFactory.ParticleEffectType.CANDLE_FIRE
+import com.badlogic.gdx.utils.Array as gdxArray
 
 class TownMap : Map(MapFactory.MapType.TOWN, "maps/town.tmx") {
 
@@ -24,6 +27,13 @@ class TownMap : Map(MapFactory.MapType.TOWN, "maps/town.tmx") {
             initSpecialEntityPosition(folk)
             mapEntities.add(folk)
         }
+
+        val candlePositions = getParticleEffectSpawnPositions(CANDLE_FIRE)
+        val iterable = gdxArray.ArrayIterable<Vector2>(candlePositions)
+        for (position in iterable) {
+            val effect = ParticleEffectFactory.getParticleEffect(CANDLE_FIRE, position)
+            mapParticleEffects.add(effect)
+        }
     }
 
     override fun updateMapEntities(batch: Batch, delta: Float) {
@@ -33,6 +43,11 @@ class TownMap : Map(MapFactory.MapType.TOWN, "maps/town.tmx") {
         }
         mapQuestEntities.forEach {
             it.update(batch, delta)
+        }
+        mapParticleEffects.forEach { effect ->
+            batch.begin()
+            effect.draw(batch, delta)
+            batch.end()
         }
     }
 

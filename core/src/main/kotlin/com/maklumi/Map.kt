@@ -1,6 +1,7 @@
 package com.maklumi
 
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.g2d.ParticleEffect
 import com.badlogic.gdx.maps.MapLayer
 import com.badlogic.gdx.maps.objects.RectangleMapObject
 import com.badlogic.gdx.maps.tiled.TiledMap
@@ -8,6 +9,7 @@ import com.badlogic.gdx.math.Vector2
 import com.maklumi.audio.AudioManager
 import com.maklumi.audio.AudioObserver
 import com.maklumi.audio.AudioSubject
+import com.maklumi.sfx.ParticleEffectFactory
 import com.badlogic.gdx.utils.Array as gdxArray
 
 abstract class Map(var mapType: MapFactory.MapType, path: String) :
@@ -34,6 +36,7 @@ abstract class Map(var mapType: MapFactory.MapType, path: String) :
         const val LIGHTMAP_AFTERNOON_LAYER = "MAP_LIGHTMAP_LAYER_AFTERNOON"
         const val LIGHTMAP_DUSK_LAYER = "MAP_LIGHTMAP_LAYER_DUSK"
         const val LIGHTMAP_NIGHT_LAYER = "MAP_LIGHTMAP_LAYER_NIGHT"
+        private const val PARTICLE_EFFECT_SPAWN_LAYER = "PARTICLE_EFFECT_SPAWN_LAYER"
     }
 
     var currentMap: TiledMap? = null
@@ -47,6 +50,7 @@ abstract class Map(var mapType: MapFactory.MapType, path: String) :
     var lightMapAfternoonLayer: MapLayer? = null
     var lightMapDuskLayer: MapLayer? = null
     var lightMapNightLayer: MapLayer? = null
+    var particleEffectSpawnLayer: MapLayer? = null
 
     val start = Vector2() // last known position on this map in pixels
     val startUnitScaled: Vector2  // in world unit
@@ -56,6 +60,7 @@ abstract class Map(var mapType: MapFactory.MapType, path: String) :
     protected val specialNPCStartPositions: MutableMap<String, Vector2>
     var mapEntities: gdxArray<Entity> = gdxArray()
     var mapQuestEntities: gdxArray<Entity> = gdxArray()
+    var mapParticleEffects: gdxArray<ParticleEffect> = gdxArray()
 
     init {
         loadMap(path)
@@ -81,6 +86,7 @@ abstract class Map(var mapType: MapFactory.MapType, path: String) :
         lightMapAfternoonLayer = currentMap?.layers?.get(LIGHTMAP_AFTERNOON_LAYER)
         lightMapDuskLayer = currentMap?.layers?.get(LIGHTMAP_DUSK_LAYER)
         lightMapNightLayer = currentMap?.layers?.get(LIGHTMAP_NIGHT_LAYER)
+        particleEffectSpawnLayer = currentMap?.layers?.get(PARTICLE_EFFECT_SPAWN_LAYER)
         setClosestStartPosition(Vector2())
 //        println("Map-loadmap: loadmap($mapType)")
     }
@@ -153,6 +159,31 @@ abstract class Map(var mapType: MapFactory.MapType, path: String) :
                     y *= unitScale
                     positions[it.name] = Vector2(x, y)
                 }
+        return positions
+    }
+
+    fun getParticleEffectSpawnPositions(effectType: ParticleEffectFactory.ParticleEffectType): gdxArray<Vector2> {
+        val positions = gdxArray<Vector2>()
+        val mapObjects = particleEffectSpawnLayer?.objects ?: return gdxArray()
+
+        for (mapObject in mapObjects) {
+            val name = mapObject.name
+            if (name == null || name.isEmpty() ||
+                    name != effectType.toString()) {
+                continue
+            }
+
+            val rect = (mapObject as RectangleMapObject).rectangle
+            //Get center of rectangle
+            var x = rect.getX() + (rect.getWidth() / 2)
+            var y = rect.getY() + (rect.getHeight() / 2)
+
+            //scale by the unit to convert from map coordinates
+            x *= unitScale
+            y *= unitScale
+
+            positions.add(Vector2(x, y))
+        }
         return positions
     }
 }

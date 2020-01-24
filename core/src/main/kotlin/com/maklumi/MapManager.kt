@@ -61,6 +61,8 @@ object MapManager : ProfileObserver {
     private var periodChanged = false
 
     fun loadMap(mapType: MapType) {
+        previousLightMap = null
+        currentLightMap = null
         if (this::gameMap.isInitialized) disableCurrentmapMusic()
         gameMap = MapFactory.getMap(mapType)
         enableCurrentmapMusic()
@@ -69,7 +71,6 @@ object MapManager : ProfileObserver {
         // unregister observers
         getCurrentMapEntities().forEach(Entity::unregisterObservers)
         clearCurrentSelectedEntity()
-        previousLightMap = null
     }
 
     fun clearCurrentSelectedEntity() {
