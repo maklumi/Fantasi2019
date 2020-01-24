@@ -9,6 +9,17 @@ class ClockActor : Label(" 00:00 PM ", Utility.STATUSUI_SKIN) {
     private var total = 0f
     private val rate = 60f
 
+    enum class TimeOfDay { DAWN, AFTERNOON, DUSK, NIGHT }
+
+    fun timeOfDay(): TimeOfDay {
+        return when (MathUtils.floor(total / 3600 % 24)) {
+            in 7..9 -> TimeOfDay.DAWN
+            in 10..16 -> TimeOfDay.AFTERNOON
+            in 17..19 -> TimeOfDay.DUSK
+            else -> TimeOfDay.NIGHT
+        }
+    }
+
     override fun act(delta: Float) {
         total += delta * rate
 

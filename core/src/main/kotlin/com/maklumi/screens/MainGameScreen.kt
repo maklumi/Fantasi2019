@@ -149,7 +149,7 @@ class MainGameScreen(private val fantasi: Fantasi) : GameScreen() {
         tiledMapRenderer.batch.enableBlending()
         tiledMapRenderer.batch.setBlendFunction(GL20.GL_BLEND_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
 
-        val lightMap = MapManager.lightMapLayer as TiledMapImageLayer?
+        val lightMap = MapManager.getCurrentLightMapLayer(playerHUD.timeOfDay()) as TiledMapImageLayer?
         if (lightMap != null) {
             renderTiles()
             renderEntities(delta)

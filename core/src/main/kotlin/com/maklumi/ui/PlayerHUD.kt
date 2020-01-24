@@ -510,4 +510,6 @@ class PlayerHUD(private val camera: Camera) : Screen,
         questUI.initQuests()
         MapManager.registerCurrentMapEntityObservers(this)
     }
+
+    fun timeOfDay(): ClockActor.TimeOfDay = clock.timeOfDay()
 }

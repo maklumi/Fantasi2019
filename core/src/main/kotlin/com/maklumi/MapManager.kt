@@ -12,6 +12,8 @@ import com.maklumi.profile.ProfileEvent
 import com.maklumi.profile.ProfileEvent.*
 import com.maklumi.profile.ProfileManager
 import com.maklumi.profile.ProfileObserver
+import com.maklumi.sfx.ClockActor
+import com.maklumi.sfx.ClockActor.TimeOfDay.*
 import com.badlogic.gdx.utils.Array as gdxArray
 
 object MapManager : ProfileObserver {
@@ -39,9 +41,6 @@ object MapManager : ProfileObserver {
 
     val enemySpawnLayer: MapLayer?
         get() = gameMap.enemySpawnLayer
-
-    val lightMapLayer: MapLayer?
-        get() = gameMap.lightMapLayer
 
     val currentMapType: MapType
         get() = gameMap.mapType
@@ -152,4 +151,14 @@ object MapManager : ProfileObserver {
     fun disableCurrentmapMusic() = gameMap.stopMusic()
 
     fun enableCurrentmapMusic() = gameMap.playMusic()
+
+    fun getCurrentLightMapLayer(timeOfDay: ClockActor.TimeOfDay): MapLayer? {
+        return when (timeOfDay) {
+            DAWN -> gameMap.lightMapDawnLayer
+            AFTERNOON -> null
+            DUSK -> gameMap.lightMapDuskLayer
+            NIGHT -> gameMap.lightMapNightLayer
+        }
+    }
+
 }
