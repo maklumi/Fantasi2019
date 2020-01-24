@@ -35,4 +35,9 @@ class ShakeCamera(x: Float, y: Float, private val radius: Float) {
             return field
         }
 
+    fun reset() {
+        shakeRadius = radius
+        shouldShake = false
+        position.set(oriPosition)
+    }
 }

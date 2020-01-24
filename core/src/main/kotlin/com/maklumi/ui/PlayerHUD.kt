@@ -164,6 +164,8 @@ class PlayerHUD(private val camera: Camera) : Screen,
 
     override fun resize(width: Int, height: Int) {
         stage.viewport.update(width, height, true)
+        battleUI.validate()
+        battleUI.resize()
     }
 
     override fun pause() {

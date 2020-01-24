@@ -136,7 +136,9 @@ abstract class GraphicsComponent : Component, ComponentSubject() {
 
         points.forEach { p -> keyFrames.add(textureFrames[p.x][p.y]) }
 
-        return Animation(duration, keyFrames, Animation.PlayMode.LOOP)
+        val animation = Animation(duration, keyFrames)
+        animation.playMode = Animation.PlayMode.LOOP
+        return animation
     }
 
     override fun dispose() {

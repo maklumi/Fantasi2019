@@ -77,6 +77,7 @@ class BattleUI : Window("BATTLE", Utility.STATUSUI_SKIN, "solidbackground"),
             OPPONENT_ADDED -> {
                 image.entity = entity // always set entity before setAnim
                 image.setAnim(AnimationType.IMMOBILE)
+                image.setPosition(getCell(image).actorX, getCell(image).actorY)
                 titleLabel.setText("Level ${battleState.currentZoneLevel}. ${entity.entityConfig.entityID}")
             }
             OPPONENT_DEFEATED -> {
@@ -151,5 +152,12 @@ class BattleUI : Window("BATTLE", Utility.STATUSUI_SKIN, "solidbackground"),
 
     fun resetDefaults() {
         battleState.resetDefaults()
+    }
+
+    fun resize() {
+        image.setPosition(getCell(image).actorX, getCell(image).actorY)
+        val position = Vector2(image.x, image.y)
+        shakeCamera.oriPosition.set(position)
+        shakeCamera.reset()
     }
 }
