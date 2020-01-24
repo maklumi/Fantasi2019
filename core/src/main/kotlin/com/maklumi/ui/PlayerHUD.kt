@@ -27,6 +27,7 @@ import com.maklumi.profile.ProfileObserver
 import com.maklumi.quest.QuestGraph
 import com.maklumi.screens.MainGameScreen
 import com.maklumi.screens.MainGameScreen.Companion.gameState
+import com.maklumi.sfx.ClockActor
 import com.maklumi.sfx.ScreenTransitionAction
 import com.maklumi.sfx.ScreenTransitionActor
 import com.maklumi.sfx.ShakeCamera
@@ -70,6 +71,7 @@ class PlayerHUD(private val camera: Camera) : Screen,
     override val audioObservers = Array<AudioObserver>()
     private val transitionActor = ScreenTransitionActor(Color.BLACK)
     private val shakeCam = ShakeCamera(camera.position.x, camera.position.y, 30f)
+    private val clock = ClockActor()
 
     init {
         audioObservers.add(AudioManager)
@@ -121,6 +123,19 @@ class PlayerHUD(private val camera: Camera) : Screen,
         statusUI.toFront()
         transitionActor.isVisible = false
         stage.addActor(transitionActor)
+
+        stage.addActor(clock)
+        battleUI.validate()
+        questUI.validate()
+        storeInventoryUI.validate()
+        conversationUI.validate()
+        messageBoxUI.validate()
+        statusUI.validate()
+        inventoryUI.validate()
+        clock.validate()
+        clock.isVisible = true
+        clock.setPosition(stage.width - clock.width, 10f)
+
         //Music/Sound loading
         notify(MUSIC_LOAD, MUSIC_BATTLE)
         notify(MUSIC_LOAD, MUSIC_LEVEL_UP_FANFARE)
