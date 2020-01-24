@@ -40,6 +40,9 @@ object MapManager : ProfileObserver {
     val enemySpawnLayer: MapLayer?
         get() = gameMap.enemySpawnLayer
 
+    val lightMapLayer: MapLayer?
+        get() = gameMap.lightMapLayer
+
     val currentMapType: MapType
         get() = gameMap.mapType
 

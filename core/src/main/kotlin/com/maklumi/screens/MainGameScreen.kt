@@ -8,10 +8,15 @@ import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.maps.MapLayer
 import com.badlogic.gdx.maps.objects.RectangleMapObject
+import com.badlogic.gdx.maps.tiled.TiledMapImageLayer
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
 import com.maklumi.Component.MESSAGE
 import com.maklumi.EntityFactory
 import com.maklumi.Fantasi
+import com.maklumi.Map.Companion.BACKGROUND_LAYER
+import com.maklumi.Map.Companion.DECORATION_LAYER
+import com.maklumi.Map.Companion.GROUND_LAYER
 import com.maklumi.MapManager
 import com.maklumi.MapManager.camera
 import com.maklumi.MapManager.collisionLayer
@@ -140,16 +145,56 @@ class MainGameScreen(private val fantasi: Fantasi) : GameScreen() {
             playerHUD.updateEntityObservers()
             playerHUD.addTransitionToStage()
         }
-        tiledMapRenderer.render()
+
+        tiledMapRenderer.batch.enableBlending()
+        tiledMapRenderer.batch.setBlendFunction(GL20.GL_BLEND_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
+
+        val lightMap = MapManager.lightMapLayer as TiledMapImageLayer?
+        if (lightMap != null) {
+            renderTiles()
+            renderEntities(delta)
+            renderLightMap(lightMap)
+        } else {
+            tiledMapRenderer.render()
+            renderEntities(delta)
+        }
 
         // debug
         drawBoundingBox()
+        // head up display
+        playerHUD.render(delta)
+    }
+
+    private fun renderEntities(delta: Float) {
         // map entities
         updateMapEntities(tiledMapRenderer.batch, delta)
         // player entity
         player.update(tiledMapRenderer.batch, delta)
-        // head up display
-        playerHUD.render(delta)
+    }
+
+    private fun renderTiles() {
+        if (currentMap == null) return
+        val backMapLayer = currentMap!!.layers[BACKGROUND_LAYER] as TiledMapTileLayer
+        val groundMapLayer = currentMap!!.layers[GROUND_LAYER] as TiledMapTileLayer
+        val decoMapLayer = currentMap!!.layers[DECORATION_LAYER] as TiledMapTileLayer
+
+        tiledMapRenderer.apply {
+            batch.begin()
+            renderTileLayer(backMapLayer)
+            renderTileLayer(groundMapLayer)
+            renderTileLayer(decoMapLayer)
+            batch.end()
+        }
+    }
+
+    private fun renderLightMap(lightMap: TiledMapImageLayer) {
+        tiledMapRenderer.apply {
+            batch.begin()
+            batch.setBlendFunction(GL20.GL_DST_COLOR, GL20.GL_ONE_MINUS_SRC_ALPHA)
+            renderImageLayer(lightMap)
+            batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
+            batch.end()
+        }
     }
 
     private fun renderPlayerHUD(delta: Float) {

@@ -27,6 +27,10 @@ abstract class Map(var mapType: MapFactory.MapType, path: String) :
         private const val QUEST_ITEM_SPAWN_LAYER = "MAP_QUEST_ITEM_SPAWN_LAYER"
         private const val QUEST_DISCOVER_LAYER = "MAP_QUEST_DISCOVER_LAYER"
         private const val ENEMY_SPAWN_LAYER = "MAP_ENEMY_SPAWN_LAYER"
+        const val BACKGROUND_LAYER = "Background_Layer"
+        const val GROUND_LAYER = "Ground_Layer"
+        const val DECORATION_LAYER = "Decoration_Layer"
+        private const val LIGHTMAP_LAYER = "MAP_LIGHTMAP_LAYER"
     }
 
     var currentMap: TiledMap? = null
@@ -36,6 +40,7 @@ abstract class Map(var mapType: MapFactory.MapType, path: String) :
     private var questItemSpawnLayer: MapLayer? = null
     var questDiscoverLayer: MapLayer? = null
     var enemySpawnLayer: MapLayer? = null
+    var lightMapLayer: MapLayer? = null
 
     val start = Vector2() // last known position on this map in pixels
     val startUnitScaled: Vector2  // in world unit
@@ -66,6 +71,7 @@ abstract class Map(var mapType: MapFactory.MapType, path: String) :
         questItemSpawnLayer = currentMap?.layers?.get(QUEST_ITEM_SPAWN_LAYER)
         questDiscoverLayer = currentMap?.layers?.get(QUEST_DISCOVER_LAYER)
         enemySpawnLayer = currentMap?.layers?.get(ENEMY_SPAWN_LAYER)
+        lightMapLayer = currentMap?.layers?.get(LIGHTMAP_LAYER)
         setClosestStartPosition(Vector2())
 //        println("Map-loadmap: loadmap($mapType)")
     }
