@@ -6,7 +6,7 @@ import com.maklumi.Utility
 
 class ClockActor : Label(" 00:00 PM ", Utility.STATUSUI_SKIN) {
 
-    private var total = 0f
+    var total = 0f
     private val rate = 60f
 
     enum class TimeOfDay { DAWN, AFTERNOON, DUSK, NIGHT }

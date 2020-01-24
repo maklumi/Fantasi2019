@@ -328,6 +328,8 @@ class PlayerHUD(private val camera: Camera) : Screen,
                     statusUI.xp = 160
                     statusUI.level = 1
                     statusUI.gold = 1250
+                    clock.total = 60 * 60 * 12f // start at noon
+                    ProfileManager.setProperty("currentTime", clock.total)
                 } else {
                     // inventory slot
                     val inventory = ProfileManager.getProperty<Array<InventoryItemLocation>>("playerInventory")
@@ -356,6 +358,9 @@ class PlayerHUD(private val camera: Camera) : Screen,
 
                     val quests = ProfileManager.getProperty<Array<QuestGraph>>("playerQuests")
                     quests?.let { questUI.quests.addAll(quests) }
+
+                    val totalTime = ProfileManager.getProperty<Float>("currentTime") ?: 0f
+                    clock.total = totalTime
                 }
             }
             ProfileEvent.SAVING_PROFILE -> {
@@ -370,6 +375,7 @@ class PlayerHUD(private val camera: Camera) : Screen,
                 ProfileManager.setProperty("currentPlayerMP", statusUI.mp)
                 ProfileManager.setProperty("currentPlayerMPMax", statusUI.mpCurrentMax)
                 ProfileManager.setProperty("currentPlayerLevel", statusUI.level)
+                ProfileManager.setProperty("currentTime", clock.total)
             }
             ProfileEvent.CLEAR_CURRENT_PROFILE -> {
                 ProfileManager.setProperty("playerQuests", Array<QuestGraph>())
@@ -383,6 +389,7 @@ class PlayerHUD(private val camera: Camera) : Screen,
                 ProfileManager.setProperty("currentPlayerHPMax", 0)
                 ProfileManager.setProperty("currentPlayerMP", 0)
                 ProfileManager.setProperty("currentPlayerMPMax", 0)
+                ProfileManager.setProperty("currentTime", 0f)
             }
         }
     }

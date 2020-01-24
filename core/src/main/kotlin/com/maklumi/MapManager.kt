@@ -155,7 +155,7 @@ object MapManager : ProfileObserver {
     fun getCurrentLightMapLayer(timeOfDay: ClockActor.TimeOfDay): MapLayer? {
         return when (timeOfDay) {
             DAWN -> gameMap.lightMapDawnLayer
-            AFTERNOON -> null
+            AFTERNOON -> gameMap.lightMapAfternoonLayer
             DUSK -> gameMap.lightMapDuskLayer
             NIGHT -> gameMap.lightMapNightLayer
         }

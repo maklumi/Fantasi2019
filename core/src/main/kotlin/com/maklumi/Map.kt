@@ -31,6 +31,7 @@ abstract class Map(var mapType: MapFactory.MapType, path: String) :
         const val GROUND_LAYER = "Ground_Layer"
         const val DECORATION_LAYER = "Decoration_Layer"
         const val LIGHTMAP_DAWN_LAYER = "MAP_LIGHTMAP_LAYER_DAWN"
+        const val LIGHTMAP_AFTERNOON_LAYER = "MAP_LIGHTMAP_LAYER_AFTERNOON"
         const val LIGHTMAP_DUSK_LAYER = "MAP_LIGHTMAP_LAYER_DUSK"
         const val LIGHTMAP_NIGHT_LAYER = "MAP_LIGHTMAP_LAYER_NIGHT"
     }
@@ -43,6 +44,7 @@ abstract class Map(var mapType: MapFactory.MapType, path: String) :
     var questDiscoverLayer: MapLayer? = null
     var enemySpawnLayer: MapLayer? = null
     var lightMapDawnLayer: MapLayer? = null
+    var lightMapAfternoonLayer: MapLayer? = null
     var lightMapDuskLayer: MapLayer? = null
     var lightMapNightLayer: MapLayer? = null
 
@@ -76,6 +78,7 @@ abstract class Map(var mapType: MapFactory.MapType, path: String) :
         questDiscoverLayer = currentMap?.layers?.get(QUEST_DISCOVER_LAYER)
         enemySpawnLayer = currentMap?.layers?.get(ENEMY_SPAWN_LAYER)
         lightMapDawnLayer = currentMap?.layers?.get(LIGHTMAP_DAWN_LAYER)
+        lightMapAfternoonLayer = currentMap?.layers?.get(LIGHTMAP_AFTERNOON_LAYER)
         lightMapDuskLayer = currentMap?.layers?.get(LIGHTMAP_DUSK_LAYER)
         lightMapNightLayer = currentMap?.layers?.get(LIGHTMAP_NIGHT_LAYER)
         setClosestStartPosition(Vector2())
