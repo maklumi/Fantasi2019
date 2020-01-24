@@ -11,7 +11,7 @@ object ParticleEffectFactory {
         CANDLE_FIRE("sfx/candle.p"),
         LANTERN_FIRE("sfx/candle.p"),
         LAVA_SMOKE("sfx/smoke.p"),
-        WAND_ATTACK(""),
+        WAND_ATTACK("sfx/magic_attack.p"),
     }
 
     fun get(type: ParticleEffectType, position: Vector2): ParticleEffect? {
@@ -22,8 +22,7 @@ object ParticleEffectFactory {
             CANDLE_FIRE -> effect.scaleEffect(.04f)
             LANTERN_FIRE -> effect.scaleEffect(.02f)
             LAVA_SMOKE -> effect.scaleEffect(.04f)
-            WAND_ATTACK -> {
-            }
+            WAND_ATTACK -> effect.scaleEffect(1.0f)
         }
         effect.start()
         return effect

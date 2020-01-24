@@ -11,13 +11,11 @@ import com.badlogic.gdx.maps.objects.RectangleMapObject
 import com.badlogic.gdx.maps.tiled.TiledMapImageLayer
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
+import com.maklumi.*
 import com.maklumi.Component.MESSAGE
-import com.maklumi.EntityFactory
-import com.maklumi.Fantasi
 import com.maklumi.Map.Companion.BACKGROUND_LAYER
 import com.maklumi.Map.Companion.DECORATION_LAYER
 import com.maklumi.Map.Companion.GROUND_LAYER
-import com.maklumi.MapManager
 import com.maklumi.MapManager.camera
 import com.maklumi.MapManager.collisionLayer
 import com.maklumi.MapManager.currentMap
@@ -30,7 +28,6 @@ import com.maklumi.MapManager.spawnsLayer
 import com.maklumi.MapManager.unitScale
 import com.maklumi.MapManager.updateMapEntities
 import com.maklumi.audio.AudioManager
-import com.maklumi.json
 import com.maklumi.profile.ProfileManager
 import com.maklumi.ui.PlayerHUD
 
@@ -265,6 +262,10 @@ class MainGameScreen(private val fantasi: Fantasi) : GameScreen() {
     override fun dispose() {
         Gdx.input.inputProcessor = null
         AudioManager.dispose()
+        tiledMapRenderer.dispose()
+        playerHUD.dispose()
+        player.dispose()
+        MapFactory.clearCache()
     }
 
     private fun setupViewport() {

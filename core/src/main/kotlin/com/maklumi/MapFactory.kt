@@ -4,7 +4,7 @@ import com.maklumi.Map as GameMap
 
 object MapFactory {
 
-    val mapTable = hashMapOf<MapType, GameMap>()
+    private val mapTable = hashMapOf<MapType, GameMap>()
 
     enum class MapType { TOWN, TOP_WORLD, CASTLE_OF_DOOM }
 
@@ -25,4 +25,8 @@ object MapFactory {
         }
     }
 
+    fun clearCache() {
+        mapTable.values.forEach { it.dispose() }
+        mapTable.clear()
+    }
 }

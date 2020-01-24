@@ -21,6 +21,7 @@ interface Component {
 
     fun receiveMessage(message: String)
 
+    fun dispose()
 }
 
 const val MESSAGE_TOKEN = ":::::"

@@ -360,7 +360,7 @@ class PlayerHUD(private val camera: Camera) : Screen,
                     val quests = ProfileManager.getProperty<Array<QuestGraph>>("playerQuests")
                     quests?.let { questUI.quests.addAll(quests) }
 
-                    val totalTime = ProfileManager.getProperty<Float>("currentTime") ?: 0f
+                    val totalTime = ProfileManager.getProperty("currentTime") ?: 0f
                     clock.total = totalTime
                 }
             }

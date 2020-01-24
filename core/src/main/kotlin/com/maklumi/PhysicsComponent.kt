@@ -113,4 +113,6 @@ abstract class PhysicsComponent : Component, ComponentSubject() {
         velocity.scl(1 / deltaTime)
     }
 
+    override fun dispose() {
+    }
 }

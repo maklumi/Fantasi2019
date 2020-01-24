@@ -119,7 +119,7 @@ object MapManager : ProfileObserver {
                 ProfileManager.setProperty("townMapStartPosition", MapFactory.getMap(TOWN).start)
             }
             CLEAR_CURRENT_PROFILE -> {
-                MapFactory.mapTable.clear()
+                MapFactory.clearCache()
                 ProfileManager.setProperty("currentMapType", TOWN.toString())
                 ProfileManager.setProperty("topWorldMapStartPosition", MapFactory.getMap(TOP_WORLD).start)
                 ProfileManager.setProperty("castleOfDoomMapStartPosition", MapFactory.getMap(CASTLE_OF_DOOM).start)

@@ -1,5 +1,8 @@
 package com.maklumi.ui
 
+import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.g2d.ParticleEffect
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -14,8 +17,11 @@ import com.maklumi.battle.BattleObserver
 import com.maklumi.battle.BattleObserver.BattleEvent
 import com.maklumi.battle.BattleObserver.BattleEvent.*
 import com.maklumi.battle.BattleState
+import com.maklumi.sfx.ParticleEffectFactory
+import com.maklumi.sfx.ParticleEffectFactory.ParticleEffectType.WAND_ATTACK
 import com.maklumi.sfx.ShakeCamera
 import ktx.actors.onClick
+import com.badlogic.gdx.utils.Array as gdxArray
 
 class BattleUI : Window("BATTLE", Utility.STATUSUI_SKIN, "solidbackground"),
         BattleObserver {
@@ -26,6 +32,9 @@ class BattleUI : Window("BATTLE", Utility.STATUSUI_SKIN, "solidbackground"),
     private val runButton = TextButton("Run", skin, "inventory")
     private val damageLabel = Label("", skin)
     private val shakeCamera = ShakeCamera(0f, 0f, 30f)
+    private val enemyWidth = 160f
+    private val enemyHeight = 160f
+    private val effects = gdxArray<ParticleEffect>()
 
     init {
         val table = Table()
@@ -36,7 +45,7 @@ class BattleUI : Window("BATTLE", Utility.STATUSUI_SKIN, "solidbackground"),
         battleState.battleObservers.add(this)
         image.touchable = Touchable.disabled
         add(damageLabel).align(Align.left).padLeft(80f).row()
-        add(image).size(160f, 160f).pad(20f, 20f, 20f, 80f)
+        add(image).size(enemyWidth, enemyHeight).pad(20f, 20f, 20f, enemyWidth / 2)
         damageLabel.isVisible = false
         damageLabel.toFront()
         add(table)
@@ -46,7 +55,7 @@ class BattleUI : Window("BATTLE", Utility.STATUSUI_SKIN, "solidbackground"),
         runButton.onClick { battleState.playerRuns() }
     }
 
-    private var damageLabelStartY = damageLabel.y + 300f
+    private var damageLabelStartY = damageLabel.y + enemyHeight
     private var battleTimer = 0f
     private val waitSecond = 2f
 
@@ -104,6 +113,9 @@ class BattleUI : Window("BATTLE", Utility.STATUSUI_SKIN, "solidbackground"),
                 battleState.opponentAttacks()
             }
             PLAYER_USED_MAGIC -> {
+                val x = image.x + enemyWidth / 2
+                val y = image.y + enemyHeight / 2
+                effects.add(ParticleEffectFactory.get(WAND_ATTACK, Vector2(x, y)))
             }
         }
     }
@@ -118,6 +130,23 @@ class BattleUI : Window("BATTLE", Utility.STATUSUI_SKIN, "solidbackground"),
             image.x = shakeCamera.position.x
             image.y = shakeCamera.position.y
         }
+        for (i in 0 until effects.size) {
+            val effect = effects.get(i) ?: continue
+            if (effect.isComplete) {
+                effects.removeIndex(i)
+                effect.dispose()
+            } else {
+                effect.update(delta)
+            }
+        }
         super.act(delta)
     }
+
+    override fun draw(batch: Batch?, parentAlpha: Float) {
+        super.draw(batch, parentAlpha)
+
+        //Draw the particles last
+        effects.forEach { it.draw(batch) }
+    }
+
 }

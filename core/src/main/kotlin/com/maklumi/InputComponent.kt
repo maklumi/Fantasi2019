@@ -26,4 +26,6 @@ abstract class InputComponent : Component, InputProcessor {
 
     abstract fun update(entity: Entity, delta: Float)
 
+    override fun dispose(){
+    }
 }

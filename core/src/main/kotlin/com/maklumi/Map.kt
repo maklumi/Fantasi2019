@@ -197,4 +197,17 @@ abstract class Map(var mapType: MapFactory.MapType, path: String) :
         }
         return positions
     }
+
+    fun dispose() {
+        for (i in 0 until mapEntities.size) {
+            mapEntities.get(i).dispose()
+        }
+        for (i in 0 until mapQuestEntities.size) {
+            mapQuestEntities.get(i).dispose()
+        }
+        for (i in 0 until mapParticleEffects.size) {
+            mapParticleEffects.get(i).dispose()
+        }
+    }
+
 }

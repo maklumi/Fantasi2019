@@ -96,6 +96,10 @@ class Entity(val inputComponent: InputComponent,
 
     fun getAnimation(type: AnimationType): Animation<TextureRegion>? = graphicsComponent.animations[type]
 
+    fun dispose() {
+        components.forEach { it.dispose() }
+    }
+
     companion object {
 
         const val MAX_COMPONENTS = 5

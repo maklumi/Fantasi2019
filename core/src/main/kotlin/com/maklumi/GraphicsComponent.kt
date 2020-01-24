@@ -138,4 +138,8 @@ abstract class GraphicsComponent : Component, ComponentSubject() {
 
         return Animation(duration, keyFrames, Animation.PlayMode.LOOP)
     }
+
+    override fun dispose() {
+        shapeRenderer.dispose()
+    }
 }
