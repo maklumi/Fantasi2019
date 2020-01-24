@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.maps.MapLayer
 import com.badlogic.gdx.maps.tiled.TiledMap
+import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import com.maklumi.MapFactory.MapType
 import com.maklumi.MapFactory.MapType.*
@@ -52,6 +53,13 @@ object MapManager : ProfileObserver {
     lateinit var player: Entity
     var currentSelectedEntity: Entity? = null
 
+    var currentLightMap: MapLayer? = null
+    var previousLightMap: MapLayer? = null
+    private var period: ClockActor.TimeOfDay = AFTERNOON
+    private var currentOpacity = 0f
+    private var previousOpacity = 1f
+    private var periodChanged = false
+
     fun loadMap(mapType: MapType) {
         if (this::gameMap.isInitialized) disableCurrentmapMusic()
         gameMap = MapFactory.getMap(mapType)
@@ -61,6 +69,7 @@ object MapManager : ProfileObserver {
         // unregister observers
         getCurrentMapEntities().forEach(Entity::unregisterObservers)
         clearCurrentSelectedEntity()
+        previousLightMap = null
     }
 
     fun clearCurrentSelectedEntity() {
@@ -152,7 +161,7 @@ object MapManager : ProfileObserver {
 
     fun enableCurrentmapMusic() = gameMap.playMusic()
 
-    fun getCurrentLightMapLayer(timeOfDay: ClockActor.TimeOfDay): MapLayer? {
+    private fun getCurrentLightMapLayer(timeOfDay: ClockActor.TimeOfDay): MapLayer? {
         return when (timeOfDay) {
             DAWN -> gameMap.lightMapDawnLayer
             AFTERNOON -> gameMap.lightMapAfternoonLayer
@@ -161,4 +170,35 @@ object MapManager : ProfileObserver {
         }
     }
 
+    fun updateLightMap(timeOfDay: ClockActor.TimeOfDay) {
+        if (period != timeOfDay) {
+            // reset
+            currentOpacity = 0f
+            previousOpacity = 1f
+            period = timeOfDay
+            periodChanged = true
+            previousLightMap = currentLightMap
+
+//            println("Time of Day CHANGED")
+        }
+
+        currentLightMap = getCurrentLightMapLayer(timeOfDay)
+
+        if (periodChanged) {
+            if (previousLightMap != null && previousOpacity != 0f) {
+                previousLightMap!!.opacity = previousOpacity
+                previousOpacity -= .05f
+                previousOpacity = MathUtils.clamp(previousOpacity, 0f, 1f)
+                if (previousOpacity <= 0f) previousLightMap = null
+            }
+
+            if (currentLightMap != null && currentOpacity != 1f) {
+                currentLightMap!!.opacity = currentOpacity
+                currentOpacity += .01f
+                currentOpacity = MathUtils.clamp(currentOpacity, 0f, 1f)
+            }
+        } else {
+            periodChanged = false
+        }
+    }
 }

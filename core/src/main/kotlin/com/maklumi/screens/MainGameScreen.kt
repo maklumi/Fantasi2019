@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
+import com.badlogic.gdx.graphics.GL30
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.maps.MapLayer
@@ -25,6 +26,7 @@ import com.maklumi.MapManager.enemySpawnLayer
 import com.maklumi.MapManager.isNewMapLoaded
 import com.maklumi.MapManager.playerStartUnitScaled
 import com.maklumi.MapManager.portalLayer
+import com.maklumi.MapManager.previousLightMap
 import com.maklumi.MapManager.spawnsLayer
 import com.maklumi.MapManager.unitScale
 import com.maklumi.MapManager.updateMapEntities
@@ -149,7 +151,8 @@ class MainGameScreen(private val fantasi: Fantasi) : GameScreen() {
         tiledMapRenderer.batch.enableBlending()
         tiledMapRenderer.batch.setBlendFunction(GL20.GL_BLEND_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
 
-        val lightMap = MapManager.getCurrentLightMapLayer(playerHUD.timeOfDay()) as TiledMapImageLayer?
+        MapManager.updateLightMap(playerHUD.timeOfDay())
+        val lightMap = MapManager.currentLightMap
         if (lightMap != null) {
             renderTiles()
             renderEntities(delta)
@@ -187,11 +190,19 @@ class MainGameScreen(private val fantasi: Fantasi) : GameScreen() {
         }
     }
 
-    private fun renderLightMap(lightMap: TiledMapImageLayer) {
+    private fun renderLightMap(lightMap: MapLayer) {
         tiledMapRenderer.apply {
             batch.begin()
             batch.setBlendFunction(GL20.GL_DST_COLOR, GL20.GL_ONE_MINUS_SRC_ALPHA)
-            renderImageLayer(lightMap)
+            renderImageLayer(lightMap as TiledMapImageLayer)
+            batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
+            batch.end()
+        }
+        if (previousLightMap == null) return
+        tiledMapRenderer.apply {
+            batch.begin()
+            batch.setBlendFunction(GL20.GL_DST_COLOR, GL20.GL_ONE_MINUS_SRC_ALPHA)
+            renderImageLayer(previousLightMap as TiledMapImageLayer)
             batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
             batch.end()
         }
