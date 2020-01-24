@@ -61,6 +61,8 @@ object MapManager : ProfileObserver {
     private var periodChanged = false
 
     fun loadMap(mapType: MapType) {
+        previousLightMap?.opacity = 0f
+        currentLightMap?.opacity = 1f
         previousLightMap = null
         currentLightMap = null
         if (this::gameMap.isInitialized) disableCurrentmapMusic()
