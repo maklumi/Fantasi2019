@@ -134,7 +134,7 @@ class PlayerHUD(private val camera: Camera) : Screen,
 
     fun addTransitionToStage() {
         transitionActor.isVisible = true
-        stage.addAction(Actions.addAction(ScreenTransitionAction(ScreenTransitionAction.ScreenTransitionType.FADE_IN, 1f), transitionActor))
+        stage.addAction(Actions.addAction(ScreenTransitionAction.transition(ScreenTransitionAction.ScreenTransitionType.FADE_IN, 1f), transitionActor))
     }
 
     override fun show() {}

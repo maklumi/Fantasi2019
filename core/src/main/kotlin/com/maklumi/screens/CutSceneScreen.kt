@@ -46,8 +46,8 @@ class CutSceneScreen(fantasi: Fantasi) : GameScreen() {
     private val dialog: Dialog = Dialog("", Utility.STATUSUI_SKIN, "solidbackground")
     private val label = Label("", Utility.STATUSUI_SKIN)
     private val transition = ScreenTransitionActor(Color.GREEN)
-    private val fadeOut = ScreenTransitionAction(ScreenTransitionAction.ScreenTransitionType.FADE_OUT, 3f)
-    private val fadeIn = ScreenTransitionAction(ScreenTransitionAction.ScreenTransitionType.FADE_IN, 3f)
+    private val fadeOut = ScreenTransitionAction.transition(ScreenTransitionAction.ScreenTransitionType.FADE_OUT, 3f)
+    private val fadeIn = ScreenTransitionAction.transition(ScreenTransitionAction.ScreenTransitionType.FADE_IN, 3f)
 
     private var shouldFollow = false
 
