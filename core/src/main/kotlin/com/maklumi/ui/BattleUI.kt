@@ -14,6 +14,7 @@ import com.maklumi.battle.BattleObserver
 import com.maklumi.battle.BattleObserver.BattleEvent
 import com.maklumi.battle.BattleObserver.BattleEvent.*
 import com.maklumi.battle.BattleState
+import com.maklumi.sfx.ShakeCamera
 import ktx.actors.onClick
 
 class BattleUI : Window("BATTLE", Utility.STATUSUI_SKIN, "solidbackground"),
@@ -24,6 +25,7 @@ class BattleUI : Window("BATTLE", Utility.STATUSUI_SKIN, "solidbackground"),
     private val attackButton = TextButton("Attack", skin, "inventory")
     private val runButton = TextButton("Run", skin, "inventory")
     private val damageLabel = Label("", skin)
+    private val shakeCamera = ShakeCamera(0f, 0f, 30f)
 
     init {
         val table = Table()
@@ -81,6 +83,8 @@ class BattleUI : Window("BATTLE", Utility.STATUSUI_SKIN, "solidbackground"),
                 damageLabel.setText(damage)
                 damageLabel.y = damageLabelStartY
                 damageLabel.isVisible = true
+                shakeCamera.oriPosition.set(image.x, image.y)
+                shakeCamera.shouldShake = true
             }
             OPPONENT_TURN_DONE -> {
                 runButton.isDisabled = false
@@ -109,6 +113,10 @@ class BattleUI : Window("BATTLE", Utility.STATUSUI_SKIN, "solidbackground"),
         if (damageLabel.isVisible) {
             damageLabel.y = damageLabel.y + 3
             if (damageLabel.y > stage.height) damageLabel.isVisible = false
+        }
+        if (shakeCamera.shouldShake) {
+            image.x = shakeCamera.position.x
+            image.y = shakeCamera.position.y
         }
         super.act(delta)
     }

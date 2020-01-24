@@ -29,12 +29,13 @@ import com.maklumi.screens.MainGameScreen
 import com.maklumi.screens.MainGameScreen.Companion.gameState
 import com.maklumi.sfx.ScreenTransitionAction
 import com.maklumi.sfx.ScreenTransitionActor
+import com.maklumi.sfx.ShakeCamera
 import com.maklumi.ui.InventoryObserver.InventoryEvent.*
 import com.maklumi.ui.StoreInventoryObserver.StoreInventoryEvent
 import ktx.actors.onClick
 import ktx.json.fromJson
 
-class PlayerHUD(camera: Camera) : Screen,
+class PlayerHUD(private val camera: Camera) : Screen,
         ComponentObserver,
         ConversationGraphObserver,
         ProfileObserver,
@@ -68,10 +69,12 @@ class PlayerHUD(camera: Camera) : Screen,
     private val battleUI = BattleUI()
     override val audioObservers = Array<AudioObserver>()
     private val transitionActor = ScreenTransitionActor(Color.BLACK)
+    private val shakeCam = ShakeCamera(camera.position.x, camera.position.y, 30f)
 
     init {
         audioObservers.add(AudioManager)
         statusUI.setPosition(0f, stage.height - statusUI.height - 40f)
+        statusUI.setKeepWithinStage(false)
         stage.addActor(statusUI)
 
         val x = statusUI.width
@@ -137,6 +140,9 @@ class PlayerHUD(camera: Camera) : Screen,
     override fun show() {}
 
     override fun render(delta: Float) {
+        if (shakeCam.shouldShake) {
+            camera.position.set(shakeCam.position.x, shakeCam.position.y, 0f)
+        }
         stage.act(delta)
         stage.draw()
     }
@@ -436,6 +442,7 @@ class PlayerHUD(camera: Camera) : Screen,
                 notify(SOUND_PLAY_ONCE, SOUND_PLAYER_PAIN)
                 val hpVal = ProfileManager.getProperty("currentPlayerHP") ?: 100
                 statusUI.hp = hpVal
+                shakeCam.shouldShake = true
                 if (hpVal <= 0) {
                     addTransitionToStage()
                     notify(MUSIC_STOP, MUSIC_BATTLE)
