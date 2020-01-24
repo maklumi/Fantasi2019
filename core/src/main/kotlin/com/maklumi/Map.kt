@@ -114,6 +114,9 @@ abstract class Map(var mapType: MapFactory.MapType, path: String) :
     fun updateMapEntities(batch: Batch, delta: Float) {
         mapEntities.forEach { it.update(batch, delta) }
         mapQuestEntities.forEach { it.update(batch, delta) }
+    }
+
+    fun updateParticleEffects(batch: Batch, delta: Float) {
         mapParticleEffects.forEach { effect ->
             batch.begin()
             effect.draw(batch, delta)

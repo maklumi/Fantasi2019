@@ -56,7 +56,8 @@ abstract class PhysicsComponent : Component, ComponentSubject() {
         entities.addAll(questEntities)
         var isCollisionWithMapEntities = false
 
-        for (mapEntity in entities) {
+        val iterable = gdxArray.ArrayIterable(entities)
+        for (mapEntity in iterable) {
             // check for testing against self
             if (mapEntity == entity) continue
 
@@ -93,7 +94,7 @@ abstract class PhysicsComponent : Component, ComponentSubject() {
     }
 
     protected fun calculateNextPosition(deltaTime: Float) {
-        if (deltaTime == 0f) return // don't know why, else velocity become NaN
+        if (deltaTime > .7f) return
         var tempX = currentPosition.x
         var tempY = currentPosition.y
         nextPosition.set(tempX, tempY)

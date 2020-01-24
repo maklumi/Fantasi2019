@@ -88,6 +88,10 @@ object MapManager : ProfileObserver {
         gameMap.updateMapEntities(batch, delta)
     }
 
+    fun updateParticleEffects(batch: Batch, delta: Float) {
+        gameMap.updateParticleEffects(batch, delta)
+    }
+
     fun getCurrentMapEntities(): gdxArray<Entity> = gameMap.mapEntities
 
     override fun onNotify(event: ProfileEvent) {

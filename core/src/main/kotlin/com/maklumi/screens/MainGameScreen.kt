@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
-import com.badlogic.gdx.graphics.GL30
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.maps.MapLayer
@@ -173,6 +172,8 @@ class MainGameScreen(private val fantasi: Fantasi) : GameScreen() {
         updateMapEntities(tiledMapRenderer.batch, delta)
         // player entity
         player.update(tiledMapRenderer.batch, delta)
+        // particle entities
+        MapManager.updateParticleEffects(tiledMapRenderer.batch, delta)
     }
 
     private fun renderTiles() {

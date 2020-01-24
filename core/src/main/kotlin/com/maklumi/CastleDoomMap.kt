@@ -4,12 +4,17 @@ import com.maklumi.audio.AudioObserver.AudioCommand
 import com.maklumi.audio.AudioObserver.AudioTypeEvent
 import com.maklumi.sfx.ParticleEffectFactory
 import com.maklumi.sfx.ParticleEffectFactory.ParticleEffectType.CANDLE_FIRE
+import com.maklumi.sfx.ParticleEffectFactory.ParticleEffectType.LAVA_SMOKE
 
 class CastleDoomMap : Map(MapFactory.MapType.CASTLE_OF_DOOM, "maps/castle_of_doom.tmx") {
 
     init {
         getParticleEffectSpawnPositions(CANDLE_FIRE).forEach { position ->
             mapParticleEffects.add(ParticleEffectFactory.get(CANDLE_FIRE, position))
+        }
+
+        getParticleEffectSpawnPositions(LAVA_SMOKE).forEach { position ->
+            mapParticleEffects.add(ParticleEffectFactory.get(LAVA_SMOKE, position))
         }
     }
 

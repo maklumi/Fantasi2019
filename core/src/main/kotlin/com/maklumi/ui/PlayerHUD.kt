@@ -215,6 +215,7 @@ class PlayerHUD(private val camera: Camera) : Screen,
                 battleUI.battleZoneTriggered()
             }
             PLAYER_HAS_MOVED -> {
+                if (MapManager.currentMapType == MapFactory.MapType.TOWN) return
                 if (battleUI.isBattleReady()) {
                     addTransitionToStage()
                     gameState = MainGameScreen.GameState.SAVING
