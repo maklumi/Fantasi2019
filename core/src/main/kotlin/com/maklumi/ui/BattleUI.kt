@@ -149,4 +149,7 @@ class BattleUI : Window("BATTLE", Utility.STATUSUI_SKIN, "solidbackground"),
         effects.forEach { it.draw(batch) }
     }
 
+    fun resetDefaults() {
+        battleState.resetDefaults()
+    }
 }

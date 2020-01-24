@@ -24,6 +24,16 @@ class BattleState : BattleSubject(), InventoryObserver {
     private val playerMagicTask = playerMagicUseCheckTimer()
     private val opponentAttackTask = opponentAttackCalculations()
 
+    fun resetDefaults() {
+        currentZoneLevel = 0
+        attackPoint = 0
+        defencePoint = 0
+        playerMagicWandAPPoints = 0
+        playerAttackTask.cancel()
+        opponentAttackTask.cancel()
+        playerMagicTask.cancel()
+    }
+
     override fun onNotify(value: String, event: InventoryObserver.InventoryEvent) {
         when (event) {
             UPDATED_AP -> {

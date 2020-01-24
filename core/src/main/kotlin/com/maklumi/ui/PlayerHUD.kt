@@ -167,7 +167,7 @@ class PlayerHUD(private val camera: Camera) : Screen,
     }
 
     override fun pause() {
-
+        battleUI.resetDefaults()
     }
 
     override fun resume() {
@@ -185,7 +185,14 @@ class PlayerHUD(private val camera: Camera) : Screen,
     override fun onNotify(value: String, event: ComponentObserver.ComponentEvent) {
         when (event) {
             LOAD_CONVERSATION -> {
-                val config = json.fromJson<EntityConfig>(value)
+                var config = json.fromJson<EntityConfig>(value)
+                //Check to see if there is a version loading into properties
+                if (config.itemTypeID == InventoryItem.ItemTypeID.NONE) {
+                    val configReturnProperty = ProfileManager.getProperty<EntityConfig>(config.entityID)
+                    if (configReturnProperty != null) {
+                        config = configReturnProperty
+                    }
+                }
                 conversationUI.loadConversation(config)
                 conversationUI.graph.conversationGraphObservers.add(this)
             }

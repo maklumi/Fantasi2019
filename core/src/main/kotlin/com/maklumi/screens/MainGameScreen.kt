@@ -242,12 +242,13 @@ class MainGameScreen(private val fantasi: Fantasi) : GameScreen() {
     @Override
     override fun pause() {
         gameState = GameState.PAUSED
-        ProfileManager.saveProfile()
+        playerHUD.pause()
     }
 
     @Override
     override fun resume() {
         gameState = GameState.LOADING
+        playerHUD.resume()
     }
 
     @Override

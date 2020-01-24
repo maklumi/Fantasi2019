@@ -80,6 +80,7 @@ class NewGameScreen(fantasi: Fantasi) : GameScreen() {
                 //Pop up dialog for Overwrite
                 overwriteDialog.show(stage)
             } else if (messageText.isNotEmpty()) {
+                ProfileManager.isNewProfile = true
                 ProfileManager.writeProfileToStorage(messageText, "", false)
                 ProfileManager.profileName = messageText
                 ProfileManager.saveProfile()
