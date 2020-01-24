@@ -174,15 +174,15 @@ class MainGameScreen(private val fantasi: Fantasi) : GameScreen() {
 
     private fun renderTiles() {
         if (currentMap == null) return
-        val backMapLayer = currentMap!!.layers[BACKGROUND_LAYER] as TiledMapTileLayer
-        val groundMapLayer = currentMap!!.layers[GROUND_LAYER] as TiledMapTileLayer
-        val decoMapLayer = currentMap!!.layers[DECORATION_LAYER] as TiledMapTileLayer
+        val backMapLayer = currentMap!!.layers[BACKGROUND_LAYER] as TiledMapTileLayer?
+        val groundMapLayer = currentMap!!.layers[GROUND_LAYER] as TiledMapTileLayer?
+        val decoMapLayer = currentMap!!.layers[DECORATION_LAYER] as TiledMapTileLayer?
 
         tiledMapRenderer.apply {
             batch.begin()
-            renderTileLayer(backMapLayer)
-            renderTileLayer(groundMapLayer)
-            renderTileLayer(decoMapLayer)
+            if (backMapLayer != null) renderTileLayer(backMapLayer)
+            if (groundMapLayer != null) renderTileLayer(groundMapLayer)
+            if (decoMapLayer != null) renderTileLayer(decoMapLayer)
             batch.end()
         }
     }
