@@ -9,18 +9,18 @@ object ParticleEffectFactory {
 
     enum class ParticleEffectType(val fullFilePath: String) {
         CANDLE_FIRE("sfx/candle.p"),
+        LANTERN_FIRE("sfx/candle.p"),
         LAVA_SMOKE(""),
         WAND_ATTACK(""),
     }
 
-    fun getParticleEffect(type: ParticleEffectType, position: Vector2): ParticleEffect? {
+    fun get(type: ParticleEffectType, position: Vector2): ParticleEffect? {
         val effect = ParticleEffect()
         effect.load(Gdx.files.internal(type.fullFilePath), Gdx.files.internal("sfx"))
         effect.setPosition(position.x, position.y)
         when (type) {
-            CANDLE_FIRE -> {
-                effect.scaleEffect(.04f)
-            }
+            CANDLE_FIRE -> effect.scaleEffect(.04f)
+            LANTERN_FIRE -> effect.scaleEffect(.02f)
             LAVA_SMOKE -> {
             }
             WAND_ATTACK -> {

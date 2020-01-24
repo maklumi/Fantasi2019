@@ -50,7 +50,7 @@ abstract class Map(var mapType: MapFactory.MapType, path: String) :
     var lightMapAfternoonLayer: MapLayer? = null
     var lightMapDuskLayer: MapLayer? = null
     var lightMapNightLayer: MapLayer? = null
-    var particleEffectSpawnLayer: MapLayer? = null
+    private var particleEffectSpawnLayer: MapLayer? = null
 
     val start = Vector2() // last known position on this map in pixels
     val startUnitScaled: Vector2  // in world unit
@@ -111,7 +111,15 @@ abstract class Map(var mapType: MapFactory.MapType, path: String) :
         start.set(closestStartPosition)
     }
 
-    abstract fun updateMapEntities(batch: Batch, delta: Float)
+    fun updateMapEntities(batch: Batch, delta: Float) {
+        mapEntities.forEach { it.update(batch, delta) }
+        mapQuestEntities.forEach { it.update(batch, delta) }
+        mapParticleEffects.forEach { effect ->
+            batch.begin()
+            effect.draw(batch, delta)
+            batch.end()
+        }
+    }
 
     fun getQuestItemSpawnPositions(objectName: String, objectTaskID: String): gdxArray<Vector2> {
         val positions = gdxArray<Vector2>()

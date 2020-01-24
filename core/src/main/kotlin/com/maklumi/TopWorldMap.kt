@@ -1,14 +1,16 @@
 package com.maklumi
 
-import com.badlogic.gdx.graphics.g2d.Batch
 import com.maklumi.audio.AudioObserver.AudioCommand.*
 import com.maklumi.audio.AudioObserver.AudioTypeEvent.MUSIC_TOPWORLD
+import com.maklumi.sfx.ParticleEffectFactory
+import com.maklumi.sfx.ParticleEffectFactory.ParticleEffectType.LANTERN_FIRE
 
 class TopWorldMap : Map(MapFactory.MapType.TOP_WORLD, "maps/topworld.tmx") {
 
-    override fun updateMapEntities(batch: Batch, delta: Float) {
-        mapEntities.forEach { it.update(batch, delta) }
-        mapQuestEntities.forEach { it.update(batch, delta) }
+    init {
+        getParticleEffectSpawnPositions(LANTERN_FIRE).forEach { position ->
+            mapParticleEffects.add(ParticleEffectFactory.get(ParticleEffectFactory.ParticleEffectType.CANDLE_FIRE, position))
+        }
     }
 
     override fun playMusic() {

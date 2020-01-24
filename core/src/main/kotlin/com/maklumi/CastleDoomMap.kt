@@ -1,14 +1,16 @@
 package com.maklumi
 
-import com.badlogic.gdx.graphics.g2d.Batch
 import com.maklumi.audio.AudioObserver.AudioCommand
 import com.maklumi.audio.AudioObserver.AudioTypeEvent
+import com.maklumi.sfx.ParticleEffectFactory
+import com.maklumi.sfx.ParticleEffectFactory.ParticleEffectType.CANDLE_FIRE
 
 class CastleDoomMap : Map(MapFactory.MapType.CASTLE_OF_DOOM, "maps/castle_of_doom.tmx") {
 
-    override fun updateMapEntities(batch: Batch, delta: Float) {
-        mapEntities.forEach { it.update(batch, delta) }
-        mapQuestEntities.forEach { it.update(batch, delta) }
+    init {
+        getParticleEffectSpawnPositions(CANDLE_FIRE).forEach { position ->
+            mapParticleEffects.add(ParticleEffectFactory.get(CANDLE_FIRE, position))
+        }
     }
 
     override fun playMusic() {

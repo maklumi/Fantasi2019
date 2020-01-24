@@ -1,6 +1,5 @@
 package com.maklumi
 
-import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
 import com.maklumi.Component.MESSAGE.INIT_START_POSITION
 import com.maklumi.EntityFactory.EntityName.TOWN_GUARD_WALKING
@@ -8,7 +7,7 @@ import com.maklumi.audio.AudioObserver.AudioCommand.*
 import com.maklumi.audio.AudioObserver.AudioTypeEvent.MUSIC_TOWN
 import com.maklumi.sfx.ParticleEffectFactory
 import com.maklumi.sfx.ParticleEffectFactory.ParticleEffectType.CANDLE_FIRE
-import com.badlogic.gdx.utils.Array as gdxArray
+import com.maklumi.sfx.ParticleEffectFactory.ParticleEffectType.LANTERN_FIRE
 
 class TownMap : Map(MapFactory.MapType.TOWN, "maps/town.tmx") {
 
@@ -28,26 +27,12 @@ class TownMap : Map(MapFactory.MapType.TOWN, "maps/town.tmx") {
             mapEntities.add(folk)
         }
 
-        val candlePositions = getParticleEffectSpawnPositions(CANDLE_FIRE)
-        val iterable = gdxArray.ArrayIterable<Vector2>(candlePositions)
-        for (position in iterable) {
-            val effect = ParticleEffectFactory.getParticleEffect(CANDLE_FIRE, position)
-            mapParticleEffects.add(effect)
+        getParticleEffectSpawnPositions(CANDLE_FIRE).forEach { position ->
+            mapParticleEffects.add(ParticleEffectFactory.get(CANDLE_FIRE, position))
         }
-    }
 
-    override fun updateMapEntities(batch: Batch, delta: Float) {
-        // #iterator() cannot be used nested, so use own index
-        for (i in 0 until mapEntities.size) {
-            mapEntities[i].update(batch, delta)
-        }
-        mapQuestEntities.forEach {
-            it.update(batch, delta)
-        }
-        mapParticleEffects.forEach { effect ->
-            batch.begin()
-            effect.draw(batch, delta)
-            batch.end()
+        getParticleEffectSpawnPositions(LANTERN_FIRE).forEach { position ->
+            mapParticleEffects.add(ParticleEffectFactory.get(LANTERN_FIRE, position))
         }
     }
 
