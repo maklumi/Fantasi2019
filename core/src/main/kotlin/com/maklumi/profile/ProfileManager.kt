@@ -3,6 +3,7 @@ package com.maklumi.profile
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.utils.Base64Coder
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.ObjectMap
 import ktx.json.fromJson
@@ -40,6 +41,14 @@ object ProfileManager : ProfileSubject() {
             file.writeString(fileData, !overwrite)
             profiles[profileName] = file
         }
+/* //uncomment if encoding
+        if (Gdx.files.isLocalStorageAvailable) {
+            val file: FileHandle = Gdx.files.local(fullFilename)
+            val encodedString = Base64Coder.encodeString(fileData)
+            file.writeString(encodedString, !overwrite)
+            profiles[profileName] = file
+        }
+        */
     }
 
     inline fun <reified T : Any> getProperty(key: String): T? = properties[key] as T?
@@ -56,7 +65,7 @@ object ProfileManager : ProfileSubject() {
     }
 
     fun loadProfile() {
-        if (isNewProfile){
+        if (isNewProfile) {
             notifyProfileObservers(ProfileEvent.CLEAR_CURRENT_PROFILE)
             saveProfile()
         }
@@ -66,13 +75,16 @@ object ProfileManager : ProfileSubject() {
         if (!doesProfileFileExist) {
             println("File doesn't exist! Default created.")
             return
-//            profileName = DEFAULT_PROFILE
-//            writeProfileToStorage(profileName, "{}", true)
-//            fullProfileFileName = DEFAULT_PROFILE + SAVEGAME_SUFFIX
         }
 
         profiles[profileName] = Gdx.files.internal(fullProfileFileName)
-        properties = json.fromJson(profiles[profileName]!!)
+/*
+        val fileHandle = profiles[profileName] as FileHandle
+        val s = fileHandle.readString()
+        val decodedFile = Base64Coder.decodeString(s)
+        properties = json.fromJson(decodedFile)
+ */
+        properties = json.fromJson(profiles[profileName]!!) // swap with above
         notifyProfileObservers(ProfileEvent.PROFILE_LOADED)
         isNewProfile = false
     }
